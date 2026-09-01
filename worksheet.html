@@ -4,13 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>한자 쓰기 연습장 (A4 프린트 & PDF) - 한자야 놀자!</title>
-<meta name="description" content="A4 용지 1장에 4글자씩 인쇄하여 손글씨로 직접 따라쓰고 받아쓰기하는 한자 워크시트입니다.">
+<meta name="description" content="A4 용지 1장에 4글자씩 인쇄하여 정통 해서체 손글씨로 직접 따라쓰고 받아쓰기하는 한자 워크시트입니다.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@500;700;900&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=LXGW+WenKai+TC:wght@400;700&family=Ma+Shan+Zheng&family=Noto+Serif+KR:wght@500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
 <style>
   /* ============================================================
-     A4 워크시트 인쇄 전용 스타일 (화면 & 프린터 공통 및 특화)
+     A4 워크시트 인쇄 전용 스타일 (정통 해서체 KaiTi 적용)
      ============================================================ */
   :root {
     --primary-color: #92400e;
@@ -18,6 +19,7 @@
     --light-border: #9ca3af;
     --grid-guide: #d1d5db;
     --guide-text-color: #9ca3af;
+    --font-kaiti: "LXGW WenKai TC", "Ma Shan Zheng", "Kaiti", "STKaiti", "KaiTi", "DFKai-SB", "BiauKai", "楷体", "楷体_GB2312", serif;
   }
 
   * {
@@ -173,11 +175,11 @@
     border-radius: 4px;
   }
   .ws-verse-text {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 1.15rem;
-    font-weight: 900;
+    font-family: var(--font-kaiti);
+    font-size: 1.28rem;
+    font-weight: 700;
     color: #92400e;
-    letter-spacing: 4px;
+    letter-spacing: 5px;
   }
   .ws-verse-meaning {
     font-size: .88rem;
@@ -215,9 +217,9 @@
     padding-right: 6px;
   }
   .ws-big-char {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 2.3rem;
-    font-weight: 900;
+    font-family: var(--font-kaiti);
+    font-size: 2.5rem;
+    font-weight: 700;
     line-height: 1.1;
     color: #111827;
   }
@@ -276,11 +278,11 @@
     height: 100%;
   }
 
-  /* 따라쓰기 연한 가이드 폰트 */
+  /* 따라쓰기 연한 가이드 폰트 (정통 해서체) */
   .ws-guide-char {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 2.1rem;
-    font-weight: 900;
+    font-family: var(--font-kaiti);
+    font-size: 2.35rem;
+    font-weight: 700;
     color: #cbd5e1;
     z-index: 2;
     position: relative;
@@ -312,10 +314,10 @@
     gap: 4px;
   }
   .ws-word-hanzi {
-    font-family: 'Noto Serif KR', serif;
-    font-weight: 800;
+    font-family: var(--font-kaiti);
+    font-weight: 700;
     color: #1f2937;
-    font-size: .95rem;
+    font-size: 1.05rem;
     letter-spacing: 2px;
   }
   .ws-word-box {
