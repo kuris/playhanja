@@ -1,6 +1,6 @@
 /* ============================================================
    한자야 놀자! - learn.html 전용 스크립트
-   필터링, 검색, 진도 표시, 상세 애니메이션 모달 제어
+   필터링, 검색, 진도 표시, 상세 애니메이션 & 따라쓰기 모달 제어
    ============================================================ */
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -14,7 +14,8 @@ document.addEventListener('DOMContentLoaded', function () {
   let state = {
     category: params.get('cat') || 'all',
     level: 'all',
-    search: ''
+    search: '',
+    modalTab: 'anim'
   };
 
   // ---------- DOM 참조 ----------
@@ -40,8 +41,19 @@ document.addEventListener('DOMContentLoaded', function () {
   const wordsList = document.getElementById('words-list');
   const markLearnedBtn = document.getElementById('mark-learned');
 
+  const modalTabs = document.querySelectorAll('.modal-tab');
+  const tabAnimContent = document.getElementById('tab-anim-content');
+  const tabWriteContent = document.getElementById('tab-write-content');
+  const writePadMount = document.getElementById('write-pad-mount');
+
   let currentList = [];
   let currentIndex = -1;
+  let writePad = null;
+
+  // ---------- 따라쓰기 패드 초기화 ----------
+  if (writePadMount && window.HanziWritePad) {
+    writePad = new window.HanziWritePad(writePadMount, { char: '漢' });
+  }
 
   // ---------- 모바일 내비 ----------
   if (navToggle && mainNav) {
@@ -51,16 +63,18 @@ document.addEventListener('DOMContentLoaded', function () {
   // ---------- 필터 UI 생성 ----------
   function renderFilterButtons() {
     // 카테고리
-    let catHtml = `<button class="filter-chip ${state.category === 'all' ? 'active' : ''}" data-cat="all"><span class="chip-icon">🗂️</span> 전체</button>`;
+    let catHtml = `<button class="filter-chip ${state.category === 'all' ? 'active' : ''}" data-cat="all"><span class="chip-icon">🗂️</span> 전체보기 (${DATA.length})</button>`;
     CATEGORIES.forEach(c => {
-      catHtml += `<button class="filter-chip ${state.category === c.id ? 'active' : ''}" data-cat="${c.id}"><span class="chip-icon">${c.icon}</span> ${c.name}</button>`;
+      const count = DATA.filter(h => h.category === c.id).length;
+      catHtml += `<button class="filter-chip ${state.category === c.id ? 'active' : ''}" data-cat="${c.id}"><span class="chip-icon">${c.icon}</span> ${c.name} <span class="chip-count">(${count})</span></button>`;
     });
     filterCategoryBox.innerHTML = catHtml;
 
     // 난이도
-    let lvlHtml = `<button class="filter-chip ${state.level === 'all' ? 'active' : ''}" data-lvl="all"><span class="chip-icon">✨</span> 전체</button>`;
+    let lvlHtml = `<button class="filter-chip ${state.level === 'all' ? 'active' : ''}" data-lvl="all"><span class="chip-icon">✨</span> 전체 단계</button>`;
     LEVELS.forEach(l => {
-      lvlHtml += `<button class="filter-chip ${state.level === l.id ? 'active' : ''}" data-lvl="${l.id}"><span class="chip-icon">${l.badge}</span> ${l.name}</button>`;
+      const count = DATA.filter(h => h.level === l.id).length;
+      lvlHtml += `<button class="filter-chip ${state.level === l.id ? 'active' : ''}" data-lvl="${l.id}"><span class="chip-icon">${l.badge}</span> ${l.name} <span class="chip-count">(${count})</span></button>`;
     });
     filterLevelBox.innerHTML = lvlHtml;
 
@@ -86,9 +100,9 @@ document.addEventListener('DOMContentLoaded', function () {
       if (state.category !== 'all' && h.category !== state.category) return false;
       if (state.level !== 'all' && h.level !== state.level) return false;
       if (state.search) {
-        const q = state.search.trim();
+        const q = state.search.trim().toLowerCase();
         const hay = (h.char + h.sound + h.meaning).toLowerCase();
-        if (!hay.includes(q.toLowerCase())) return false;
+        if (!hay.includes(q)) return false;
       }
       return true;
     });
@@ -100,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function () {
     currentList = list;
 
     if (list.length === 0) {
-      grid.innerHTML = `<div class="empty-state"><i class="fa-solid fa-face-frown" style="font-size:2rem;"></i><p>조건에 맞는 한자가 없어요. 다른 조건을 선택해 보세요!</p></div>`;
+      grid.innerHTML = `<div class="empty-state"><i class="fa-solid fa-face-frown" style="font-size:2rem; margin-bottom:12px; display:block;"></i><p>조건에 맞는 한자가 없어요. 다른 카테고리나 단계를 골라보세요!</p></div>`;
       updateProgress();
       return;
     }
@@ -142,7 +156,32 @@ document.addEventListener('DOMContentLoaded', function () {
     searchTimer = setTimeout(() => {
       state.search = searchInput.value;
       renderGrid();
-    }, 200);
+    }, 180);
+  });
+
+  // ---------- 탭 전환 로직 ----------
+  modalTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.tab;
+      modalTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      if (target === 'anim') {
+        tabAnimContent.classList.add('active');
+        tabWriteContent.classList.remove('active');
+        if (currentIndex >= 0) {
+          runDetailAnimation(currentList[currentIndex], 1);
+        }
+      } else {
+        tabAnimContent.classList.remove('active');
+        tabWriteContent.classList.add('active');
+        stopHanziAnimation(detailStage);
+        if (writePad && currentIndex >= 0) {
+          writePad.resize();
+          writePad.setChar(currentList[currentIndex].char);
+        }
+      }
+    });
   });
 
   // ---------- 상세 모달 ----------
@@ -152,23 +191,40 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!hanzi) return;
 
     modal.classList.add('open');
-    detailSound.textContent = `${hanzi.sound} · ${LEVELS.find(l => l.id === hanzi.level)?.badge || ''} ${LEVELS.find(l => l.id === hanzi.level)?.name || ''}`;
+    const lvlInfo = LEVELS.find(l => l.id === hanzi.level);
+    detailSound.textContent = `${hanzi.sound} · ${lvlInfo?.badge || ''} ${lvlInfo?.name || ''} (${hanzi.strokes}획)`;
     detailMeaning.textContent = `${hanzi.char}  —  ${hanzi.meaning}`;
 
-    storyBox.innerHTML = `<strong>어떻게 만들어졌을까요?</strong><br>${hanzi.story}`;
+    storyBox.innerHTML = `<strong>어떻게 만들어진 한자일까요?</strong><br>${hanzi.story}`;
 
     wordsList.innerHTML = hanzi.words.map(w =>
-      `<div class="word-chip">${w.word} <small>${w.meaning}</small></div>`
+      `<div class="word-chip">${w.word} <small>${w.reading ? `(${w.reading}) ` : ''}${w.meaning}</small></div>`
     ).join('');
 
     updateMarkButton(hanzi);
-    runDetailAnimation(hanzi, 1);
+
+    // 탭 상태 유지 및 갱신
+    if (writePad) {
+      writePad.setChar(hanzi.char);
+    }
+
+    // 기본으로 애니메이션 실행
+    const activeTab = document.querySelector('.modal-tab.active');
+    if (activeTab && activeTab.dataset.tab === 'write') {
+      tabAnimContent.classList.remove('active');
+      tabWriteContent.classList.add('active');
+      setTimeout(() => { if (writePad) writePad.resize(); }, 50);
+    } else {
+      tabAnimContent.classList.add('active');
+      tabWriteContent.classList.remove('active');
+      runDetailAnimation(hanzi, 1);
+    }
   }
 
   function updateMarkButton(hanzi) {
     const learned = PROGRESS.isLearned(hanzi.id);
     markLearnedBtn.innerHTML = learned
-      ? '<i class="fa-solid fa-star"></i> 학습 완료! (취소하기)'
+      ? '<i class="fa-solid fa-star"></i> 학습 완료! (다시 누르면 취소)'
       : '<i class="fa-solid fa-star"></i> 다 배웠어요!';
     markLearnedBtn.classList.toggle('btn-secondary', learned);
     markLearnedBtn.classList.toggle('btn-primary', !learned);
@@ -177,7 +233,6 @@ document.addEventListener('DOMContentLoaded', function () {
   function runDetailAnimation(hanzi, speed) {
     stopHanziAnimation(detailStage);
 
-    // 부수 설명 목록(레전드) 초기 상태로 준비
     partsLegend.innerHTML = hanzi.parts.map(p => `
       <div class="legend-item">
         <span class="legend-icon">${p.txt}</span>

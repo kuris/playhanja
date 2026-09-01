@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>한자 배우기 - 한자야 놀자!</title>
-<meta name="description" content="카테고리와 난이도별로 생활 한자를 애니메이션으로 배워보세요.">
+<meta name="description" content="카테고리와 난이도별로 생활 한자를 애니메이션과 따라쓰기로 재미있게 배워보세요.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@500;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
@@ -33,23 +33,23 @@
   <div class="container">
     <div class="section-head" style="margin-bottom:24px;">
       <span class="eyebrow">LEARN HANZI</span>
-      <h2>한자 배우기</h2>
-      <p>카테고리와 난이도를 골라서, 클릭하면 애니메이션으로 한자를 배울 수 있어요.</p>
+      <h2>한자 배우기 & 따라쓰기</h2>
+      <p>카테고리와 단계를 골라 애니메이션으로 원리를 보고, 직접 손으로 따라 써보세요!</p>
     </div>
 
     <div class="learn-layout">
       <!-- ---------------- 필터 패널 ---------------- -->
       <aside class="filter-panel">
         <h3><i class="fa-solid fa-magnifying-glass"></i> 한자 검색</h3>
-        <input type="text" id="search-input" placeholder="뜻이나 소리로 찾기 (예: 물, 수)">
+        <input type="text" id="search-input" placeholder="뜻이나 소리로 찾기 (예: 물, 수, 뫼)">
 
         <div class="filter-group">
-          <h3>카테고리</h3>
+          <h3>주제별 카테고리</h3>
           <div id="filter-category"></div>
         </div>
 
         <div class="filter-group">
-          <h3>난이도</h3>
+          <h3>학습 단계</h3>
           <div id="filter-level"></div>
         </div>
 
@@ -68,9 +68,9 @@
   </div>
 </main>
 
-<!-- ---------------- 상세 애니메이션 모달 ---------------- -->
+<!-- ---------------- 상세 학습 및 따라쓰기 모달 ---------------- -->
 <div class="modal-overlay" id="detail-modal">
-  <div class="modal-box">
+  <div class="modal-box modal-wide">
     <button class="modal-close" id="modal-close"><i class="fa-solid fa-xmark"></i></button>
 
     <div class="detail-head">
@@ -78,19 +78,33 @@
       <div class="detail-meaning" id="detail-meaning"></div>
     </div>
 
-    <div class="detail-stage-wrap">
-      <div class="char-stage" id="detail-stage"></div>
+    <!-- 모달 탭 스위처 -->
+    <div class="modal-tabs">
+      <button class="modal-tab active" data-tab="anim"><i class="fa-solid fa-wand-magic-sparkles"></i> 조립 애니메이션</button>
+      <button class="modal-tab" data-tab="write"><i class="fa-solid fa-pen-nib"></i> 직접 따라쓰기</button>
     </div>
 
-    <div class="detail-controls">
-      <button class="btn btn-secondary btn-sm" id="detail-replay"><i class="fa-solid fa-rotate-right"></i> 다시 보기</button>
-      <button class="btn btn-outline btn-sm" id="detail-slow"><i class="fa-solid fa-gauge-simple"></i> 천천히 보기</button>
+    <!-- 탭 1: 애니메이션 뷰 -->
+    <div class="tab-content active" id="tab-anim-content">
+      <div class="detail-stage-wrap">
+        <div class="char-stage" id="detail-stage"></div>
+      </div>
+
+      <div class="detail-controls">
+        <button class="btn btn-secondary btn-sm" id="detail-replay"><i class="fa-solid fa-rotate-right"></i> 다시 보기</button>
+        <button class="btn btn-outline btn-sm" id="detail-slow"><i class="fa-solid fa-gauge-simple"></i> 천천히 보기</button>
+      </div>
+
+      <div class="parts-legend" id="parts-legend"></div>
     </div>
 
-    <div class="parts-legend" id="parts-legend"></div>
+    <!-- 탭 2: 따라쓰기 뷰 -->
+    <div class="tab-content" id="tab-write-content">
+      <div class="write-pad-wrapper" id="write-pad-mount"></div>
+    </div>
 
+    <!-- 어원 이야기 및 실생활 낱말 (공통) -->
     <div class="story-box" id="story-box"></div>
-
     <div class="words-list" id="words-list"></div>
 
     <div class="detail-footer-actions">
@@ -104,7 +118,7 @@
   <div class="container foot-grid">
     <div>
       <h4>漢 한자야 놀자!</h4>
-      <p>초등학교 1학년부터 시작할 수 있는<br>애니메이션 한자 학습 사이트</p>
+      <p>초등학교 1학년부터 천자문 마스터까지!<br>애니메이션 & 따라쓰기 한자 학습 사이트</p>
     </div>
     <div>
       <h4>바로가기</h4>
@@ -112,7 +126,7 @@
     </div>
     <div>
       <h4>안내</h4>
-      <p>이 학습 결과와 진도는 사용 중인 기기의 브라우저에 저장돼요.</p>
+      <p>학습 결과와 진도는 브라우저 로컬 저장소에 안전하게 보관돼요.</p>
     </div>
   </div>
   <div class="container foot-bottom">© 2026 한자야 놀자! 어린이를 위한 한자 학습 사이트</div>
@@ -120,6 +134,7 @@
 
 <script src="js/hanzi-data.js"></script>
 <script src="js/animation.js"></script>
+<script src="js/write-pad.js"></script>
 <script src="js/progress.js"></script>
 <script src="js/learn.js"></script>
 </body>
