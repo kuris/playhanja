@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>천자문 250구 (1,000자) - 한자야 놀자!</title>
+<meta name="description" content="하늘 천 따 지부터 언재호야까지 천자문 250구 1,000자를 4글자씩 카드와 획순 애니메이션으로 완벽 정복하세요!">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@500;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-wrap">
+    <a href="index.html" class="logo">
+      <span class="logo-char">漢</span>
+      <span>한자야 놀자!</span>
+    </a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="메뉴 열기"><i class="fa-solid fa-bars"></i></button>
+    <nav class="main-nav" id="main-nav">
+      <ul>
+        <li><a href="index.html">홈</a></li>
+        <li><a href="learn.html">한자 배우기</a></li>
+        <li><a href="thousand.html" class="active">📜 천자문 250구</a></li>
+        <li><a href="quiz.html">퀴즈로 복습</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main class="section" style="padding-top:30px;">
+  <div class="container">
+    <div class="section-head" style="margin-bottom:28px;">
+      <span class="eyebrow">THOUSAND CHARACTER CLASSIC</span>
+      <h2>천자문 250구 완당 (1,000자)</h2>
+      <p>4글자씩 250개 구절이 정갈하게 펼쳐집니다. 구절을 클릭하면 <strong>확대되어 획순과 따라쓰기</strong>를 바로 배울 수 있어요!</p>
+    </div>
+
+    <!-- 검색 & 통계 바 -->
+    <div class="thousand-toolbar">
+      <div class="thousand-search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="thousand-search" placeholder="구절 번호(예: 1), 한자(예: 天地), 독음(예: 천지), 뜻으로 검색">
+      </div>
+      <div class="thousand-stats-badge" id="verse-count-label">총 250구 중 250구 표시</div>
+    </div>
+
+    <!-- 250구 콤팩트 카드 그리드 -->
+    <div class="thousand-grid" id="thousand-grid"></div>
+  </div>
+</main>
+
+<!-- ================= 구절 상세 모달 (클릭 시 확대) ================= -->
+<div class="modal-overlay" id="verse-modal">
+  <div class="modal-box modal-wide verse-modal-box">
+    <button class="modal-close" id="verse-modal-close"><i class="fa-solid fa-xmark"></i></button>
+
+    <div class="v-modal-header">
+      <span class="v-modal-badge" id="v-modal-no">천자문 제 1구</span>
+      <div class="v-modal-big-verse" id="v-modal-verse">天地玄黃</div>
+      <div class="v-modal-reading" id="v-modal-reading">천지현황</div>
+      <div class="v-modal-meaning" id="v-modal-meaning">하늘은 검고 아득하며 땅은 누렇다.</div>
+    </div>
+
+    <!-- 4글자 개별 선택 탭 -->
+    <div class="v-char-selector-wrap">
+      <div class="v-selector-title">글자를 골라 획순과 쓰기를 연습해 보세요:</div>
+      <div class="v-char-tabs" id="v-char-tabs"></div>
+    </div>
+
+    <!-- 선택된 글자의 획순 & 따라쓰기 영역 -->
+    <div class="v-practice-stage-wrap">
+      <div class="write-pad-wrapper" id="v-write-mount"></div>
+    </div>
+
+    <!-- 글자 상세 설명 및 어원 -->
+    <div class="v-char-detail-container" id="v-char-detail-box"></div>
+
+    <div class="v-modal-nav-actions">
+      <button class="btn btn-outline" id="v-prev-btn"><i class="fa-solid fa-arrow-left"></i> 이전 구절</button>
+      <button class="btn btn-primary" id="v-next-btn">다음 구절 <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container foot-grid">
+    <div>
+      <h4>漢 한자야 놀자!</h4>
+      <p>초등학교 1학년부터 천자문 1,000자 완결까지!<br>애니메이션 & 따라쓰기 한자 학습 사이트</p>
+    </div>
+    <div>
+      <h4>바로가기</h4>
+      <p><a href="learn.html">한자 배우기</a> · <a href="thousand.html">천자문 250구</a> · <a href="quiz.html">퀴즈로 복습</a></p>
+    </div>
+    <div>
+      <h4>안내</h4>
+      <p>학습 결과와 진도는 사용 중인 기기의 브라우저에 저장돼요.</p>
+    </div>
+  </div>
+  <div class="container foot-bottom">© 2026 한자야 놀자! 어린이를 위한 한자 학습 사이트</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+<script src="js/hanzi-data.js"></script>
+<script src="js/thousand-data.js"></script>
+<script src="js/write-pad.js"></script>
+<script src="js/progress.js"></script>
+<script src="js/thousand.js"></script>
+</body>
+</html>

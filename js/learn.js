@@ -119,7 +119,20 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    grid.innerHTML = list.map((h, i) => {
+    let bannerHtml = '';
+    if (state.category === 'thousand') {
+      bannerHtml = `
+        <div class="thousand-promo-banner" style="grid-column:1/-1; background:#fef3c7; border:2px solid #f59e0b; border-radius:12px; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:14px; flex-wrap:wrap;">
+          <div>
+            <strong style="color:#92400e; font-size:1.05rem; display:block;">📜 천자문 250구 (1,000자) 전체 모아보기</strong>
+            <span style="color:#78350f; font-size:.9rem;">4글자씩 250개 구절이 작게 나열되어 클릭하면 확대되는 천자문 전용관을 이용해 보세요!</span>
+          </div>
+          <a href="thousand.html" class="btn btn-primary btn-sm" style="white-space:nowrap;"><i class="fa-solid fa-arrow-right"></i> 천자문 250구 전용관 가기</a>
+        </div>
+      `;
+    }
+
+    grid.innerHTML = bannerHtml + list.map((h, i) => {
       const lvlInfo = LEVELS.find(l => l.id === h.level);
       const learned = PROGRESS.isLearned(h.id);
       return `
