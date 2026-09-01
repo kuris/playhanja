@@ -1,9 +1,8 @@
 /* ============================================================
    한자야 놀자! - 한자 따라쓰기(Write Pad) & 획순 애니메이션 엔진
    - HanziWriter 라이브러리 연동으로 정확한 표준 획순 애니메이션 제공
-   - 획순 자동 재생(보통/천천히/반복) & 한 획씩 순서대로 보여주기
-   - 캔버스 미자(米/十) 격자 보조선 위 자유 붓펜 필기 및 가이드 On/Off
-   - 네트워크 fallback(자체 캔버스 렌더러) 완벽 지원
+   - 직접 쓰기(따라쓰기) 모드에서도 획순 보기와 100% 동일한 정통 해서체 외곽선 가이드 공유
+   - 획순 자동 재생(보통/천천히/반복) & 자유 붓펜 필기 및 가이드 On/Off
    ============================================================ */
 
 (function () {
@@ -37,12 +36,16 @@
           </div>
 
           <div class="write-canvas-wrap" id="write-canvas-wrap">
-            <!-- 획순 전용 HanziWriter 타겟 컨테이너 -->
+            <!-- 배경 격자 캔버스 (z-index: 1) -->
+            <canvas class="write-bg-canvas"></canvas>
+
+            <!-- 획순 & 따라쓰기 공통 HanziWriter 해서체 스테이지 (z-index: 2) -->
             <div class="hanzi-writer-stage" id="hanzi-writer-target"></div>
 
-            <!-- 자유 드로잉 캔버스 -->
-            <canvas class="write-bg-canvas"></canvas>
+            <!-- 직접 쓰기 드로잉 캔버스 (z-index: 3) -->
             <canvas class="write-draw-canvas"></canvas>
+
+            <!-- 칭찬 오버레이 (z-index: 10) -->
             <div class="write-success-overlay"><span class="success-stamp">참 잘 썼어요! 💮</span></div>
           </div>
 
@@ -127,12 +130,19 @@
         });
       });
 
-      // 가이드 토글
+      // 가이드 토글 (동일한 HanziWriter 해서체 외곽선 On/Off)
       this.toggleGuideBtn.addEventListener('click', () => {
         this.showGuide = !this.showGuide;
         const textSpan = this.toggleGuideBtn.querySelector('.guide-text');
         if (textSpan) textSpan.textContent = this.showGuide ? '가이드 끄기' : '가이드 켜기';
-        this.renderBackground();
+        
+        if (this.writer) {
+          if (this.showGuide) {
+            this.writer.showOutline();
+          } else {
+            this.writer.hideOutline();
+          }
+        }
       });
 
       // 지우기
@@ -152,18 +162,27 @@
     setMode(mode) {
       this.mode = mode;
       if (mode === 'stroke') {
-        this.writerTarget.style.display = 'flex';
         this.drawCanvas.style.display = 'none';
         this.strokeControls.style.display = 'flex';
         this.drawToolbar.style.display = 'none';
-        this.renderBackground();
+        if (this.writer) {
+          this.writer.showOutline();
+        }
         this.playStrokeAnimation(1);
       } else {
-        this.writerTarget.style.display = 'none';
+        // 직접 쓰기 모드: 동일한 해서체 외곽선을 배경 가이드로 유지하고 드로잉 캔버스 활성화
         this.drawCanvas.style.display = 'block';
         this.strokeControls.style.display = 'none';
         this.drawToolbar.style.display = 'flex';
-        this.renderBackground();
+        if (this.writer) {
+          this.writer.cancelAnimation();
+          this.writer.hideCharacter();
+          if (this.showGuide) {
+            this.writer.showOutline();
+          } else {
+            this.writer.hideOutline();
+          }
+        }
       }
     }
 
@@ -186,7 +205,7 @@
             width: size,
             height: size,
             padding: 16,
-            showOutline: true,
+            showOutline: this.showGuide,
             strokeAnimationSpeed: 1,
             delayBetweenStrokes: 200,
             strokeColor: '#2b231c',
@@ -199,12 +218,14 @@
               this.isWriterLoaded = true;
               if (this.mode === 'stroke') {
                 this.playStrokeAnimation(1);
+              } else {
+                if (this.showGuide) this.writer.showOutline();
+                else this.writer.hideOutline();
               }
             },
             onLoadCharDataError: (err) => {
               console.warn('HanziWriter fallback for character:', this.currentChar, err);
               this.writer = null;
-              this.renderBackground();
             }
           });
         } catch (e) {
@@ -223,8 +244,6 @@
           strokeAnimationSpeed: speed,
           delayBetweenStrokes: 200 / speed
         });
-      } else {
-        this.renderBackground();
       }
     }
 
@@ -295,17 +314,6 @@
       ctx.lineWidth = 2;
       ctx.strokeRect(1, 1, size - 2, size - 2);
       ctx.restore();
-
-      // 연한 가이드 폰트는 '직접 쓰기 모드(draw)'에서만 렌더링
-      if (this.mode === 'draw' && this.showGuide && this.currentChar) {
-        ctx.save();
-        ctx.fillStyle = '#eddac2';
-        ctx.font = `900 ${Math.floor(size * 0.72)}px "Noto Serif KR", "Gowun Dodum", serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(this.currentChar, size / 2, size / 2 + size * 0.04);
-        ctx.restore();
-      }
     }
 
     getPos(e) {
