@@ -71,24 +71,24 @@ document.addEventListener('DOMContentLoaded', function () {
       const meaning = hanziInfo ? hanziInfo.meaning.split(',')[0] : c.sound;
       const sound = c.sound;
 
-      // 낱말 데이터
+      // 낱말 데이터 (괄호로 음과 뜻 표기)
       let wordsHtml = '';
       if (hanziInfo && hanziInfo.words && hanziInfo.words.length > 0) {
         wordsHtml = hanziInfo.words.slice(0, 2).map(w => `
           <div class="ws-word-item">
             <span class="ws-word-hanzi">${w.word}</span>
-            <span class="ws-word-box"></span>
+            <span class="ws-word-desc">(${w.reading}: ${w.meaning})</span>
           </div>
         `).join('');
       } else {
         wordsHtml = `
           <div class="ws-word-item">
             <span class="ws-word-hanzi">${verseItem.verse.slice(0, 2)}</span>
-            <span class="ws-word-box"></span>
+            <span class="ws-word-desc">(${verseItem.reading.slice(0, 2)})</span>
           </div>
           <div class="ws-word-item">
             <span class="ws-word-hanzi">${verseItem.verse.slice(2, 4)}</span>
-            <span class="ws-word-box"></span>
+            <span class="ws-word-desc">(${verseItem.reading.slice(2, 4)})</span>
           </div>
         `;
       }

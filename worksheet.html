@@ -299,7 +299,7 @@
 
   /* 활용 낱말 쓰기 영역 */
   .ws-words-col {
-    width: 130px;
+    width: 175px;
     border-left: 1px dashed #9ca3af;
     padding-left: 8px;
     display: flex;
@@ -311,19 +311,22 @@
   .ws-word-item {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .ws-word-hanzi {
     font-family: var(--font-kaiti);
     font-weight: 700;
     color: #1f2937;
     font-size: 1.05rem;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
   }
-  .ws-word-box {
-    border-bottom: 1px solid #6b7280;
-    width: 50px;
-    height: 18px;
+  .ws-word-desc {
+    font-size: .74rem;
+    color: #4b5563;
+    font-weight: 600;
   }
 
   /* 하단 받아쓰기 & 퀴즈 영역 */
