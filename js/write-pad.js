@@ -20,6 +20,7 @@
       this.writer = null;
       this.isDrawing = false;
       this.points = [];
+      this.isWriterLoaded = false;
 
       this.initDOM();
       this.initEvents();
@@ -103,10 +104,19 @@
         });
       });
 
-      // 획순 버튼들
-      this.strokePlayBtn.addEventListener('click', () => this.playStrokeAnimation(1));
-      this.strokeSlowBtn.addEventListener('click', () => this.playStrokeAnimation(0.4));
-      this.strokeLoopBtn.addEventListener('click', () => this.loopStrokeAnimation());
+      // 획순 버튼 클릭 이벤트
+      this.strokePlayBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.playStrokeAnimation(1);
+      });
+      this.strokeSlowBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.playStrokeAnimation(0.4);
+      });
+      this.strokeLoopBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.loopStrokeAnimation();
+      });
 
       // 색상 변경
       this.colorBtns.forEach(btn => {
@@ -159,12 +169,10 @@
 
     setChar(char) {
       this.currentChar = char;
+      this.isWriterLoaded = false;
       this.clear();
       this.initHanziWriter();
       this.renderBackground();
-      if (this.mode === 'stroke') {
-        setTimeout(() => this.playStrokeAnimation(1), 80);
-      }
     }
 
     initHanziWriter() {
@@ -186,10 +194,21 @@
             drawingColor: '#d9381e',
             highlightColor: '#e05338',
             showCharacter: false,
-            gridBackground: false
+            gridBackground: false,
+            onLoadCharDataSuccess: () => {
+              this.isWriterLoaded = true;
+              if (this.mode === 'stroke') {
+                this.playStrokeAnimation(1);
+              }
+            },
+            onLoadCharDataError: (err) => {
+              console.warn('HanziWriter fallback for character:', this.currentChar, err);
+              this.writer = null;
+              this.renderBackground();
+            }
           });
         } catch (e) {
-          console.warn('HanziWriter fallback:', e);
+          console.warn('HanziWriter create error:', e);
           this.writer = null;
         }
       }
@@ -198,6 +217,8 @@
     playStrokeAnimation(speed = 1) {
       if (this.writer) {
         this.writer.cancelAnimation();
+        this.writer.hideCharacter();
+        this.writer.showOutline();
         this.writer.animateCharacter({
           strokeAnimationSpeed: speed,
           delayBetweenStrokes: 200 / speed
@@ -210,6 +231,8 @@
     loopStrokeAnimation() {
       if (this.writer) {
         this.writer.cancelAnimation();
+        this.writer.hideCharacter();
+        this.writer.showOutline();
         this.writer.loopCharacterAnimation({
           strokeAnimationSpeed: 0.9,
           delayBetweenStrokes: 180,
@@ -273,7 +296,7 @@
       ctx.strokeRect(1, 1, size - 2, size - 2);
       ctx.restore();
 
-      // 연한 가이드 폰트는 '직접 쓰기 모드(draw)'에서만 렌더링 (획순 모드 시 이중 겹침 방지!)
+      // 연한 가이드 폰트는 '직접 쓰기 모드(draw)'에서만 렌더링
       if (this.mode === 'draw' && this.showGuide && this.currentChar) {
         ctx.save();
         ctx.fillStyle = '#eddac2';
