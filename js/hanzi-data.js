@@ -934,160 +934,266 @@ const HANZI_DATA = [
     words:[ {word:'道路', reading:'도로', meaning:'사람과 차가 다니는 길'}, {word:'道徳', reading:'도덕', meaning:'사람으로서 지킬 도리'}, {word:'車道', reading:'차도', meaning:'차가 다니는 길'} ] },
 
   // ==========================================
-  // 11. 천자문 명구 (thousand) - 최고 난이도 6단계
+  // 11. 천자문 명구 (thousand) - 4자 완성 8개 명구 (총 32자)
   // ==========================================
-  { id:'h_dark', char:'玄', sound:'현', meaning:'검을, 아득할, 검을 현', category:'thousand', level:6, strokes:5,
+  // [1구] 天地玄黃 (천지현황) - 하늘은 검고 아득하며 땅은 누렇다
+  { id:'h_th_tian', char:'天', sound:'천', meaning:'하늘, 하늘 천 [天地玄黃 1/4]', category:'thousand', level:6, strokes:4,
     parts:[
-      { txt:'🌌', label:'아득한 하늘 지붕(亠)', meaning:'끝없이 펼쳐진 아득한 우주의 덮개예요.', dir:'top' },
-      { txt:'🧶', label:'가느다란 실타래(幺)', meaning:'실타래를 검푸르게 물들인 깊은 빛깔이에요.', dir:'bottom' }
+      { txt:'一', label:'넓은 하늘선', meaning:'사람 머리 위로 끝없이 펼쳐진 하늘이에요.', dir:'top' },
+      { txt:'🧍', label:'큰 사람(大)', meaning:'두 팔과 다리를 벌리고 선 사람의 모습이에요.', dir:'bottom' }
     ],
-    story:'천자문의 첫 구절 "天地玄黃(천지현황)"에 나오는 글자로, 끝없이 아득한 우주 하늘의 깊고 검푸른 신비로운 “검은빛”을 뜻해요.',
-    words:[ {word:'天地玄黃', reading:'천지현황', meaning:'하늘은 검고 땅은 누르다'}, {word:'玄關', reading:'현관', meaning:'건물의 주된 출입구'}, {word:'玄妙', reading:'현묘', meaning:'이치가 깊고 묘함'} ] },
+    story:'천자문의 첫 번째 글자예요. 사람(大) 머리 위로 끝없이 넓게 펼쳐진 우주와 광활한 “하늘”을 나타냈어요.',
+    words:[ {word:'天地玄黃', reading:'천지현황', meaning:'하늘은 검고 아득하며 땅은 누렇다'}, {word:'天下', reading:'천하', meaning:'온 세상'} ] },
 
-  { id:'h_space_u', char:'宇', sound:'우', meaning:'집, 무한한 공간, 집 우', category:'thousand', level:6, strokes:6,
+  { id:'h_th_di', char:'地', sound:'지', meaning:'땅, 땅 지 [天地玄黃 2/4]', category:'thousand', level:6, strokes:6,
+    parts:[
+      { txt:'🌱', label:'흙(土)', meaning:'우리가 딛고 서 있는 대지의 흙이에요.', dir:'left' },
+      { txt:'🐍', label:'굽이치는 땅(也)', meaning:'들판과 산줄기가 끝없이 이어진 모양이에요.', dir:'right' }
+    ],
+    story:'천자문의 두 번째 글자예요. 흙(土)이 끝없이 펼쳐져 온갖 생명을 품어 안아 기르는 “땅(대지)”을 뜻해요.',
+    words:[ {word:'天地玄黃', reading:'천지현황', meaning:'하늘은 검고 땅은 누르다'}, {word:'大地', reading:'대지', meaning:'넓은 땅'} ] },
+
+  { id:'h_th_xuan', char:'玄', sound:'현', meaning:'검을, 아득할, 검을 현 [天地玄黃 3/4]', category:'thousand', level:6, strokes:5,
+    parts:[
+      { txt:'🌌', label:'아득한 하늘(亠)', meaning:'끝없이 깊은 우주의 덮개예요.', dir:'top' },
+      { txt:'🧶', label:'가느다란 실타래(幺)', meaning:'검푸르게 물들인 깊은 빛깔이에요.', dir:'bottom' }
+    ],
+    story:'천자문의 세 번째 글자예요. 낮의 파란 하늘을 넘어 밤과 우주의 깊고 그윽하며 신비로운 “검은빛(아득함)”을 뜻해요.',
+    words:[ {word:'天地玄黃', reading:'천지현황', meaning:'하늘은 검고 아득하며 땅은 누렇다'}, {word:'玄妙', reading:'현묘', meaning:'이치가 깊고 오묘함'} ] },
+
+  { id:'h_th_huang', char:'黃', sound:'황', meaning:'누를, 노랑, 누를 황 [天地玄黃 4/4]', category:'thousand', level:6, strokes:12,
+    parts:[
+      { txt:'🌱', label:'빛나는 싹(廿)', meaning:'가을 햇살 아래 황금빛이에요.', dir:'top' },
+      { txt:'🌍', label:'기름진 흙(田/由/八)', meaning:'가슴에 옥을 품은 기름진 황토 땅이에요.', dir:'bottom' }
+    ],
+    story:'천자문 1구의 마지막 글자예요. 만물을 살찌우는 기름진 황토 흙의 따뜻한 “누런색(노랑)”을 뜻해요.',
+    words:[ {word:'天地玄黃', reading:'천지현황', meaning:'하늘은 검고 땅은 누르다'}, {word:'黃金', reading:'황금', meaning:'누런 금'} ] },
+
+  // [2구] 宇宙洪荒 (우주홍황) - 우주는 끝없이 넓고 아득히 거칠다
+  { id:'h_th_yu', char:'宇', sound:'우', meaning:'집, 무한한 공간, 집 우 [宇宙洪荒 1/4]', category:'thousand', level:6, strokes:6,
     parts:[
       { txt:'🏠', label:'지붕 집 면(宀)', meaning:'온 세상을 덮고 있는 거대한 지붕이에요.', dir:'top' },
       { txt:'🪓', label:'굽은 처마 우(于)', meaning:'사방으로 끝없이 뻗어나간 처마예요.', dir:'bottom' }
     ],
-    story:'천자문 "宇宙洪荒(우주홍황)"의 첫 글자로, 지붕(宀)처럼 상하사방 끝없이 넓게 펼쳐진 삼차원 “공간(우주)”을 뜻해요.',
-    words:[ {word:'宇宙', reading:'우주', meaning:'온 세상의 무한한 시공간'}, {word:'宇宙船', reading:'우주선', meaning:'우주를 비행하는 배'}, {word:'宇內', reading:'우내', meaning:'천하, 온 세상'} ] },
+    story:'천자문 2구의 첫 글자예요. 상하사방 끝없이 넓게 펼쳐진 삼차원의 모든 “공간(우주)”을 뜻해요.',
+    words:[ {word:'宇宙洪荒', reading:'우주홍황', meaning:'우주는 넓고 아득히 거칠다'}, {word:'宇宙船', reading:'우주선', meaning:'우주 비행선'} ] },
 
-  { id:'h_space_ju', char:'宙', sound:'주', meaning:'집, 영원한 시간, 집 주', category:'thousand', level:6, strokes:8,
+  { id:'h_th_zhou', char:'宙', sound:'주', meaning:'집, 영원한 시간, 집 주 [宇宙洪荒 2/4]', category:'thousand', level:6, strokes:8,
     parts:[
       { txt:'🏠', label:'지붕 집 면(宀)', meaning:'과거와 미래를 품은 시간의 집이에요.', dir:'top' },
-      { txt:'🌱', label:'말미암을 유(由)', meaning:'과거에서 오늘로 이어져 내려오는 줄기예요.', dir:'bottom' }
+      { txt:'🌱', label:'말미암을 유(由)', meaning:'과거에서 오늘로 이어지는 줄기예요.', dir:'bottom' }
     ],
-    story:'천자문 "宇宙洪荒(우주홍황)"의 둘째 글자로, 태초부터 영원히 쉼 없이 흘러가는 무한한 “시간(역사)”을 뜻해요.',
-    words:[ {word:'宇宙', reading:'우주', meaning:'무한한 공간과 영원한 시간'}, {word:'宙合', reading:'주합', meaning:'천지와 시공간의 조화'} ] },
+    story:'천자문 2구의 둘째 글자예요. 태초부터 영원히 쉼 없이 흘러가는 무한한 “시간(역사)”을 뜻해요.',
+    words:[ {word:'宇宙', reading:'우주', meaning:'무한한 공간과 영원한 시간'}, {word:'宙合', reading:'주합', meaning:'천지의 시공간 조화'} ] },
 
-  { id:'h_flood', char:'洪', sound:'홍', meaning:'넓을, 클, 넓을 홍', category:'thousand', level:6, strokes:9,
+  { id:'h_th_hong', char:'洪', sound:'홍', meaning:'넓을, 클, 넓을 홍 [宇宙洪荒 3/4]', category:'thousand', level:6, strokes:9,
     parts:[
       { txt:'💧', label:'삼수변 물(氵)', meaning:'도도하게 넘쳐흐르는 거대한 물결이에요.', dir:'left' },
       { txt:'🤝', label:'함께 공(共)', meaning:'온 강물이 다 함께 합쳐져요.', dir:'right' }
     ],
-    story:'온 세상의 물(氵)이 다 함께(共) 합쳐져 끝없이 넓고 거대하게 넘실대는 광대한 “넓음/큼”을 뜻해요.',
-    words:[ {word:'洪水', reading:'홍수', meaning:'비가 많이 와서 물이 크게 넘침'}, {word:'宇宙洪荒', reading:'우주홍황', meaning:'우주는 넓고 아득히 거칠다'}, {word:'洪恩', reading:'홍은', meaning:'넓고 큰 은혜'} ] },
+    story:'온 세상의 물(氵)이 함께(共) 합쳐져 끝없이 넓고 거대하게 넘실대는 광대한 “넓음/큼”을 뜻해요.',
+    words:[ {word:'宇宙洪荒', reading:'우주홍황', meaning:'우주는 넓고 아득히 거칠다'}, {word:'洪水', reading:'홍수', meaning:'크게 넘치는 물'} ] },
 
-  { id:'h_wild', char:'荒', sound:'황', meaning:'거칠, 아득할, 거칠 황', category:'thousand', level:6, strokes:9,
+  { id:'h_th_huang2', char:'荒', sound:'황', meaning:'거칠, 아득할, 거칠 황 [宇宙洪荒 4/4]', category:'thousand', level:6, strokes:9,
     parts:[
       { txt:'🌱', label:'풀초 머리(艹)', meaning:'원시 대자연에 무성한 풀이에요.', dir:'top' },
       { txt:'💧', label:'망할 망/흐를 망(亡/川)', meaning:'길도 없이 아득하게 펼쳐진 황야예요.', dir:'bottom' }
     ],
-    story:'천자문 "宇宙洪荒"의 구절로, 사람의 손길이 닿지 않은 태초의 대우주가 아득하고 거대하게 펼쳐진 “거침/아득함”을 뜻해요.',
-    words:[ {word:'荒野', reading:'황야', meaning:'거칠고 넓은 들판'}, {word:'荒唐', reading:'황당', meaning:'말이나 행동이 터무니없음'}, {word:'荒蕪地', reading:'황무지', meaning:'버려진 거친 땅'} ] },
+    story:'천자문 2구의 완성 글자예요. 사람의 손길이 닿지 않은 태초 대우주의 “아득함과 거침”을 뜻해요.',
+    words:[ {word:'宇宙洪荒', reading:'우주홍황', meaning:'우주는 넓고 아득히 거칠다'}, {word:'荒野', reading:'황야', meaning:'거친 들판'} ] },
 
-  { id:'h_star_jin', char:'辰', sound:'진/신', meaning:'별, 때, 지지 진', category:'thousand', level:6, strokes:7,
+  // [3구] 日月盈昃 (일월영측) - 해와 달은 차오르고 기울며
+  { id:'h_th_ri', char:'日', sound:'일', meaning:'해, 날, 해 일 [日月盈昃 1/4]', category:'thousand', level:6, strokes:4,
+    parts:[{ txt:'☀️', label:'둥근 해', meaning:'온 세상을 비추는 둥근 태양의 모습이에요.', dir:'center' }],
+    story:'천자문 3구의 첫 글자예요. 하늘 높이 떠서 만물에게 빛과 온기를 주는 눈부신 “해(태양)”를 뜻해요.',
+    words:[ {word:'日月盈昃', reading:'일월영측', meaning:'해와 달은 차고 기운다'}, {word:'日月', reading:'일월', meaning:'해와 달, 세월'} ] },
+
+  { id:'h_th_yue', char:'月', sound:'월', meaning:'달, 달 월 [日月盈昃 2/4]', category:'thousand', level:6, strokes:4,
+    parts:[{ txt:'🌙', label:'초승달 모양', meaning:'밤하늘에 은은하게 빛나는 둥근 달이에요.', dir:'center' }],
+    story:'천자문 3구의 둘째 글자예요. 밤하늘을 은은하고 고요하게 밝혀주는 둥근 “달”을 뜻해요.',
+    words:[ {word:'日月盈昃', reading:'일월영측', meaning:'해와 달은 차고 기운다'}, {word:'月光', reading:'월광', meaning:'달빛'} ] },
+
+  { id:'h_th_ying', char:'盈', sound:'영', meaning:'찰, 가득할, 찰 영 [日月盈昃 3/4]', category:'thousand', level:6, strokes:9,
+    parts:[
+      { txt:'🥣', label:'그릇 명(皿)', meaning:'음식을 담는 정갈한 그릇이에요.', dir:'bottom' },
+      { txt:'💧', label:'가득 찬 모양(乃/又)', meaning:'그릇 위로 넘칠 듯 가득 차올라요.', dir:'top' }
+    ],
+    story:'그릇(皿)에 물이나 곡식이 넘칠 듯이 가득 차오르듯, 달이 보름달로 환하게 “차오름”을 뜻해요.',
+    words:[ {word:'日月盈昃', reading:'일월영측', meaning:'해와 달은 차고 기운다'}, {word:'盈虛', reading:'영허', meaning:'차오름과 빔'} ] },
+
+  { id:'h_th_ze', char:'昃', sound:'측', meaning:'기울, 기울 측 [日月盈昃 4/4]', category:'thousand', level:6, strokes:8,
+    parts:[
+      { txt:'☀️', label:'해 일(日)', meaning:'하늘에 뜬 붉은 해예요.', dir:'top' },
+      { txt:'🚶', label:'기울 척(仄)', meaning:'사람이 비스듬히 몸을 기울인 모습이에요.', dir:'bottom' }
+    ],
+    story:'천자문 3구의 완성 글자예요. 정오를 지난 해(日)가 서산 너머로 뉘엿뉘엿 “기우는 모습”을 뜻해요.',
+    words:[ {word:'日月盈昃', reading:'일월영측', meaning:'해와 달은 차고 기운다'}, {word:'日昃', reading:'일측', meaning:'해가 서쪽으로 긺'} ] },
+
+  // [4구] 辰宿列張 (진숙열장) - 별자리는 하늘에 넓게 펼쳐져 있다
+  { id:'h_th_chen', char:'辰', sound:'진/신', meaning:'별, 때, 지지 진 [辰宿列張 1/4]', category:'thousand', level:6, strokes:7,
     parts:[
       { txt:'🪨', label:'바위 언덕(厂)', meaning:'하늘의 높은 언덕이에요.', dir:'top' },
       { txt:'🐚', label:'조개와 발(𧘇/二)', meaning:'봄이 되어 조개가 입을 벌리듯 별이 반짝여요.', dir:'bottom' }
     ],
-    story:'천자문 "辰宿列張(진숙열장)"에 나오는 글자로, 밤하늘 언덕 위에서 찬란하게 반짝이는 모든 “별”과 농사짓는 “때”를 뜻해요.',
-    words:[ {word:'星辰', reading:'성진', meaning:'밤하늘의 모든 별'}, {word:'辰宿列張', reading:'진숙열장', meaning:'별자리가 하늘에 벌여 베풀어지다'}, {word:'生辰', reading:'생신/생진', meaning:'생일의 높임말'} ] },
+    story:'천자문 4구의 첫 글자예요. 밤하늘 언덕 위에서 찬란하게 반짝이는 모든 “별”과 “때”를 뜻해요.',
+    words:[ {word:'辰宿列張', reading:'진숙열장', meaning:'별자리가 하늘에 넓게 펼쳐지다'}, {word:'星辰', reading:'성진', meaning:'모든 별'} ] },
 
-  { id:'h_star_suk', char:'宿', sound:'숙/수', meaning:'잘 숙, 별자리 수', category:'thousand', level:6, strokes:11,
+  { id:'h_th_xiu', char:'宿', sound:'숙/수', meaning:'잘 숙, 별자리 수 [辰宿列張 2/4]', category:'thousand', level:6, strokes:11,
     parts:[
-      { txt:'🏠', label:'지붕 집 면(宀)', meaning:'밤하늘 별들이 깃드는 우주의 집이에요.', dir:'top' },
-      { txt:'🛏️', label:'자리 백(百/亻/一)', meaning:'사람이 누워 곤히 잠드는 돗자리예요.', dir:'bottom' }
+      { txt:'🏠', label:'지붕 집 면(宀)', meaning:'별들이 머무는 우주의 궁궐이에요.', dir:'top' },
+      { txt:'🛏️', label:'자리 백(百/亻/一)', meaning:'사람이 곤히 머무르는 돗자리예요.', dir:'bottom' }
     ],
-    story:'사람이 집(宀)에 머물러 자듯(숙), 밤하늘의 28개 별자리들이 하늘에 질서 있게 깃들어 빛나는 “별자리(수)”를 뜻해요.',
-    words:[ {word:'星座', reading:'성수(성좌)', meaning:'하늘의 별자리'}, {word:'宿題', reading:'숙제', meaning:'집에서 해 오는 과제'}, {word:'宿泊', reading:'숙박', meaning:'여관 등에 묵음'} ] },
+    story:'사람이 집(宀)에 편안히 머물듯, 밤하늘에 질서정연하게 깃들어 빛나는 28수 “별자리(수)”를 뜻해요.',
+    words:[ {word:'辰宿列張', reading:'진숙열장', meaning:'별자리가 하늘에 베풀어지다'}, {word:'星座', reading:'성수(별자리)', meaning:'별자리'} ] },
 
-  { id:'h_line_yeol', char:'列', sound:'렬(열)', meaning:'벌일, 줄지을, 줄 열', category:'thousand', level:6, strokes:6,
+  { id:'h_th_lie', char:'列', sound:'렬(열)', meaning:'벌일, 줄지을, 줄 열 [辰宿列張 3/4]', category:'thousand', level:6, strokes:6,
     parts:[
-      { txt:'🦴', label:'뼈 앙상할 알(歹)', meaning:'가지런히 정돈된 뼈대 모양이에요.', dir:'left' },
-      { txt:'🔪', label:'칼 도(刂)', meaning:'칼로 반듯반듯하게 줄을 맞추어 정렬해요.', dir:'right' }
+      { txt:'🦴', label:'뼈대 알(歹)', meaning:'가지런히 정돈된 뼈대 모양이에요.', dir:'left' },
+      { txt:'🔪', label:'칼 도(刂)', meaning:'칼로 반듯하게 줄을 맞추어 정렬해요.', dir:'right' }
     ],
-    story:'칼(刂)로 자른 듯 밤하늘의 수많은 별자리들이 규칙에 따라 질서정연하게 늘어서 있는 “줄지음/벌임”을 뜻해요.',
-    words:[ {word:'列車', reading:'열차', meaning:'줄지어 이어진 기차'}, {word:'行列', reading:'행렬', meaning:'줄을 지어 감'}, {word:'列島', reading:'열도', meaning:'줄지어 늘어선 섬들'} ] },
+    story:'칼(刂)로 자른 듯 밤하늘의 수많은 별자리들이 질서 있게 늘어서 있는 “줄지음/벌임”을 뜻해요.',
+    words:[ {word:'辰宿列張', reading:'진숙열장', meaning:'별자리가 벌여 펼쳐지다'}, {word:'行列', reading:'행렬', meaning:'줄지어 감'} ] },
 
-  { id:'h_spread', char:'張', sound:'장', meaning:'베풀, 펼, 베풀 장', category:'thousand', level:6, strokes:11,
+  { id:'h_th_zhang', char:'張', sound:'장', meaning:'베풀, 펼, 베풀 장 [辰宿列張 4/4]', category:'thousand', level:6, strokes:11,
     parts:[
-      { txt:'🏹', label:'활 궁(弓)', meaning:'팽팽하게 시위를 당긴 활이에요.', dir:'left' },
+      { txt:'🏹', label:'활 궁(弓)', meaning:'시위를 팽팽하게 당긴 활이에요.', dir:'left' },
       { txt:'👴', label:'길 장(長)', meaning:'활시위를 길게 끝까지 당겨 펼쳐요.', dir:'right' }
     ],
-    story:'활(弓)시위를 길게(長) 힘껏 당겨 활짝 펴듯, 광활한 밤하늘에 은하수와 별빛이 눈부시게 펼쳐진 “베풂/펼침”을 뜻해요.',
-    words:[ {word:'主張', reading:'주장', meaning:'자기 뜻을 펼침'}, {word:'緊張', reading:'긴장', meaning:'마음을 팽팽하게 죔'}, {word:'擴張', reading:'확장', meaning:'넓혀서 크게 펼침'} ] },
+    story:'천자문 4구의 완성 글자예요. 활시위를 힘껏 당겨 펴듯 은하수와 별빛이 온 하늘에 “펼쳐짐”을 뜻해요.',
+    words:[ {word:'辰宿列張', reading:'진숙열장', meaning:'별자리가 하늘에 넓게 펼쳐지다'}, {word:'擴張', reading:'확장', meaning:'넓혀서 크게 폄'} ] },
 
-  { id:'h_cold', char:'寒', sound:'한', meaning:'찰, 추울, 찰 한', category:'thousand', level:6, strokes:12,
+  // [5구] 寒來暑往 (한래서왕) - 추위가 오면 더위가 가고
+  { id:'h_th_han', char:'寒', sound:'한', meaning:'찰, 추울, 찰 한 [寒來暑往 1/4]', category:'thousand', level:6, strokes:12,
     parts:[
       { txt:'🏠', label:'집 면(宀)', meaning:'추위를 피하는 집이에요.', dir:'top' },
-      { txt:'🌾', label:'풀과 짚(艸/人)', meaning:'짚풀을 몸에 두르고 추위를 견뎌요.', dir:'center' },
+      { txt:'🌾', label:'풀과 짚(艸/人)', meaning:'짚풀을 몸에 두르고 견뎌요.', dir:'center' },
       { txt:'🧊', label:'얼음 빙(冫/井)', meaning:'마루 밑에 꽁꽁 언 얼음 알갱이예요.', dir:'bottom' }
     ],
-    story:'천자문 "寒來暑往(한래서왕)"의 첫 글자로, 집(宀) 안에서 짚풀을 덮고 있어도 얼음(冫)이 얼 만큼 살을 에는 “추위”를 뜻해요.',
-    words:[ {word:'寒來暑往', reading:'한래서왕', meaning:'추위가 오면 더위가 가고'}, {word:'寒波', reading:'한파', meaning:'매서운 추위'}, {word:'惡戰苦鬪', reading:'대한(大寒)', meaning:'가장 추운 절기'} ] },
+    story:'천자문 5구의 첫 글자예요. 집(宀) 안에서도 얼음(冫)이 얼 만큼 살을 에는 매서운 “겨울 추위”를 뜻해요.',
+    words:[ {word:'寒來暑往', reading:'한래서왕', meaning:'추위가 오면 더위가 가고'}, {word:'寒波', reading:'한파', meaning:'매서운 추위'} ] },
 
-  { id:'h_come', char:'來', sound:'래(내)', meaning:'올, 올 래', category:'thousand', level:6, strokes:8,
+  { id:'h_th_lai', char:'來', sound:'래(내)', meaning:'올, 올 래 [寒來暑往 2/4]', category:'thousand', level:6, strokes:8,
     parts:[
-      { txt:'🌾', label:'보리 이삭 모양', meaning:'줄기 끝에 알곡이 주렁주렁 매달린 보리예요.', dir:'center' },
-      { txt:'🧍', label:'사람들(人人)', meaning:'하늘이 내려준 보리를 거두러 모여들어요.', dir:'center' }
+      { txt:'🌾', label:'보리 이삭 모양', meaning:'줄기 끝에 알곡이 주렁주렁 매달렸어요.', dir:'center' },
+      { txt:'🧍', label:'사람들(人人)', meaning:'곡식을 거두러 모여들어요.', dir:'center' }
     ],
-    story:'하늘에서 백성들을 살리기 위해 곡식(보리)이 내려오듯, 시간과 계절이 순서대로 우리에게 다가오는 “오다”를 뜻해요.',
-    words:[ {word:'未來', reading:'미래', meaning:'아직 오지 않은 앞날'}, {word:'來年', reading:'내년', meaning:'오는 해, 다음 해'}, {word:'往來', reading:'왕래', meaning:'오고 감'} ] },
+    story:'하늘에서 곡식이 내려오듯 시간과 계절이 순서에 따라 우리에게 다가오는 “오다”를 뜻해요.',
+    words:[ {word:'寒來暑往', reading:'한래서왕', meaning:'추위가 오면 더위가 간다'}, {word:'未來', reading:'미래', meaning:'앞으로 올 날'} ] },
 
-  { id:'h_hot', char:'暑', sound:'서', meaning:'더울, 더울 서', category:'thousand', level:6, strokes:12,
+  { id:'h_th_shu', char:'暑', sound:'서', meaning:'더울, 더울 서 [寒來暑往 3/4]', category:'thousand', level:6, strokes:12,
     parts:[
-      { txt:'☀️', label:'해 일(日)', meaning:'하늘에서 이글이글 타오르는 붉은 태양이에요.', dir:'top' },
-      { txt:'🧑‍🌾', label:'놈 자/사람(者)', meaning:'뜨거운 햇볕 아래 땀 흘리는 사람이에요.', dir:'bottom' }
+      { txt:'☀️', label:'해 일(日)', meaning:'하늘에서 이글이글 타오르는 태양이에요.', dir:'top' },
+      { txt:'🧑‍🌾', label:'사람(者)', meaning:'뜨거운 햇볕 아래 땀 흘리는 사람이에요.', dir:'bottom' }
     ],
-    story:'천자문 "寒來暑往(한래서왕)"의 구절로, 머리 위에서 태양(日)이 맹렬하게 내리쬐어 온 대지가 펄펄 끓는 “더위”를 뜻해요.',
-    words:[ {word:'避暑', reading:'피서', meaning:'더위를 피하여 감'}, {word:'酷暑', reading:'혹서', meaning:'혹독한 더위'}, {word:'暑中', reading:'서중', meaning:'더위의 한가운데'} ] },
+    story:'머리 위에서 태양(日)이 맹렬하게 내리쬐어 대지가 펄펄 끓는 뜨거운 “여름 더위”를 뜻해요.',
+    words:[ {word:'寒來暑往', reading:'한래서왕', meaning:'추위가 오면 더위가 가고'}, {word:'避暑', reading:'피서', meaning:'더위를 피함'} ] },
 
-  { id:'h_go', char:'往', sound:'왕', meaning:'갈, 지난, 갈 왕', category:'thousand', level:6, strokes:8,
+  { id:'h_th_wang', char:'往', sound:'왕', meaning:'갈, 지난, 갈 왕 [寒來暑往 4/4]', category:'thousand', level:6, strokes:8,
     parts:[
       { txt:'🚶', label:'걸어갈 척(彳)', meaning:'길을 따라 걸어가는 발걸음이에요.', dir:'left' },
       { txt:'🕯️', label:'주인 주/촛불(主)', meaning:'목적지를 향해 똑바로 나아가요.', dir:'right' }
     ],
-    story:'길(彳)을 따라 발걸음을 멈추지 않고 저 멀리 목적지를 향해 앞으로 나아가 지나치는 “가다”와 “지나간 때”를 뜻해요.',
-    words:[ {word:'往復', reading:'왕복', meaning:'갔다가 돌아옴'}, {word:'往生', reading:'왕생', meaning:'극락에 감'}, {word:'往年', reading:'왕년', meaning:'지나간 옛 시절'} ] },
+    story:'천자문 5구의 완성 글자예요. 발걸음을 멈추지 않고 저 멀리 지나쳐 흘러가는 “가다/지나감”을 뜻해요.',
+    words:[ {word:'寒來暑往', reading:'한래서왕', meaning:'추위가 오면 더위가 가고'}, {word:'往復', reading:'왕복', meaning:'갔다가 돌아옴'} ] },
 
-  { id:'h_gather', char:'收', sound:'수', meaning:'거둘, 거둘 수', category:'thousand', level:6, strokes:6,
+  // [6구] 秋收冬藏 (추수동장) - 가을에는 거두고 겨울에는 감춘다
+  { id:'h_th_qiu', char:'秋', sound:'추', meaning:'가을, 가을 추 [秋收冬藏 1/4]', category:'thousand', level:6, strokes:9,
     parts:[
-      { txt:'🧵', label:'얽힐 구(丩)', meaning:'잘 익은 곡식 단을 끈으로 묶는 모양이에요.', dir:'left' },
-      { txt:'🌾', label:'손에 든 칠 복(攵)', meaning:'손으로 볏단을 쳐서 알곡을 알뜰히 거두어요.', dir:'right' }
+      { txt:'🌾', label:'벼 화(禾)', meaning:'알곡이 누렇게 꽉 찬 볏이삭이에요.', dir:'left' },
+      { txt:'🔥', label:'불 화(火)', meaning:'가을볕에 곡식이 붉게 익어가요.', dir:'right' }
     ],
-    story:'천자문 "秋收冬藏(추수동장)"에 나오는 글자로, 가을에 풍성하게 익은 곡식 단을 손(攵)으로 알뜰하게 “거두어들임”을 뜻해요.',
-    words:[ {word:'秋收', reading:'추수', meaning:'가을에 곡식을 거둠'}, {word:'收穫', reading:'수확', meaning:'농작물을 거두어들임'}, {word:'收入', reading:'수입', meaning:'벌어들이는 돈'} ] },
+    story:'천자문 6구의 첫 글자예요. 볏이삭(禾)이 황금빛으로 풍요롭게 결실을 맺는 시원한 “가을”을 뜻해요.',
+    words:[ {word:'秋收冬藏', reading:'추수동장', meaning:'가을에 거두고 겨울에 감춘다'}, {word:'秋夕', reading:'추석', meaning:'한가위 명절'} ] },
 
-  { id:'h_store', char:'藏', sound:'장', meaning:'감출, 간직할, 감출 장', category:'thousand', level:6, strokes:17,
+  { id:'h_th_shou', char:'收', sound:'수', meaning:'거둘, 거둘 수 [秋收冬藏 2/4]', category:'thousand', level:6, strokes:6,
+    parts:[
+      { txt:'🧵', label:'얽힐 구(丩)', meaning:'잘 익은 볏단을 끈으로 묶는 모양이에요.', dir:'left' },
+      { txt:'🌾', label:'손에 든 도구(攵)', meaning:'볏단을 털어 알곡을 거두어요.', dir:'right' }
+    ],
+    story:'가을에 풍성하게 익은 곡식 단을 손(攵)으로 알뜰하게 “거두어들임(수확)”을 뜻해요.',
+    words:[ {word:'秋收冬藏', reading:'추수동장', meaning:'가을에 거두고 겨울에 감춘다'}, {word:'收穫', reading:'수확', meaning:'농작물을 거둠'} ] },
+
+  { id:'h_th_dong', char:'冬', sound:'동', meaning:'겨울, 겨울 동 [秋收冬藏 3/4]', category:'thousand', level:6, strokes:5,
+    parts:[
+      { txt:'🧵', label:'매듭지음(夂)', meaning:'한 해 농사가 끝난 매듭이에요.', dir:'top' },
+      { txt:'🧊', label:'얼음 빙(冫)', meaning:'추위로 꽁꽁 얼어붙은 얼음이에요.', dir:'bottom' }
+    ],
+    story:'한 해의 순환이 매듭(夂)지어 끝나고 차가운 얼음(冫)이 얼어붙는 하얗고 추운 “겨울”을 뜻해요.',
+    words:[ {word:'秋收冬藏', reading:'추수동장', meaning:'가을에 거두고 겨울에 감춘다'}, {word:'冬季', reading:'동계', meaning:'겨울철'} ] },
+
+  { id:'h_th_cang', char:'藏', sound:'장', meaning:'감출, 간직할, 감출 장 [秋收冬藏 4/4]', category:'thousand', level:6, strokes:17,
     parts:[
       { txt:'🌱', label:'풀초 머리(艹)', meaning:'곡식과 보물을 풀과 짚으로 감싸요.', dir:'top' },
       { txt:'🪖', label:'착할 장/창(臧/戈)', meaning:'신하와 군사가 비밀 곳간을 굳게 지켜요.', dir:'bottom' }
     ],
-    story:'천자문 "秋收冬藏"의 구절로, 거둔 귀한 알곡과 보물을 겨우내 안전하게 곳간 깊숙이 소중하게 “감추고 간직함”을 뜻해요.',
-    words:[ {word:'貯藏', reading:'저장', meaning:'물건을 모아 간직함'}, {word:'冷藏庫', reading:'냉장고', meaning:'차갑게 보관하는 통'}, {word:'萬寶藏', reading:'만보장', meaning:'온갖 보물을 감춘 곳'} ] },
+    story:'천자문 6구의 완성 글자예요. 거둔 소중한 알곡과 보물을 겨울 동안 안전하게 곳간 깊숙이 “간직하고 감춤”을 뜻해요.',
+    words:[ {word:'秋收冬藏', reading:'추수동장', meaning:'가을에 거두고 겨울에 감춘다'}, {word:'貯藏', reading:'저장', meaning:'물건을 모아 간직함'} ] },
 
-  { id:'h_cry', char:'鳴', sound:'명', meaning:'울, 소리낼, 울 명', category:'thousand', level:6, strokes:14,
+  // [7구] 雲騰致雨 (운등치우) - 구름이 피어올라 비를 내리고
+  { id:'h_th_yun', char:'雲', sound:'운', meaning:'구름, 구름 운 [雲騰致雨 1/4]', category:'thousand', level:6, strokes:12,
     parts:[
-      { txt:'👄', label:'입 구(口)', meaning:'맑고 고운 소리를 내는 입이에요.', dir:'left' },
-      { txt:'🦜', label:'새 조(鳥)', meaning:'나뭇가지에 앉은 아름다운 새예요.', dir:'right' }
+      { txt:'🌧️', label:'비 우(雨)', meaning:'하늘에서 내리는 비의 기운이에요.', dir:'top' },
+      { txt:'☁️', label:'구름 운(云)', meaning:'하늘에 두둥실 뭉게뭉게 피어올라요.', dir:'bottom' }
     ],
-    story:'천자문 "鳴鳳在樹(명봉재수)"에 나오는 글자로, 나뭇가지에 앉은 새(鳥)가 입(口)을 벌려 청아하게 노래하며 “우는 소리”를 뜻해요.',
-    words:[ {word:'鳴鳳在樹', reading:'명봉재수', meaning:'우는 봉황이 나무에 앉아 있다'}, {word:'悲鳴', reading:'비명', meaning:'놀라거나 슬퍼서 지르는 소리'}, {word:'共鳴', reading:'공명', meaning:'남의 마음에 깊이 울려 퍼짐'} ] },
+    story:'천자문 7구의 첫 글자예요. 대지의 수증기가 하늘로 올라가 뭉게뭉게 뭉쳐 비(雨)를 품고 있는 “구름”을 뜻해요.',
+    words:[ {word:'雲騰致雨', reading:'운등치우', meaning:'구름이 피어올라 비가 된다'}, {word:'白雲', reading:'백운', meaning:'하얀 뭉게구름'} ] },
 
-  { id:'h_phoenix', char:'鳳', sound:'봉', meaning:'봉황, 봉황 봉', category:'thousand', level:6, strokes:14,
+  { id:'h_th_teng', char:'騰', sound:'등', meaning:'오를, 솟구칠, 오를 등 [雲騰致雨 2/4]', category:'thousand', level:6, strokes:20,
     parts:[
-      { txt:'🪶', label:'바람 풍(凡/風)', meaning:'신비로운 바람을 일으키며 날아요.', dir:'center' },
-      { txt:'🦜', label:'새 조(鳥)', meaning:'성스러운 임금의 덕을 상징하는 전설의 새예요.', dir:'center' }
+      { txt:'🥩', label:'달 월/고기 육(月)', meaning:'힘찬 말의 근육이에요.', dir:'left' },
+      { txt:'🐴', label:'말 마(馬)', meaning:'하늘을 향해 힘차게 뛰어오르는 명마예요.', dir:'right' }
     ],
-    story:'천자문 "鳴鳳在樹"의 구절로, 세상이 평화롭고 성스러울 때 나타나 영롱한 소리로 노래하는 전설 속 상서로운 영물 “봉황”을 뜻해요.',
-    words:[ {word:'鳳凰', reading:'봉황', meaning:'전설 속 성스러운 영물 새'}, {word:'鳳仙花', reading:'봉선화', meaning:'봉황 모양의 고운 꽃'} ] },
+    story:'준마(馬)가 힘차게 하늘로 솟구쳐 오르듯, 수증기가 하늘 높이 힘차게 “솟구쳐 피어오름”을 뜻해요.',
+    words:[ {word:'雲騰致雨', reading:'운등치우', meaning:'구름이 솟아올라 비를 내린다'}, {word:'沸騰', reading:'비등', meaning:'물이 끓어오름'} ] },
 
-  { id:'h_white_colt', char:'駒', sound:'구', meaning:'망아지, 망아지 구', category:'thousand', level:6, strokes:15,
+  { id:'h_th_zhi', char:'致', sound:'치', meaning:'이를, 보낼, 이를 치 [雲騰致雨 3/4]', category:'thousand', level:6, strokes:10,
     parts:[
-      { txt:'🐴', label:'말 마(馬)', meaning:'늠름한 기상을 지닌 말이에요.', dir:'left' },
-      { txt:'👶', label:'글귀 구/어릴 구(句)', meaning:'아직 몸이 작은 어린 새끼예요.', dir:'right' }
+      { txt:'🎯', label:'이를 지(至)', meaning:'목적지에 딱 도달한 화살이에요.', dir:'left' },
+      { txt:'🚶', label:'칠 복(攵)', meaning:'발걸음을 재촉해 결과를 이끌어내요.', dir:'right' }
     ],
-    story:'천자문 "白駒食場(백구식장: 흰 망아지가 마당의 풀을 뜯는다)"에 나오는 글자로, 힘차고 티 없이 뛰노는 건강한 “어린 망아지”를 뜻해요.',
-    words:[ {word:'白駒食場', reading:'백구식장', meaning:'흰 망아지가 마당의 풀을 뜯음(어진 선비의 평화)'}, {word:'千里駒', reading:'천리구', meaning:'장차 큰 인물이 될 뛰어난 아이'} ] },
+    story:'정성을 다해 밀고 나아가 목표한 곳에 딱 도달하여(至) 마침내 결과를 “이루고 이르게 함”을 뜻해요.',
+    words:[ {word:'雲騰致雨', reading:'운등치우', meaning:'구름이 피어올라 비에 이른다'}, {word:'一致', reading:'일치', meaning:'꼭 들어맞음'} ] },
 
-  { id:'h_eat', char:'食', sound:'식/사', meaning:'밥, 먹을, 밥 식', category:'thousand', level:2, strokes:9,
+  { id:'h_th_yu2', char:'雨', sound:'우', meaning:'비, 비 우 [雲騰致雨 4/4]', category:'thousand', level:6, strokes:8,
     parts:[
-      { txt:'🏠', label:'모을 집(亼)', meaning:'뚜껑을 덮어 따뜻하게 모은 그릇이에요.', dir:'top' },
-      { txt:'🥣', label:'고소한 밥그릇(皀)', meaning:'하얀 쌀밥이 소복하게 담긴 밥그릇이에요.', dir:'bottom' }
+      { txt:'☁️', label:'하늘과 구름(一/冂)', meaning:'먹구름이 가득 찬 하늘이에요.', dir:'top' },
+      { txt:'💧', label:'떨어지는 빗방울', meaning:'빗방울이 땅으로 후수수 떨어져요.', dir:'bottom' }
     ],
-    story:'천자문 "白駒食場"의 글자로, 밥그릇(皀)에 소복하게 담긴 맛있는 곡식을 뚜껑(亼)을 열고 맛있게 “먹다”와 그 “밥”을 뜻해요.',
-    words:[ {word:'食事', reading:'식사', meaning:'밥을 먹는 일'}, {word:'飮食', reading:'음식', meaning:'마시고 먹는 온갖 것'}, {word:'朝食', reading:'조식', meaning:'아침밥'} ] }
+    story:'천자문 7구의 완성 글자예요. 하늘 높이 솟은 구름이 마침내 대지를 촉촉하게 적셔주는 시원한 “비”가 되어 내림을 뜻해요.',
+    words:[ {word:'雲騰致雨', reading:'운등치우', meaning:'구름이 피어올라 비를 내린다'}, {word:'雨傘', reading:'우산', meaning:'비를 막는 우산'} ] },
+
+  // [8구] 露結爲霜 (노결위상) - 이슬이 엉겨 맺혀 서리가 된다
+  { id:'h_th_lu', char:'露', sound:'로(노)', meaning:'이슬, 이슬 로 [露結爲霜 1/4]', category:'thousand', level:6, strokes:21,
+    parts:[
+      { txt:'🌧️', label:'비 우(雨)', meaning:'하늘에서 내리는 맑은 물방울이에요.', dir:'top' },
+      { txt:'🌱', label:'길 로(路)', meaning:'풀잎과 길가에 맺혀 반짝여요.', dir:'bottom' }
+    ],
+    story:'천자문 8구의 첫 글자예요. 밤새 맑은 기운이 엉겨 아침 풀잎 끝에 영롱하게 맺히는 투명한 “이슬”을 뜻해요.',
+    words:[ {word:'露結爲霜', reading:'노결위상', meaning:'이슬이 맺혀 서리가 된다'}, {word:'白露', reading:'백로', meaning:'가을의 맑은 이슬 절기'} ] },
+
+  { id:'h_th_jie', char:'結', sound:'결', meaning:'맺을, 묶을, 맺을 결 [露結爲霜 2/4]', category:'thousand', level:6, strokes:12,
+    parts:[
+      { txt:'🧶', label:'실 사(糹)', meaning:'명주실로 단단하게 묶는 모양이에요.', dir:'left' },
+      { txt:'🌱', label:'길할 길(吉)', meaning:'단단히 묶어 좋은 결실을 맺어요.', dir:'right' }
+    ],
+    story:'실(糹)을 정성껏 얽어 매듭을 짓듯, 차가운 공기가 엉겨 모여 보석 같은 방울로 “맺힘”을 뜻해요.',
+    words:[ {word:'露結爲霜', reading:'노결위상', meaning:'이슬이 엉겨 서리가 된다'}, {word:'結果', reading:'결과', meaning:'맺어진 결실'} ] },
+
+  { id:'h_th_wei', char:'爲', sound:'위', meaning:'될, 할, 위할, 될 위 [露結爲霜 3/4]', category:'thousand', level:6, strokes:9,
+    parts:[
+      { txt:'🤚', label:'손 조(爫)', meaning:'코끼리를 손으로 이끄는 모습이에요.', dir:'top' },
+      { txt:'🐘', label:'코끼리 몸 모양', meaning:'사물과 상황이 새로운 모양으로 변화해요.', dir:'bottom' }
+    ],
+    story:'사물의 형세가 움직여 새로운 모양으로 바뀌어 가는 모습에서 “~이 되다”와 “행하다”를 뜻해요.',
+    words:[ {word:'露結爲霜', reading:'노결위상', meaning:'이슬이 맺혀 서리가 된다'}, {word:'行爲', reading:'행위', meaning:'사람의 행동'} ] },
+
+  { id:'h_th_shuang', char:'霜', sound:'상', meaning:'서리, 서리 상 [露結爲霜 4/4]', category:'thousand', level:6, strokes:17,
+    parts:[
+      { txt:'🌧️', label:'비 우(雨)', meaning:'차가운 하늘의 얼음 기운이에요.', dir:'top' },
+      { txt:'🌳', label:'서로 상(相)', meaning:'나뭇가지와 풀잎을 하얗게 덮어요.', dir:'bottom' }
+    ],
+    story:'천자문 8구의 완성 글자예요. 늦가을 새벽 풀잎 위에 내린 이슬이 영하의 찬 기운을 만나 하얗게 얼어붙은 “서리”를 뜻해요.',
+    words:[ {word:'露結爲霜', reading:'노결위상', meaning:'이슬이 맺혀 서리가 된다'}, {word:'秋霜', reading:'추상', meaning:'가을의 매서운 서리'} ] }
 ];
 
 // 다른 파일에서 쉽게 참조할 수 있도록 전역에 등록
@@ -1099,3 +1205,4 @@ if (typeof window !== 'undefined') {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { LEVELS, CATEGORIES, HANZI_DATA };
 }
+
