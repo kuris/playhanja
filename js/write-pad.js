@@ -1,7 +1,7 @@
 /* ============================================================
    한자야 놀자! - 한자 따라쓰기(Write Pad) & 획순 애니메이션 엔진
    - HanziWriter 라이브러리 연동으로 정확한 표준 획순 애니메이션 제공
-   - 직접 쓰기(따라쓰기) 모드에서도 획순 보기와 100% 동일한 정통 해서체 외곽선 가이드 공유
+   - 획순 재생 시 획 시작 위치에 1, 2, 3, 4 숫자 뱃지가 순서대로 나타났다 사라짐!
    - 획순 자동 재생(보통/천천히/반복) & 자유 붓펜 필기 및 가이드 On/Off
    ============================================================ */
 
@@ -20,6 +20,9 @@
       this.isDrawing = false;
       this.points = [];
       this.isWriterLoaded = false;
+      this.charData = null;
+      this.animTimeoutId = null;
+      this.isAnimating = false;
 
       this.initDOM();
       this.initEvents();
@@ -41,6 +44,12 @@
 
             <!-- 획순 & 따라쓰기 공통 HanziWriter 해서체 스테이지 (z-index: 2) -->
             <div class="hanzi-writer-stage" id="hanzi-writer-target"></div>
+
+            <!-- 획순 1, 2, 3, 4 숫자 뱃지 컨테이너 (z-index: 5) -->
+            <div class="stroke-numbers-layer" id="stroke-numbers-layer"></div>
+
+            <!-- 현재 획 카운터 뱃지 (z-index: 6) -->
+            <div class="stroke-step-counter" id="stroke-step-counter" style="display:none;"></div>
 
             <!-- 직접 쓰기 드로잉 캔버스 (z-index: 3) -->
             <canvas class="write-draw-canvas"></canvas>
@@ -74,6 +83,9 @@
 
       this.wrap = this.container.querySelector('#write-canvas-wrap');
       this.writerTarget = this.container.querySelector('#hanzi-writer-target');
+      this.numbersLayer = this.container.querySelector('#stroke-numbers-layer');
+      this.stepCounter = this.container.querySelector('#stroke-step-counter');
+
       this.bgCanvas = this.container.querySelector('.write-bg-canvas');
       this.drawCanvas = this.container.querySelector('.write-draw-canvas');
       this.overlay = this.container.querySelector('.write-success-overlay');
@@ -130,7 +142,7 @@
         });
       });
 
-      // 가이드 토글 (동일한 HanziWriter 해서체 외곽선 On/Off)
+      // 가이드 토글
       this.toggleGuideBtn.addEventListener('click', () => {
         this.showGuide = !this.showGuide;
         const textSpan = this.toggleGuideBtn.querySelector('.guide-text');
@@ -161,6 +173,9 @@
 
     setMode(mode) {
       this.mode = mode;
+      this.clearNumbers();
+      if (this.animTimeoutId) clearTimeout(this.animTimeoutId);
+
       if (mode === 'stroke') {
         this.drawCanvas.style.display = 'none';
         this.strokeControls.style.display = 'flex';
@@ -170,7 +185,6 @@
         }
         this.playStrokeAnimation(1);
       } else {
-        // 직접 쓰기 모드: 동일한 해서체 외곽선을 배경 가이드로 유지하고 드로잉 캔버스 활성화
         this.drawCanvas.style.display = 'block';
         this.strokeControls.style.display = 'none';
         this.drawToolbar.style.display = 'flex';
@@ -190,7 +204,10 @@
     setChar(char) {
       this.currentChar = char;
       this.isWriterLoaded = false;
+      this.charData = null;
       this.clear();
+      this.clearNumbers();
+      if (this.animTimeoutId) clearTimeout(this.animTimeoutId);
       this.initHanziWriter();
       this.renderBackground();
     }
@@ -215,8 +232,9 @@
             highlightColor: '#e05338',
             showCharacter: false,
             gridBackground: false,
-            onLoadCharDataSuccess: () => {
+            onLoadCharDataSuccess: (data) => {
               this.isWriterLoaded = true;
+              this.charData = data;
               if (this.mode === 'stroke') {
                 this.playStrokeAnimation(1);
               } else {
@@ -236,35 +254,112 @@
       }
     }
 
-    playStrokeAnimation(speed = 1) {
-      if (this.writer) {
+    // 1, 2, 3, 4 숫자 뱃지와 함께 순차 획순 재생!
+    playStrokeAnimation(speed = 1, isLoop = false) {
+      if (!this.writer) return;
+      if (this.animTimeoutId) clearTimeout(this.animTimeoutId);
+      this.clearNumbers();
+
+      try {
+        this.writer.hideCharacter();
+        this.writer.showOutline();
+      } catch (e) {}
+
+      // 획순 메디안 데이터 가져오기
+      const strokes = (this.charData && this.charData.strokes) ? this.charData.strokes : [];
+      const medians = (this.charData && this.charData.medians) ? this.charData.medians : [];
+      const totalStrokes = strokes.length;
+
+      if (totalStrokes === 0) {
+        // Fallback: 일반 animateCharacter 호출
         try {
-          this.writer.hideCharacter();
-          this.writer.showOutline();
           this.writer.animateCharacter({
             strokeAnimationSpeed: speed,
             delayBetweenStrokes: 200 / speed
           });
-        } catch (e) {
-          console.warn('HanziWriter animate error:', e);
-        }
+        } catch (e) {}
+        return;
       }
+
+      const size = this.size || 280;
+      const padding = 16;
+      const innerSize = size - padding * 2;
+      const scale = innerSize / 1024;
+
+      let currentStroke = 0;
+
+      const animateNextStroke = () => {
+        if (this.mode !== 'stroke') return;
+
+        if (currentStroke >= totalStrokes) {
+          // 전체 획순 완성 후
+          if (this.stepCounter) {
+            this.stepCounter.innerHTML = `총 ${totalStrokes}획 완성! ✨`;
+            this.stepCounter.style.display = 'block';
+          }
+          if (isLoop) {
+            this.animTimeoutId = setTimeout(() => {
+              this.playStrokeAnimation(speed, true);
+            }, 1200);
+          }
+          return;
+        }
+
+        const strokeIndex = currentStroke;
+        const strokeNum = strokeIndex + 1;
+
+        // 획 시작 좌표 계산
+        let posX = size / 2;
+        let posY = size / 2;
+        if (medians[strokeIndex] && medians[strokeIndex].length > 0) {
+          const firstPoint = medians[strokeIndex][0];
+          posX = padding + firstPoint[0] * scale;
+          posY = size - (padding + firstPoint[1] * scale); // SVG 좌표 반전 보정
+        }
+
+        // 숫자 버블 뱃지 생성 & 표시
+        this.showNumberBubble(strokeNum, posX, posY);
+
+        // 상단 카운터 업데이트
+        if (this.stepCounter) {
+          this.stepCounter.innerHTML = `<span class="stroke-badge-num">${strokeNum}</span> / ${totalStrokes}획`;
+          this.stepCounter.style.display = 'block';
+        }
+
+        // 해당 획 애니메이션 실행
+        this.writer.animateStroke(strokeIndex, {
+          strokeAnimationSpeed: speed,
+          onComplete: () => {
+            currentStroke++;
+            const delay = 180 / speed;
+            this.animTimeoutId = setTimeout(animateNextStroke, delay);
+          }
+        });
+      };
+
+      animateNextStroke();
+    }
+
+    showNumberBubble(num, x, y) {
+      this.clearNumbers();
+      if (!this.numbersLayer) return;
+
+      const bubble = document.createElement('div');
+      bubble.className = 'stroke-num-bubble pop-in';
+      bubble.textContent = num;
+      bubble.style.left = `${Math.max(12, Math.min(this.size - 32, x - 14))}px`;
+      bubble.style.top = `${Math.max(12, Math.min(this.size - 32, y - 14))}px`;
+
+      this.numbersLayer.appendChild(bubble);
+    }
+
+    clearNumbers() {
+      if (this.numbersLayer) this.numbersLayer.innerHTML = '';
+      if (this.stepCounter) this.stepCounter.style.display = 'none';
     }
 
     loopStrokeAnimation() {
-      if (this.writer) {
-        try {
-          this.writer.hideCharacter();
-          this.writer.showOutline();
-          this.writer.loopCharacterAnimation({
-            strokeAnimationSpeed: 0.9,
-            delayBetweenStrokes: 180,
-            delayBetweenLoops: 1200
-          });
-        } catch (e) {
-          console.warn('HanziWriter loop error:', e);
-        }
-      }
+      this.playStrokeAnimation(0.9, true);
     }
 
     resize() {

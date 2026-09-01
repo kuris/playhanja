@@ -696,6 +696,54 @@ img { max-width: 100%; display: block; }
   cursor: crosshair;
   z-index: 3;
 }
+/* 획순 번호 버블 레이어 (1, 2, 3, 4) */
+.stroke-numbers-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+.stroke-num-bubble {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  background: #d9381e;
+  color: #fff;
+  border-radius: 50%;
+  font-size: .88rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 10px rgba(217, 56, 30, 0.45);
+  border: 2px solid #fff;
+  animation: popBubble .25s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popBubble {
+  0% { transform: scale(0); opacity: 0; }
+  80% { transform: scale(1.25); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.stroke-step-counter {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(253, 243, 226, 0.95);
+  color: #92400e;
+  border: 1.5px solid #f59e0b;
+  border-radius: 999px;
+  padding: 3px 12px;
+  font-size: .8rem;
+  font-weight: 800;
+  z-index: 6;
+  pointer-events: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+.stroke-badge-num {
+  color: #d9381e;
+  font-weight: 900;
+  font-size: .92rem;
+}
 .write-success-overlay {
   position: absolute;
   inset: 0;
