@@ -24,6 +24,7 @@
         <li><a href="index.html">홈</a></li>
         <li><a href="learn.html">한자 배우기</a></li>
         <li><a href="thousand.html" class="active">📜 천자문 250구</a></li>
+        <li><a href="worksheet.html">📄 쓰기 연습장(A4)</a></li>
         <li><a href="quiz.html">퀴즈로 복습</a></li>
       </ul>
     </nav>
@@ -44,7 +45,10 @@
         <i class="fa-solid fa-magnifying-glass"></i>
         <input type="text" id="thousand-search" placeholder="구절 번호(예: 1), 한자(예: 天地), 독음(예: 천지), 뜻으로 검색">
       </div>
-      <div class="thousand-stats-badge" id="verse-count-label">총 250구 중 250구 표시</div>
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <div class="thousand-stats-badge" id="verse-count-label">총 250구 중 250구 표시</div>
+        <a href="worksheet.html?type=verse_range&from=1&to=5" target="_blank" class="btn btn-secondary btn-sm"><i class="fa-solid fa-print"></i> 1~5구 A4 연습장 인쇄</a>
+      </div>
     </div>
 
     <!-- 250구 콤팩트 카드 그리드 -->
@@ -80,6 +84,7 @@
 
     <div class="v-modal-nav-actions">
       <button class="btn btn-outline" id="v-prev-btn"><i class="fa-solid fa-arrow-left"></i> 이전 구절</button>
+      <a href="worksheet.html?type=verse&no=1" target="_blank" class="btn btn-secondary" id="v-print-ws-btn"><i class="fa-solid fa-print"></i> 이 구절 A4 연습장 인쇄</a>
       <button class="btn btn-primary" id="v-next-btn">다음 구절 <i class="fa-solid fa-arrow-right"></i></button>
     </div>
   </div>

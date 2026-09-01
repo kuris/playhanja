@@ -104,6 +104,11 @@ document.addEventListener('DOMContentLoaded', function () {
     modalReading.textContent = item.reading;
     modalMeaning.textContent = item.meaning;
 
+    const printWsBtn = document.getElementById('v-print-ws-btn');
+    if (printWsBtn) {
+      printWsBtn.href = `worksheet.html?type=verse&no=${item.no}`;
+    }
+
     // 4글자 탭 렌더링
     selectedCharIndex = 0;
     renderCharTabs(item);
