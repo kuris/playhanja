@@ -23,6 +23,7 @@
       <ul>
         <li><a href="index.html" class="active">홈</a></li>
         <li><a href="learn.html">한자 배우기</a></li>
+        <li><a href="grade.html">🏅 급수별 한자</a></li>
         <li><a href="thousand.html">📜 천자문 250구</a></li>
         <li><a href="worksheet.html">📄 쓰기 연습장(A4)</a></li>
         <li><a href="quiz.html">퀴즈로 복습</a></li>
@@ -45,6 +46,7 @@
         </p>
         <div class="hero-actions">
           <a href="learn.html" class="btn btn-primary"><i class="fa-solid fa-play"></i> 한자 배우기 시작</a>
+          <a href="grade.html" class="btn btn-secondary"><i class="fa-solid fa-medal"></i> 급수별 한자 (1~9급)</a>
           <a href="quiz.html" class="btn btn-outline"><i class="fa-solid fa-puzzle-piece"></i> 퀴즈로 복습하기</a>
         </div>
       </div>
@@ -103,6 +105,22 @@
     </div>
   </section>
 
+  <!-- ================= 급수별 한자 ================= -->
+  <section class="section" id="grades" style="background:#fffdf7;">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">HANJA BY GRADE</span>
+        <h2>🏅 급수별 한자 공부 (9급 → 1급)</h2>
+        <p>한자능력검정 급수 체계에 맞춰 9급(입문)부터 1급(최고급)까지 1,100자 이상을 단계별로 익히고,<br><strong>A4 쓰기 연습장으로 바로 출력</strong>해서 손으로 연습할 수 있어요.</p>
+      </div>
+      <div class="grade-picker" id="home-grade-picker"></div>
+      <div class="detail-controls" style="margin-top:22px;">
+        <a href="grade.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-medal"></i> 급수별 한자 배우러 가기</a>
+        <a href="worksheet.html?type=grade&grade=9&limit=20" target="_blank" class="btn btn-secondary btn-sm"><i class="fa-solid fa-print"></i> 9급 A4 연습장 인쇄</a>
+      </div>
+    </div>
+  </section>
+
   <!-- ================= SAMPLE DEMO ================= -->
   <section class="section" id="demo">
     <div class="container">
@@ -141,7 +159,9 @@
   <div class="container foot-bottom">© 2026 한자야 놀자! 어린이를 위한 한자 학습 사이트</div>
 </footer>
 
+<script src="js/nav.js"></script>
 <script src="js/hanzi-data.js"></script>
+<script src="js/grade-data.js"></script>
 <script src="js/animation.js"></script>
 <script src="js/main.js"></script>
 </body>

@@ -7,9 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const CATEGORIES = window.CATEGORIES || [];
   const PROGRESS = window.HanziProgress;
 
-  const navToggle = document.getElementById('nav-toggle');
-  const mainNav = document.getElementById('main-nav');
-  if (navToggle && mainNav) navToggle.addEventListener('click', () => mainNav.classList.toggle('open'));
+  // 상단 내비게이션(햄버거 메뉴)은 js/nav.js에서 공통 처리합니다.
 
   const catFilterBox = document.getElementById('quiz-category-filter');
   const startBtn = document.getElementById('start-quiz-btn');

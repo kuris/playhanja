@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>급수별 한자 공부 (1급~9급) - 한자야 놀자!</title>
+<meta name="description" content="한자능력검정 9급(입문)부터 1급(최고급)까지 급수별 한자를 훈음과 획순 애니메이션으로 공부하고 A4 쓰기 연습장으로 출력하세요.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@500;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-wrap">
+    <a href="index.html" class="logo">
+      <span class="logo-char">漢</span>
+      <span>한자야 놀자!</span>
+    </a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="메뉴 열기"><i class="fa-solid fa-bars"></i></button>
+    <nav class="main-nav" id="main-nav">
+      <ul>
+        <li><a href="index.html">홈</a></li>
+        <li><a href="learn.html">한자 배우기</a></li>
+        <li><a href="grade.html" class="active">🏅 급수별 한자</a></li>
+        <li><a href="thousand.html">📜 천자문 250구</a></li>
+        <li><a href="worksheet.html">📄 쓰기 연습장(A4)</a></li>
+        <li><a href="quiz.html">퀴즈로 복습</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main class="section" style="padding-top:30px;">
+  <div class="container">
+    <div class="section-head" style="margin-bottom:24px;">
+      <span class="eyebrow">HANJA BY GRADE</span>
+      <h2>급수별 한자 공부 (9급 → 1급)</h2>
+      <p>한자능력검정 급수 체계에 맞춰 <strong>9급(입문)부터 1급(최고급)까지</strong> 차근차근 올라가요.<br>글자를 누르면 획순 애니메이션과 따라쓰기가 열리고, <strong>A4 쓰기 연습장으로 바로 출력</strong>할 수 있어요!</p>
+    </div>
+
+    <!-- 급수 선택 카드 -->
+    <div class="grade-picker" id="grade-picker"></div>
+
+    <!-- 검색 & 인쇄 툴바 -->
+    <div class="thousand-toolbar" style="margin-top:22px;">
+      <div class="thousand-search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="grade-search" placeholder="한자(예: 天), 훈(예: 하늘), 음(예: 천)으로 검색">
+      </div>
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <div class="thousand-stats-badge" id="grade-count-label">9급 50자</div>
+        <select id="print-range" class="grade-print-select" aria-label="인쇄 범위 선택">
+          <option value="20">앞에서 20자만 인쇄</option>
+          <option value="40" selected>앞에서 40자 인쇄</option>
+          <option value="80">앞에서 80자 인쇄</option>
+          <option value="all">이 급수 전체 인쇄</option>
+        </select>
+        <a href="worksheet.html?type=grade&grade=9&limit=40" target="_blank" class="btn btn-secondary btn-sm" id="grade-print-btn"><i class="fa-solid fa-print"></i> A4 연습장 인쇄</a>
+      </div>
+    </div>
+
+    <!-- 급수 진도 -->
+    <div class="grade-progress-box">
+      <div class="progress-bar-track"><div class="progress-bar-fill" id="grade-progress-fill"></div></div>
+      <div class="progress-label" id="grade-progress-label">0 / 0자 학습 완료</div>
+    </div>
+
+    <!-- 한자 카드 그리드 -->
+    <div class="grade-grid" id="grade-grid"></div>
+  </div>
+</main>
+
+<!-- ================= 급수 한자 상세 모달 ================= -->
+<div class="modal-overlay" id="grade-modal">
+  <div class="modal-box modal-wide">
+    <button class="modal-close" id="grade-modal-close"><i class="fa-solid fa-xmark"></i></button>
+
+    <div class="v-modal-header">
+      <span class="v-modal-badge" id="g-modal-grade">9급</span>
+      <div class="v-modal-big-verse" id="g-modal-char">一</div>
+      <div class="v-modal-reading" id="g-modal-hunmum">한 일</div>
+      <div class="v-modal-meaning" id="g-modal-desc"></div>
+    </div>
+
+    <!-- 획순 & 따라쓰기 -->
+    <div class="v-practice-stage-wrap">
+      <div class="write-pad-wrapper" id="g-write-mount"></div>
+    </div>
+
+    <!-- 상세 설명 (한자 DB에 자료가 있으면 어원과 낱말도 표시) -->
+    <div class="v-char-detail-container" id="g-char-detail-box"></div>
+
+    <div class="v-modal-nav-actions">
+      <button class="btn btn-outline" id="g-prev-btn"><i class="fa-solid fa-arrow-left"></i> 이전 글자</button>
+      <button class="btn btn-primary" id="g-mark-learned"><i class="fa-solid fa-star"></i> 다 배웠어요!</button>
+      <a href="worksheet.html" target="_blank" class="btn btn-secondary" id="g-print-btn"><i class="fa-solid fa-print"></i> 이 글자 A4 인쇄</a>
+      <button class="btn btn-outline" id="g-next-btn">다음 글자 <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container foot-grid">
+    <div>
+      <h4>漢 한자야 놀자!</h4>
+      <p>9급 입문부터 1급 최고급까지!<br>급수별 한자 & 따라쓰기 학습 사이트</p>
+    </div>
+    <div>
+      <h4>바로가기</h4>
+      <p><a href="learn.html">한자 배우기</a> · <a href="grade.html">급수별 한자</a> · <a href="thousand.html">천자문 250구</a></p>
+    </div>
+    <div>
+      <h4>안내</h4>
+      <p>학습 결과와 진도는 사용 중인 기기의 브라우저에 저장돼요.</p>
+    </div>
+  </div>
+  <div class="container foot-bottom">© 2026 한자야 놀자! 어린이를 위한 한자 학습 사이트</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+<script src="js/hanzi-data.js"></script>
+<script src="js/grade-data.js"></script>
+<script src="js/write-pad.js"></script>
+<script src="js/progress.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/grade.js"></script>
+</body>
+</html>

@@ -152,6 +152,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    white-space: nowrap;
   }
   .ws-meta-box {
     display: flex;
@@ -329,6 +330,15 @@
     font-weight: 600;
   }
 
+  /* 급수 모드 훈음 쓰기 밑줄 */
+  .ws-write-line {
+    display: inline-block;
+    flex: 1;
+    min-width: 60px;
+    border-bottom: 1px solid #9ca3af;
+    height: 14px;
+  }
+
   /* 하단 받아쓰기 & 퀴즈 영역 */
   .ws-footer-quiz {
     border: 1.5px solid #1f2937;
@@ -430,11 +440,22 @@
 <!-- 상단 툴바 (인쇄 시 자동 숨김) -->
 <div class="no-print-toolbar">
   <div class="toolbar-left">
-    <a href="thousand.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> 돌아가기</a>
+    <a href="index.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> 돌아가기</a>
     <div class="toolbar-title"><i class="fa-solid fa-print"></i> 한자 쓰기 연습장 (A4)</div>
   </div>
   <div class="toolbar-actions">
+    <select id="mode-selector" class="select-box" aria-label="연습장 종류 선택">
+      <option value="verse">📜 천자문 구절</option>
+      <option value="grade">🏅 급수별 한자 (1급~9급)</option>
+    </select>
     <select id="verse-selector" class="select-box"></select>
+    <select id="grade-selector" class="select-box" style="display:none;" aria-label="급수 선택"></select>
+    <select id="grade-range" class="select-box" style="display:none;" aria-label="인쇄 분량 선택">
+      <option value="20">앞에서 20자 (5장)</option>
+      <option value="40" selected>앞에서 40자 (10장)</option>
+      <option value="80">앞에서 80자 (20장)</option>
+      <option value="all">이 급수 전체</option>
+    </select>
     <button class="btn-print" onclick="window.print()"><i class="fa-solid fa-print"></i> A4 인쇄 / PDF 저장</button>
   </div>
 </div>
@@ -444,6 +465,7 @@
 
 <script src="js/hanzi-data.js"></script>
 <script src="js/thousand-data.js"></script>
+<script src="js/grade-data.js"></script>
 <script src="js/worksheet.js"></script>
 </body>
 </html>

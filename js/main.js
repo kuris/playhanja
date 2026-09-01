@@ -4,11 +4,24 @@
 
 document.addEventListener('DOMContentLoaded', function () {
   // ---------- 모바일 내비게이션 토글 ----------
-  const navToggle = document.getElementById('nav-toggle');
-  const mainNav = document.getElementById('main-nav');
-  if (navToggle && mainNav) {
-    navToggle.addEventListener('click', () => mainNav.classList.toggle('open'));
+  // 상단 내비게이션(햄버거 메뉴)은 js/nav.js에서 공통 처리합니다.
+
+  // ---------- 홈 화면 급수(1급~9급) 카드 ----------
+  const homeGradePicker = document.getElementById('home-grade-picker');
+  if (homeGradePicker && window.GRADE_LEVELS) {
+    homeGradePicker.innerHTML = window.GRADE_LEVELS.map(g => {
+      const total = window.getGradeChars ? window.getGradeChars(g.id).length : 0;
+      return `
+        <a class="grade-card" href="grade.html?grade=${g.id}" style="--grade-color:${g.color};">
+          <span class="grade-badge">${g.badge}</span>
+          <span class="grade-name">${g.name}</span>
+          <span class="grade-title">${g.title}</span>
+          <span class="grade-count">${total}자</span>
+        </a>
+      `;
+    }).join('');
   }
+
 
   // ---------- 카테고리 미리보기 카드 ----------
   const catGrid = document.getElementById('category-grid');

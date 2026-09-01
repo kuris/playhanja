@@ -19,8 +19,6 @@ document.addEventListener('DOMContentLoaded', function () {
   };
 
   // ---------- DOM 참조 ----------
-  const navToggle = document.getElementById('nav-toggle');
-  const mainNav = document.getElementById('main-nav');
   const grid = document.getElementById('hanzi-grid');
   const filterCategoryBox = document.getElementById('filter-category');
   const filterLevelBox = document.getElementById('filter-level');
@@ -55,10 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
     writePad = new window.HanziWritePad(writePadMount, { char: '漢' });
   }
 
-  // ---------- 모바일 내비 ----------
-  if (navToggle && mainNav) {
-    navToggle.addEventListener('click', () => mainNav.classList.toggle('open'));
-  }
+  // ---------- 모바일 내비 (js/nav.js 공통 처리) ----------
 
   // ---------- 필터 UI 생성 ----------
   function renderFilterButtons() {

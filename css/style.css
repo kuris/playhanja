@@ -1097,15 +1097,56 @@ img { max-width: 100%; display: block; }
   .filter-panel { position: static; }
 }
 @media (max-width: 640px) {
-  .main-nav { position: fixed; top: 70px; left: 0; right: 0; background: var(--color-bg); border-bottom: 3px solid var(--color-border); display: none; }
-  .main-nav.open { display: block; }
-  .main-nav ul { flex-direction: column; padding: 12px 20px 20px; }
-  .nav-toggle { display: block; }
+  /* 헤더 바로 아래에 정확히 붙는 모바일 드롭다운 메뉴 */
+  .site-header .nav-wrap { position: relative; padding: 12px 16px; }
+  .main-nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--color-bg);
+    border-bottom: 3px solid var(--color-border);
+    box-shadow: 0 14px 24px rgba(60, 40, 20, .18);
+    max-height: calc(100vh - 100%);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: none;
+    z-index: 120;
+  }
+  .main-nav.open { display: block; animation: navSlideDown .18s ease-out; }
+  .main-nav ul { flex-direction: column; gap: 0; padding: 6px 12px 12px; }
+  .main-nav li + li { border-top: 1px solid rgba(160, 130, 100, .18); }
+  .main-nav a {
+    display: block;
+    width: 100%;
+    padding: 14px 14px;
+    border-radius: 12px;
+    font-size: 1.05rem;
+  }
+  /* 메뉴가 열려 있는 동안 뒤쪽 본문 스크롤 잠금 */
+  body.nav-open { overflow: hidden; }
+  .nav-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    cursor: pointer;
+  }
+  .nav-toggle[aria-expanded="true"] { background: var(--color-primary); color: #fff; }
+  .logo { font-size: 1.25rem; }
+  .logo .logo-char { width: 40px; height: 40px; font-size: 1.55rem; }
   .hero h1 { font-size: 2rem; }
   .steps-grid { grid-template-columns: 1fr; }
   .category-grid { grid-template-columns: 1fr; }
   .quiz-options { grid-template-columns: 1fr; }
   .site-footer .foot-grid { flex-direction: column; }
+}
+
+@keyframes navSlideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ---------------- Animation keyframes ---------------- */
@@ -1127,3 +1168,107 @@ img { max-width: 100%; display: block; }
   50% { transform: translateY(-8px); }
 }
 .bounce { animation: gentleBounce 2.2s ease-in-out infinite; }
+
+/* ============================================================
+   급수별 한자 공부 (grade.html)
+   ============================================================ */
+.grade-picker {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 10px;
+}
+.grade-card {
+  background: #fff;
+  border: 2px solid var(--color-border);
+  border-radius: 16px;
+  padding: 12px 6px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  transition: all .18s ease;
+  box-shadow: var(--shadow-soft);
+}
+.grade-card:hover { transform: translateY(-3px); border-color: var(--grade-color); }
+.grade-card.active {
+  border-color: var(--grade-color);
+  background: var(--grade-color);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(0,0,0,.16);
+}
+.grade-card .grade-badge { font-size: 1.5rem; line-height: 1.2; }
+.grade-card .grade-name { font-size: 1.05rem; font-weight: 900; }
+.grade-card .grade-title { font-size: .74rem; font-weight: 700; opacity: .85; }
+.grade-card .grade-count { font-size: .74rem; opacity: .8; }
+.grade-card .grade-done { font-size: .68rem; font-weight: 700; color: var(--color-secondary); }
+.grade-card.active .grade-done { color: #fff; }
+
+.grade-print-select {
+  border: 2px solid var(--color-border);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-family: inherit;
+  font-size: .9rem;
+  font-weight: 700;
+  color: var(--color-text);
+  background: #fff;
+  cursor: pointer;
+}
+
+.grade-progress-box {
+  margin: 16px 0 20px;
+}
+
+.grade-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 12px;
+}
+.grade-char-card {
+  position: relative;
+  background: #fff;
+  border: 2px solid var(--color-border);
+  border-radius: 16px;
+  padding: 14px 6px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all .18s ease;
+  box-shadow: var(--shadow-soft);
+}
+.grade-char-card:hover { transform: translateY(-4px); border-color: var(--grade-color); }
+.grade-char-card.learned { border-color: var(--color-secondary); background: #f2fbf6; }
+.grade-char-card .gc-char {
+  font-family: var(--font-hanzi);
+  font-size: 2.5rem;
+  line-height: 1;
+  color: var(--color-text);
+}
+.grade-char-card .gc-hunmum {
+  font-size: .85rem;
+  font-weight: 800;
+  color: var(--color-text-soft);
+}
+.grade-char-card .gc-done {
+  position: absolute;
+  top: 5px;
+  right: 7px;
+  font-size: .8rem;
+}
+
+@media (max-width: 900px) {
+  .grade-picker { grid-template-columns: repeat(5, 1fr); }
+}
+@media (max-width: 640px) {
+  .grade-picker { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .grade-card { padding: 10px 4px 8px; border-radius: 14px; }
+  .grade-card .grade-badge { font-size: 1.25rem; }
+  .grade-card .grade-name { font-size: .95rem; }
+  .grade-grid { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 9px; }
+  .grade-char-card .gc-char { font-size: 2.1rem; }
+  .grade-char-card .gc-hunmum { font-size: .78rem; }
+  .grade-print-select { width: 100%; }
+}

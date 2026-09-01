@@ -8,9 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const HANZI_DATA = window.HANZI_DATA || [];
   const PROGRESS = window.HanziProgress;
 
-  const navToggle = document.getElementById('nav-toggle');
-  const mainNav = document.getElementById('main-nav');
-  if (navToggle && mainNav) navToggle.addEventListener('click', () => mainNav.classList.toggle('open'));
+  // 상단 내비게이션(햄버거 메뉴)은 js/nav.js에서 공통 처리합니다.
 
   const grid = document.getElementById('thousand-grid');
   const searchInput = document.getElementById('thousand-search');
