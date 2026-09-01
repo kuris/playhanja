@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>한자 배우기 - 한자야 놀자!</title>
+<meta name="description" content="카테고리와 난이도별로 생활 한자를 애니메이션으로 배워보세요.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@500;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-wrap">
+    <a href="index.html" class="logo">
+      <span class="logo-char">漢</span>
+      <span>한자야 놀자!</span>
+    </a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="메뉴 열기"><i class="fa-solid fa-bars"></i></button>
+    <nav class="main-nav" id="main-nav">
+      <ul>
+        <li><a href="index.html">홈</a></li>
+        <li><a href="learn.html" class="active">한자 배우기</a></li>
+        <li><a href="quiz.html">퀴즈로 복습</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main class="section" style="padding-top:30px;">
+  <div class="container">
+    <div class="section-head" style="margin-bottom:24px;">
+      <span class="eyebrow">LEARN HANZI</span>
+      <h2>한자 배우기</h2>
+      <p>카테고리와 난이도를 골라서, 클릭하면 애니메이션으로 한자를 배울 수 있어요.</p>
+    </div>
+
+    <div class="learn-layout">
+      <!-- ---------------- 필터 패널 ---------------- -->
+      <aside class="filter-panel">
+        <h3><i class="fa-solid fa-magnifying-glass"></i> 한자 검색</h3>
+        <input type="text" id="search-input" placeholder="뜻이나 소리로 찾기 (예: 물, 수)">
+
+        <div class="filter-group">
+          <h3>카테고리</h3>
+          <div id="filter-category"></div>
+        </div>
+
+        <div class="filter-group">
+          <h3>난이도</h3>
+          <div id="filter-level"></div>
+        </div>
+
+        <div class="progress-box">
+          <h3 style="margin-bottom:0;">나의 학습 진도</h3>
+          <div class="progress-bar-track"><div class="progress-bar-fill" id="progress-fill"></div></div>
+          <div class="progress-label" id="progress-label">0 / 0자 학습 완료</div>
+        </div>
+      </aside>
+
+      <!-- ---------------- 한자 카드 그리드 ---------------- -->
+      <section>
+        <div class="hanzi-grid" id="hanzi-grid"></div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<!-- ---------------- 상세 애니메이션 모달 ---------------- -->
+<div class="modal-overlay" id="detail-modal">
+  <div class="modal-box">
+    <button class="modal-close" id="modal-close"><i class="fa-solid fa-xmark"></i></button>
+
+    <div class="detail-head">
+      <div class="detail-sound" id="detail-sound"></div>
+      <div class="detail-meaning" id="detail-meaning"></div>
+    </div>
+
+    <div class="detail-stage-wrap">
+      <div class="char-stage" id="detail-stage"></div>
+    </div>
+
+    <div class="detail-controls">
+      <button class="btn btn-secondary btn-sm" id="detail-replay"><i class="fa-solid fa-rotate-right"></i> 다시 보기</button>
+      <button class="btn btn-outline btn-sm" id="detail-slow"><i class="fa-solid fa-gauge-simple"></i> 천천히 보기</button>
+    </div>
+
+    <div class="parts-legend" id="parts-legend"></div>
+
+    <div class="story-box" id="story-box"></div>
+
+    <div class="words-list" id="words-list"></div>
+
+    <div class="detail-footer-actions">
+      <button class="btn btn-primary" id="mark-learned"><i class="fa-solid fa-star"></i> 다 배웠어요!</button>
+      <button class="btn btn-outline" id="detail-next"><i class="fa-solid fa-forward"></i> 다음 한자</button>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container foot-grid">
+    <div>
+      <h4>漢 한자야 놀자!</h4>
+      <p>초등학교 1학년부터 시작할 수 있는<br>애니메이션 한자 학습 사이트</p>
+    </div>
+    <div>
+      <h4>바로가기</h4>
+      <p><a href="learn.html">한자 배우기</a> · <a href="quiz.html">퀴즈로 복습</a></p>
+    </div>
+    <div>
+      <h4>안내</h4>
+      <p>이 학습 결과와 진도는 사용 중인 기기의 브라우저에 저장돼요.</p>
+    </div>
+  </div>
+  <div class="container foot-bottom">© 2026 한자야 놀자! 어린이를 위한 한자 학습 사이트</div>
+</footer>
+
+<script src="js/hanzi-data.js"></script>
+<script src="js/animation.js"></script>
+<script src="js/progress.js"></script>
+<script src="js/learn.js"></script>
+</body>
+</html>
