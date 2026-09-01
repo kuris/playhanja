@@ -175,13 +175,14 @@
         this.strokeControls.style.display = 'none';
         this.drawToolbar.style.display = 'flex';
         if (this.writer) {
-          this.writer.cancelAnimation();
-          this.writer.hideCharacter();
-          if (this.showGuide) {
-            this.writer.showOutline();
-          } else {
-            this.writer.hideOutline();
-          }
+          try {
+            this.writer.hideCharacter();
+            if (this.showGuide) {
+              this.writer.showOutline();
+            } else {
+              this.writer.hideOutline();
+            }
+          } catch (e) {}
         }
       }
     }
@@ -237,26 +238,32 @@
 
     playStrokeAnimation(speed = 1) {
       if (this.writer) {
-        this.writer.cancelAnimation();
-        this.writer.hideCharacter();
-        this.writer.showOutline();
-        this.writer.animateCharacter({
-          strokeAnimationSpeed: speed,
-          delayBetweenStrokes: 200 / speed
-        });
+        try {
+          this.writer.hideCharacter();
+          this.writer.showOutline();
+          this.writer.animateCharacter({
+            strokeAnimationSpeed: speed,
+            delayBetweenStrokes: 200 / speed
+          });
+        } catch (e) {
+          console.warn('HanziWriter animate error:', e);
+        }
       }
     }
 
     loopStrokeAnimation() {
       if (this.writer) {
-        this.writer.cancelAnimation();
-        this.writer.hideCharacter();
-        this.writer.showOutline();
-        this.writer.loopCharacterAnimation({
-          strokeAnimationSpeed: 0.9,
-          delayBetweenStrokes: 180,
-          delayBetweenLoops: 1200
-        });
+        try {
+          this.writer.hideCharacter();
+          this.writer.showOutline();
+          this.writer.loopCharacterAnimation({
+            strokeAnimationSpeed: 0.9,
+            delayBetweenStrokes: 180,
+            delayBetweenLoops: 1200
+          });
+        } catch (e) {
+          console.warn('HanziWriter loop error:', e);
+        }
       }
     }
 
