@@ -292,7 +292,8 @@
         if (this.mode !== 'stroke') return;
 
         if (currentStroke >= totalStrokes) {
-          // 전체 획순 완성 후
+          // 전체 획순 완성 후 마지막 숫자 버블 즉시 정리
+          if (this.numbersLayer) this.numbersLayer.innerHTML = '';
           if (this.stepCounter) {
             this.stepCounter.innerHTML = `총 ${totalStrokes}획 완성! ✨`;
             this.stepCounter.style.display = 'block';
@@ -300,7 +301,11 @@
           if (isLoop) {
             this.animTimeoutId = setTimeout(() => {
               this.playStrokeAnimation(speed, true);
-            }, 1200);
+            }, 1400);
+          } else {
+            this.animTimeoutId = setTimeout(() => {
+              if (this.stepCounter) this.stepCounter.style.display = 'none';
+            }, 2500);
           }
           return;
         }

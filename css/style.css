@@ -717,12 +717,14 @@ img { max-width: 100%; display: block; }
   justify-content: center;
   box-shadow: 0 3px 10px rgba(217, 56, 30, 0.45);
   border: 2px solid #fff;
-  animation: popBubble .25s cubic-bezier(.34,1.56,.64,1);
+  animation: popAndFade 0.9s cubic-bezier(.34,1.56,.64,1) forwards;
+  pointer-events: none;
 }
-@keyframes popBubble {
+@keyframes popAndFade {
   0% { transform: scale(0); opacity: 0; }
-  80% { transform: scale(1.25); opacity: 1; }
-  100% { transform: scale(1); opacity: 1; }
+  25% { transform: scale(1.25); opacity: 1; }
+  65% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.6); opacity: 0; }
 }
 .stroke-step-counter {
   position: absolute;
