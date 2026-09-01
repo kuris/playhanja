@@ -96,6 +96,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!item) return;
 
     modal.classList.add('open');
+    const modalBox = modal.querySelector('.modal-box');
+    if (modalBox) modalBox.scrollTop = 0;
+
     modalNo.textContent = `천자문 제 ${item.no}구 (총 250구)`;
     modalVerse.textContent = item.verse;
     modalReading.textContent = item.reading;
@@ -157,8 +160,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 캔버스 / HanziWriter에 글자 설정
     if (writePad) {
-      writePad.setChar(c.char);
-      writePad.resize();
+      setTimeout(() => {
+        writePad.resize();
+        writePad.setChar(c.char);
+      }, 50);
     }
   }
 

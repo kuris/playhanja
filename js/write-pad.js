@@ -1,7 +1,7 @@
 /* ============================================================
    한자야 놀자! - 한자 따라쓰기(Write Pad) & 획순 애니메이션 엔진
    - HanziWriter 라이브러리 연동으로 정확한 표준 획순 애니메이션 제공
-   - 획순 자동 재생(보통/천천히) & 한 획씩 순서대로 보여주기
+   - 획순 자동 재생(보통/천천히/반복) & 한 획씩 순서대로 보여주기
    - 캔버스 미자(米/十) 격자 보조선 위 자유 붓펜 필기 및 가이드 On/Off
    - 네트워크 fallback(자체 캔버스 렌더러) 완벽 지원
    ============================================================ */
@@ -16,7 +16,7 @@
       this.color = options.color || '#2d241e';
       this.lineWidth = options.lineWidth || 14;
       this.showGuide = true;
-      this.mode = 'draw'; // 'draw' | 'stroke'
+      this.mode = 'stroke'; // 기본 모드: 획순 보기
       this.writer = null;
       this.isDrawing = false;
       this.points = [];
@@ -105,7 +105,7 @@
 
       // 획순 버튼들
       this.strokePlayBtn.addEventListener('click', () => this.playStrokeAnimation(1));
-      this.strokeSlowBtn.addEventListener('click', () => this.playStrokeAnimation(0.45));
+      this.strokeSlowBtn.addEventListener('click', () => this.playStrokeAnimation(0.4));
       this.strokeLoopBtn.addEventListener('click', () => this.loopStrokeAnimation());
 
       // 색상 변경
@@ -146,6 +146,7 @@
         this.drawCanvas.style.display = 'none';
         this.strokeControls.style.display = 'flex';
         this.drawToolbar.style.display = 'none';
+        this.renderBackground();
         this.playStrokeAnimation(1);
       } else {
         this.writerTarget.style.display = 'none';
@@ -160,10 +161,9 @@
       this.currentChar = char;
       this.clear();
       this.initHanziWriter();
+      this.renderBackground();
       if (this.mode === 'stroke') {
-        this.playStrokeAnimation(1);
-      } else {
-        this.renderBackground();
+        setTimeout(() => this.playStrokeAnimation(1), 80);
       }
     }
 
@@ -177,14 +177,14 @@
           this.writer = window.HanziWriter.create(this.writerTarget, this.currentChar, {
             width: size,
             height: size,
-            padding: 18,
+            padding: 16,
             showOutline: true,
             strokeAnimationSpeed: 1,
-            delayBetweenStrokes: 220,
-            strokeColor: '#2d241e',
+            delayBetweenStrokes: 200,
+            strokeColor: '#2b231c',
             outlineColor: '#dfd2c0',
             drawingColor: '#d9381e',
-            highlightColor: '#ff6b4a',
+            highlightColor: '#e05338',
             showCharacter: false,
             gridBackground: false
           });
@@ -200,10 +200,9 @@
         this.writer.cancelAnimation();
         this.writer.animateCharacter({
           strokeAnimationSpeed: speed,
-          delayBetweenStrokes: 220 / speed
+          delayBetweenStrokes: 200 / speed
         });
       } else {
-        // Fallback: 캔버스 가이드 글자 깜빡임 효과
         this.renderBackground();
       }
     }
@@ -221,7 +220,7 @@
 
     resize() {
       if (!this.wrap) return;
-      const size = Math.min(this.wrap.clientWidth || 300, 300);
+      const size = Math.min(this.wrap.clientWidth || 280, 280);
       const dpr = window.devicePixelRatio || 1;
 
       this.bgCanvas.width = size * dpr;
@@ -244,7 +243,7 @@
 
     renderBackground() {
       const ctx = this.bgCtx;
-      const size = this.size || 300;
+      const size = this.size || 280;
       ctx.clearRect(0, 0, size, size);
 
       // 격자선 (미자/십자 점선 격자)
@@ -274,7 +273,7 @@
       ctx.strokeRect(1, 1, size - 2, size - 2);
       ctx.restore();
 
-      // 연한 가이드 폰트 (직접 쓰기 모드일 때)
+      // 연한 가이드 폰트는 '직접 쓰기 모드(draw)'에서만 렌더링 (획순 모드 시 이중 겹침 방지!)
       if (this.mode === 'draw' && this.showGuide && this.currentChar) {
         ctx.save();
         ctx.fillStyle = '#eddac2';
@@ -336,16 +335,18 @@
     }
 
     clear() {
-      const size = this.size || 300;
+      const size = this.size || 280;
       this.drawCtx.clearRect(0, 0, size, size);
-      this.overlay.classList.remove('show');
+      if (this.overlay) this.overlay.classList.remove('show');
     }
 
     celebrate() {
-      this.overlay.classList.add('show');
-      setTimeout(() => {
-        this.overlay.classList.remove('show');
-      }, 2000);
+      if (this.overlay) {
+        this.overlay.classList.add('show');
+        setTimeout(() => {
+          this.overlay.classList.remove('show');
+        }, 1800);
+      }
     }
   }
 

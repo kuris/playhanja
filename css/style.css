@@ -696,6 +696,30 @@ img { max-width: 100%; display: block; }
   cursor: crosshair;
   z-index: 3;
 }
+.write-success-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.92);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  pointer-events: none;
+}
+.write-success-overlay.show {
+  display: flex;
+}
+.success-stamp {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #d9381e;
+  border: 4px solid #d9381e;
+  padding: 12px 24px;
+  border-radius: 12px;
+  transform: rotate(-8deg) scale(1.1);
+  box-shadow: 0 4px 16px rgba(217, 56, 30, 0.25);
+  animation: popCenter .3s cubic-bezier(.34,1.56,.64,1);
+}
 /* ============================================================
    Thousand Verses (천자문 250구) Grid & Modal
    ============================================================ */
