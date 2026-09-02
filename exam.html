@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>급수별 실전 모의고사 - 한자야 놀자!</title>
+<meta name="description" content="한국어문회 전국한자능력검정시험 출제기준 그대로! 급수별 문항 수·시험 시간·합격 기준을 반영한 실전 모의고사를 풀어보세요.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@500;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-wrap">
+    <a href="index.html" class="logo">
+      <span class="logo-char">漢</span>
+      <span>한자야 놀자!</span>
+    </a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="메뉴 열기"><i class="fa-solid fa-bars"></i></button>
+    <nav class="main-nav" id="main-nav">
+      <ul>
+        <li><a href="index.html">홈</a></li>
+        <li><a href="planner.html">🗓️ 학습 플래너</a></li>
+        <li><a href="flashcard.html">⚡ 빠른 복습</a></li>
+        <li><a href="learn.html">한자 배우기</a></li>
+        <li><a href="grade.html">🏅 급수별 한자</a></li>
+        <li><a href="exam.html" class="active">📝 실전 모의고사</a></li>
+        <li><a href="idiom.html">📖 고사성어</a></li>
+        <li><a href="thousand.html">📜 천자문 250구</a></li>
+        <li><a href="worksheet.html">📄 쓰기 연습장(A4)</a></li>
+        <li><a href="quiz.html">퀴즈로 복습</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main class="section" style="padding-top:26px;">
+  <div class="container">
+
+    <!-- ============ 급수 선택 ============ -->
+    <div id="exam-setup">
+      <div class="section-head" style="margin-bottom:20px;">
+        <span class="eyebrow">MOCK EXAM</span>
+        <h2>📝 급수별 실전 모의고사</h2>
+        <p>한국어문회 <strong>출제기준 그대로</strong> — 급수마다 문항 수·시험 시간·합격 기준이 실제와 같아요.<br>
+        시험은 <strong>해당 급수와 그 아래 급수 한자</strong>에서 모두 출제됩니다.</p>
+      </div>
+
+      <div class="exam-grade-grid" id="exam-grade-grid"></div>
+
+      <div class="exam-info-card" id="exam-info-card"></div>
+
+      <div class="exam-start-row">
+        <label class="deck-check"><input type="checkbox" id="timer-on" checked> 실제 시험처럼 시간 재기</label>
+        <button class="btn btn-primary" id="start-exam-btn"><i class="fa-solid fa-file-pen"></i> 모의고사 시작</button>
+      </div>
+    </div>
+
+    <!-- ============ 시험지 ============ -->
+    <div id="exam-view" style="display:none;">
+      <div class="exam-bar">
+        <div class="eb-left">
+          <span class="eb-grade" id="eb-grade"></span>
+          <span class="eb-count" id="eb-count"></span>
+        </div>
+        <div class="eb-timer" id="eb-timer">50:00</div>
+        <button class="btn btn-outline btn-sm" id="submit-exam-btn"><i class="fa-solid fa-paper-plane"></i> 답안 제출</button>
+      </div>
+      <div class="exam-progress-track"><div class="exam-progress-fill" id="exam-progress"></div></div>
+
+      <div class="exam-sheet" id="exam-sheet"></div>
+
+      <div class="exam-footer">
+        <button class="btn btn-primary" id="submit-exam-btn2"><i class="fa-solid fa-paper-plane"></i> 답안 제출하기</button>
+      </div>
+    </div>
+
+    <!-- ============ 성적표 ============ -->
+    <div id="exam-result" style="display:none;">
+      <div class="result-card">
+        <div class="result-emoji" id="ex-emoji">🎉</div>
+        <h2 id="ex-title"></h2>
+        <div class="ex-score" id="ex-score"></div>
+        <div class="ex-pass" id="ex-pass"></div>
+        <div class="ex-meta" id="ex-meta"></div>
+
+        <h3 class="ex-sub">유형별 정답률</h3>
+        <div class="ex-types" id="ex-types"></div>
+
+        <h3 class="ex-sub">틀린 문제 <small>(오답 노트에 자동 저장됐어요)</small></h3>
+        <div class="ex-wrong" id="ex-wrong"></div>
+
+        <div class="hero-actions" style="justify-content:center; margin-top:24px;">
+          <button class="btn btn-primary" id="ex-retry"><i class="fa-solid fa-rotate-right"></i> 다시 응시</button>
+          <a href="quiz.html" class="btn btn-secondary"><i class="fa-solid fa-list-check"></i> 오답 복습하기</a>
+          <button class="btn btn-outline" id="ex-back"><i class="fa-solid fa-medal"></i> 다른 급수 보기</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/hanzi-data.js"></script>
+<script src="js/grade-data.js"></script>
+<script src="js/idiom-data.js"></script>
+<script src="js/exam-data.js"></script>
+<script src="js/wrong-notes.js"></script>
+<script src="js/srs.js"></script>
+<script src="js/progress.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/exam.js"></script>
+</body>
+</html>
