@@ -18,17 +18,28 @@
     return getLearnedIds().includes(id);
   }
 
+  // 로그인 상태면 서버(Supabase)에도 반영 - 비로그인이면 아무 일도 하지 않음
+  function syncToCloud(id, learned) {
+    if (window.HanjaAuth && window.HanjaAuth.isLoggedIn()) {
+      window.HanjaAuth.syncItem(id, learned);
+    }
+    // 대시보드 등 다른 화면이 즉시 갱신할 수 있도록 알림
+    document.dispatchEvent(new CustomEvent('hanja:progress-changed', { detail: { id: id, learned: learned } }));
+  }
+
   function markLearned(id) {
     const list = getLearnedIds();
     if (!list.includes(id)) {
       list.push(id);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
     }
+    syncToCloud(id, true);
   }
 
   function unmarkLearned(id) {
     const list = getLearnedIds().filter(x => x !== id);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    syncToCloud(id, false);
   }
 
   function toggleLearned(id) {

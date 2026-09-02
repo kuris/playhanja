@@ -489,6 +489,20 @@ document.addEventListener('DOMContentLoaded', function () {
       resultPrintLink.style.display = 'none';
     }
 
+    // 로그인 상태면 시험 결과를 계정에 저장
+    if (window.HanjaAuth && window.HanjaAuth.isLoggedIn()) {
+      window.HanjaAuth.saveQuizResult({
+        mode: mode,
+        grade: mode === 'grade' ? selectedGrade : null,
+        level: mode === 'idiom' ? idiomLevel : (mode === 'category' ? selectedCat : null),
+        total: total,
+        score: score,
+        percent: pct,
+        passed: mode === 'grade' ? pct >= PASS_SCORE : pct >= 70,
+        wrong: wrongAnswers
+      });
+    }
+
     // 오답 노트
     if (wrongAnswers.length > 0) {
       wrongNote.style.display = 'block';
