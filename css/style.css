@@ -1440,3 +1440,107 @@ img { max-width: 100%; display: block; }
   .quiz-option-row label { justify-content: space-between; }
   .wrong-item .wrong-type { margin-left: 0; }
 }
+
+/* ============================================================
+   고사성어 (idiom.html)
+   ============================================================ */
+.idiom-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+.idiom-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+.idiom-card {
+  position: relative;
+  background: #fff;
+  border: 2px solid var(--color-border);
+  border-radius: 18px;
+  padding: 30px 14px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  text-align: center;
+  transition: all .18s ease;
+  box-shadow: var(--shadow-soft);
+}
+.idiom-card:hover { transform: translateY(-4px); border-color: var(--lv-color); }
+.idiom-card.learned { border-color: var(--color-secondary); background: #f4fbf7; }
+.idiom-card .ic-level {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  font-size: .7rem;
+  font-weight: 800;
+  color: var(--lv-color);
+}
+.idiom-card .ic-done { position: absolute; top: 8px; right: 10px; font-size: .8rem; }
+.idiom-card .ic-idiom {
+  font-family: var(--font-hanzi);
+  font-size: 1.9rem;
+  letter-spacing: 2px;
+  line-height: 1.15;
+  color: var(--color-text);
+}
+.idiom-card .ic-reading { font-weight: 900; color: var(--color-primary-dark); font-size: .95rem; }
+.idiom-card .ic-meaning {
+  font-size: .8rem;
+  color: var(--color-text-soft);
+  line-height: 1.45;
+  font-weight: 600;
+}
+
+.idiom-story-box {
+  background: #fffaf0;
+  border: 2px solid var(--color-border);
+  border-radius: 16px;
+  padding: 16px 18px;
+  margin: 4px 0 18px;
+  text-align: left;
+}
+.idiom-story-box h4 {
+  margin: 0 0 8px;
+  color: var(--color-primary-dark);
+  font-size: 1rem;
+}
+.idiom-story-box p { line-height: 1.75; color: var(--color-text); font-size: .95rem; }
+.idiom-lesson {
+  margin-top: 12px;
+  background: #eefaf2;
+  border-left: 4px solid var(--color-secondary);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: .92rem;
+  font-weight: 600;
+}
+.idiom-source {
+  margin-top: 8px;
+  font-size: .8rem;
+  color: var(--color-text-soft);
+  text-align: right;
+  font-weight: 700;
+}
+
+/* 고사성어 문제(일화 제시문 / 성어 오답노트) */
+.quiz-char.quiz-char-story {
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.75;
+  color: var(--color-text);
+  text-align: left;
+  background: #fffaf0;
+  border: 2px solid var(--color-border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  max-width: 640px;
+  margin: 0 auto 6px;
+}
+.wrong-char.wrong-char-idiom { font-size: 1.15rem; min-width: 78px; letter-spacing: 1px; }

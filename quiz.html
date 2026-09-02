@@ -24,6 +24,7 @@
         <li><a href="index.html">홈</a></li>
         <li><a href="learn.html">한자 배우기</a></li>
         <li><a href="grade.html">🏅 급수별 한자</a></li>
+        <li><a href="idiom.html">📖 고사성어</a></li>
         <li><a href="thousand.html">📜 천자문 250구</a></li>
         <li><a href="worksheet.html">📄 쓰기 연습장(A4)</a></li>
         <li><a href="quiz.html" class="active">퀴즈로 복습</a></li>
@@ -44,6 +45,7 @@
     <div class="quiz-mode-tabs" id="quiz-mode-tabs">
       <button class="quiz-mode-tab active" data-mode="category"><i class="fa-solid fa-shapes"></i> 주제별 뜻 맞히기</button>
       <button class="quiz-mode-tab" data-mode="grade"><i class="fa-solid fa-medal"></i> 급수별 모의시험 (1~9급)</button>
+      <button class="quiz-mode-tab" data-mode="idiom"><i class="fa-solid fa-book-open"></i> 고사성어 문제은행</button>
     </div>
 
     <div id="quiz-setup" class="quiz-box">
@@ -79,6 +81,33 @@
           </label>
         </div>
         <p class="quiz-pass-note">💯 100점 만점 · <strong>70점 이상이면 합격</strong>이에요! 최고 점수는 기기에 저장돼요.</p>
+      </div>
+
+      <!-- 고사성어 문제은행 설정 -->
+      <div id="setup-idiom" style="display:none;">
+        <h3 style="margin-top:0;">고사성어 문제은행</h3>
+        <p style="color:var(--color-text-soft); font-size:.92rem; margin-top:6px;">유래 일화를 읽고 성어를 맞히거나, 빈칸에 알맞은 한자를 넣어보세요!</p>
+        <div class="filter-group" style="text-align:center; margin-top:16px;">
+          <div id="idiom-level-filter-quiz" class="idiom-filter-row"></div>
+        </div>
+        <div class="quiz-option-row">
+          <label>문항 수
+            <select id="idiom-count" class="grade-print-select">
+              <option value="10" selected>10문항</option>
+              <option value="20">20문항</option>
+              <option value="30">30문항</option>
+            </select>
+          </label>
+          <label>출제 유형
+            <select id="idiom-qtype" class="grade-print-select">
+              <option value="mix" selected>혼합 (실전)</option>
+              <option value="story">일화 읽고 성어 맞히기</option>
+              <option value="meaning">뜻 보고 성어 맞히기</option>
+              <option value="blank">빈칸에 알맞은 한자</option>
+              <option value="reverse">성어 보고 뜻 맞히기</option>
+            </select>
+          </label>
+        </div>
       </div>
 
       <button class="btn btn-primary" id="start-quiz-btn" style="margin-top:10px;"><i class="fa-solid fa-play"></i> 퀴즈 시작!</button>
@@ -132,6 +161,7 @@
 <script src="js/nav.js"></script>
 <script src="js/hanzi-data.js"></script>
 <script src="js/grade-data.js"></script>
+<script src="js/idiom-data.js"></script>
 <script src="js/progress.js"></script>
 <script src="js/quiz.js"></script>
 </body>

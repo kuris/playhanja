@@ -5,6 +5,7 @@
    - 두 가지 모드 지원
      1) 천자문 모드 : ?type=verse&no=1  /  ?type=verse_range&from=1&to=5
      2) 급수 모드   : ?type=grade&grade=7&limit=40  /  ?type=grade&grade=7&from=5&limit=4
+     3) 성어 모드   : ?type=idiom&no=1  /  ?type=idiom&level=all&limit=10
    ============================================================ */
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -13,6 +14,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const selector = document.getElementById('verse-selector');
   const gradeSelector = document.getElementById('grade-selector');
   const gradeRange = document.getElementById('grade-range');
+  const idiomSelector = document.getElementById('idiom-selector');
+  const idiomRange = document.getElementById('idiom-range');
   const VERSES = window.THOUSAND_VERSES || [];
   const HANZI_DATA = window.HANZI_DATA || [];
   const GRADE_LEVELS = window.GRADE_LEVELS || [];
@@ -24,6 +27,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const from = parseInt(urlParams.get('from') || '1', 10);
   const to = parseInt(urlParams.get('to') || '1', 10);
   const gradeParam = parseInt(urlParams.get('grade') || '9', 10);
+  const idiomNo = parseInt(urlParams.get('no') || '0', 10);
+  const idiomLevel = urlParams.get('level') || 'all';
   const limitParam = urlParams.get('limit') || '40';
 
   const CHARS_PER_PAGE = 4;
@@ -58,12 +63,23 @@ document.addEventListener('DOMContentLoaded', function () {
     gradeRange.value = String(limitParam);
   }
 
+  // 성어 셀렉터
+  const IDIOMS = window.IDIOMS || [];
+  if (idiomSelector) {
+    idiomSelector.innerHTML = `<option value="range">난이도 전체에서 순서대로</option>`
+      + IDIOMS.map(i => `<option value="${i.no}">${i.idiom} (${i.reading})</option>`).join('');
+    if (idiomNo > 0) idiomSelector.value = String(idiomNo);
+  }
+
   // ---------- 모드 전환 ----------
   function applyMode(mode) {
     const isGrade = mode === 'grade';
-    selector.style.display = isGrade ? 'none' : '';
+    const isIdiom = mode === 'idiom';
+    selector.style.display = (!isGrade && !isIdiom) ? '' : 'none';
     if (gradeSelector) gradeSelector.style.display = isGrade ? '' : 'none';
     if (gradeRange) gradeRange.style.display = isGrade ? '' : 'none';
+    if (idiomSelector) idiomSelector.style.display = isIdiom ? '' : 'none';
+    if (idiomRange) idiomRange.style.display = isIdiom ? '' : 'none';
     if (modeSelector) modeSelector.value = mode;
   }
 
@@ -72,6 +88,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const mode = e.target.value;
       applyMode(mode);
       if (mode === 'grade') renderGradeSheets();
+      else if (mode === 'idiom') renderIdiomSheets();
       else renderSingleVerse(parseInt(selector.value, 10) || no);
     });
   }
@@ -93,11 +110,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (gradeSelector) gradeSelector.addEventListener('change', renderGradeSheets);
   if (gradeRange) gradeRange.addEventListener('change', renderGradeSheets);
+  if (idiomSelector) idiomSelector.addEventListener('change', renderIdiomSheets);
+  if (idiomRange) idiomRange.addEventListener('change', renderIdiomSheets);
 
   // ---------- 초기 렌더링 ----------
   if (type === 'grade') {
     applyMode('grade');
     renderGradeSheets(true);
+  } else if (type === 'idiom') {
+    applyMode('idiom');
+    renderIdiomSheets(true);
   } else if (type === 'verse_range') {
     applyMode('verse');
     renderVerseRange(from, to);
@@ -248,6 +270,61 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ============================================================
+     3) 고사성어 모드
+     ============================================================ */
+  function renderIdiomSheets(useUrlParams) {
+    const list = window.IDIOMS || [];
+    if (list.length === 0) return;
+
+    let targets;
+    const selVal = idiomSelector ? idiomSelector.value : 'range';
+    if (useUrlParams && idiomNo > 0) {
+      const one = list.find(i => i.no === idiomNo);
+      targets = one ? [one] : [list[0]];
+    } else if (selVal !== 'range') {
+      const one = list.find(i => i.no === Number(selVal));
+      targets = one ? [one] : [list[0]];
+    } else {
+      const lv = useUrlParams ? idiomLevel : 'all';
+      const pool = lv === 'all' ? list : list.filter(i => i.level === Number(lv));
+      const limitRaw = useUrlParams
+        ? (urlParams.get('limit') || '10')
+        : (idiomRange ? idiomRange.value : '10');
+      const limit = limitRaw === 'all' ? pool.length : (parseInt(limitRaw, 10) || 10);
+      targets = pool.slice(0, limit);
+    }
+
+    mount.innerHTML = targets.map((it, idx) => {
+      const rows = it.chars.map(c => {
+        const dbInfo = HANZI_DATA.find(d => d.char === c.char);
+        return {
+          char: c.char,
+          sound: c.sound,
+          meaning: c.meaning,
+          strokes: dbInfo ? `${dbInfo.strokes}획` : '',
+          words: dbInfo && dbInfo.words && dbInfo.words.length
+            ? buildWordsHtml(dbInfo, null)
+            : buildHunmumPracticeHtml(c)
+        };
+      });
+
+      return generatePageHTML({
+        title: '고사성어 쓰기 연습장',
+        titleSmall: `(제 ${it.no}번 · ${window.getIdiomLevelInfo(it.level).name})`,
+        bannerLeft: `【 ${it.idiom} 】 (${it.reading})`,
+        bannerRight: it.meaning,
+        rows: rows,
+        quizItems: it.chars.map(c => ({ label: `${c.meaning} ${c.sound}:` })),
+        quizTitle: '✍️ 【 성어 통쓰기 】 훈과 음을 보고 네 글자를 순서대로 적어보세요:',
+        quizHint: `${it.reading} · ${it.source}`,
+        storyNote: `📖 ${it.story}<br><strong>💡 ${it.lesson}</strong>`,
+        footerMiddle: '고사성어 100선 워크시트 · A4 규격',
+        footerRight: `${idx + 1} / ${targets.length}장`
+      });
+    }).join('');
+  }
+
+  /* ============================================================
      공통 A4 1페이지 HTML 생성
      ============================================================ */
   function generatePageHTML(opt) {
@@ -314,6 +391,8 @@ document.addEventListener('DOMContentLoaded', function () {
         <div class="ws-body-rows">
           ${charsHtml}
         </div>
+
+        ${opt.storyNote ? `<div class="ws-story-note">${opt.storyNote}</div>` : ''}
 
         <div class="ws-footer-quiz">
           <div class="ws-quiz-title">

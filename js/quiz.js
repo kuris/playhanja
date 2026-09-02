@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const CATEGORIES = window.CATEGORIES || [];
   const GRADE_LEVELS = window.GRADE_LEVELS || [];
   const GRADE_HANJA = window.GRADE_HANJA || [];
+  const IDIOMS = window.IDIOMS || [];
+  const IDIOM_LEVELS = window.IDIOM_LEVELS || [];
   const PROGRESS = window.HanziProgress;
 
   const BEST_KEY = 'hanzi_grade_best_scores';
@@ -19,6 +21,10 @@ document.addEventListener('DOMContentLoaded', function () {
   const modeTabs = document.querySelectorAll('.quiz-mode-tab');
   const setupCategory = document.getElementById('setup-category');
   const setupGrade = document.getElementById('setup-grade');
+  const setupIdiom = document.getElementById('setup-idiom');
+  const idiomFilterBox = document.getElementById('idiom-level-filter-quiz');
+  const idiomCount = document.getElementById('idiom-count');
+  const idiomQtype = document.getElementById('idiom-qtype');
   const catFilterBox = document.getElementById('quiz-category-filter');
   const gradePicker = document.getElementById('quiz-grade-picker');
   const countSelect = document.getElementById('quiz-count');
@@ -41,7 +47,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const resultLearnLink = document.getElementById('result-learn-link');
   const resultPrintLink = document.getElementById('result-print-link');
 
-  let mode = 'category';        // 'category' | 'grade'
+  let mode = 'category';        // 'category' | 'grade' | 'idiom'
+  let idiomLevel = 'all';
   let selectedCat = 'all';
   let selectedGrade = 9;
   let quizPool = [];
@@ -85,9 +92,10 @@ document.addEventListener('DOMContentLoaded', function () {
       mode = tab.dataset.mode;
       setupCategory.style.display = mode === 'category' ? 'block' : 'none';
       setupGrade.style.display = mode === 'grade' ? 'block' : 'none';
-      startBtn.innerHTML = mode === 'grade'
-        ? '<i class="fa-solid fa-file-pen"></i> 급수 시험 시작!'
-        : '<i class="fa-solid fa-play"></i> 퀴즈 시작!';
+      if (setupIdiom) setupIdiom.style.display = mode === 'idiom' ? 'block' : 'none';
+      if (mode === 'grade') startBtn.innerHTML = '<i class="fa-solid fa-file-pen"></i> 급수 시험 시작!';
+      else if (mode === 'idiom') startBtn.innerHTML = '<i class="fa-solid fa-book-open"></i> 성어 문제 풀기!';
+      else startBtn.innerHTML = '<i class="fa-solid fa-play"></i> 퀴즈 시작!';
       updateRangeInfo();
     });
   });
@@ -136,8 +144,29 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // ---------- 고사성어 난이도 필터 ----------
+  function renderIdiomFilter() {
+    if (!idiomFilterBox) return;
+    let html = `<button class="filter-chip ${idiomLevel === 'all' ? 'active' : ''}" data-lv="all"><span class="chip-icon">📚</span> 전체 (${IDIOMS.length}개)</button>`;
+    IDIOM_LEVELS.forEach(l => {
+      const cnt = IDIOMS.filter(i => i.level === l.id).length;
+      html += `<button class="filter-chip ${idiomLevel == l.id ? 'active' : ''}" data-lv="${l.id}"><span class="chip-icon">${l.badge}</span> ${l.name} (${cnt}개)</button>`;
+    });
+    idiomFilterBox.innerHTML = html;
+    idiomFilterBox.querySelectorAll('.filter-chip').forEach(btn => {
+      btn.addEventListener('click', () => {
+        idiomLevel = btn.dataset.lv === 'all' ? 'all' : Number(btn.dataset.lv);
+        renderIdiomFilter();
+        updateRangeInfo();
+      });
+    });
+  }
+
   // ---------- 출제 범위 안내 ----------
   function getPool() {
+    if (mode === 'idiom') {
+      return idiomLevel === 'all' ? IDIOMS.slice() : IDIOMS.filter(i => i.level === Number(idiomLevel));
+    }
     if (mode === 'grade') {
       return GRADE_HANJA.filter(h => h.grade === selectedGrade);
     }
@@ -146,6 +175,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function updateRangeInfo() {
     const pool = getPool();
+    if (mode === 'idiom') {
+      const learned = pool.filter(i => PROGRESS.isLearned(i.id)).length;
+      rangeInfo.textContent = `출제 범위 ${pool.length}개 성어 · 학습 완료 ${learned}개 · 유래 일화는 고사성어 페이지에서 읽을 수 있어요.`;
+      return;
+    }
     if (mode === 'grade') {
       const info = window.getGradeInfo(selectedGrade);
       const best = getBestScores()[selectedGrade];
@@ -167,7 +201,14 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    if (mode === 'grade') {
+    if (mode === 'idiom') {
+      const count = Math.min(Number(idiomCount.value) || 10, quizPool.length);
+      const qt = idiomQtype.value;
+      quizQueue = shuffle(quizPool).slice(0, count).map(it => ({
+        item: it,
+        type: qt === 'mix' ? pickIdiomType() : qt
+      }));
+    } else if (mode === 'grade') {
       const count = Math.min(Number(countSelect.value) || 20, quizPool.length);
       const qtype = qtypeSelect.value;
       quizQueue = shuffle(quizPool).slice(0, count).map(h => ({
@@ -197,6 +238,11 @@ document.addEventListener('DOMContentLoaded', function () {
     return types[Math.floor(Math.random() * types.length)];
   }
 
+  function pickIdiomType() {
+    const types = ['story', 'meaning', 'blank', 'reverse'];
+    return types[Math.floor(Math.random() * types.length)];
+  }
+
   // ---------- 문제 유형별 표시 값 ----------
   // label: 보기 버튼에 표시할 정답/오답 텍스트
   function optionLabel(h, type) {
@@ -205,6 +251,13 @@ document.addEventListener('DOMContentLoaded', function () {
     if (type === 'hunmum') return `${h.meaning} ${h.sound}`;
     return h.meaning; // 주제별 기본(뜻)
   }
+
+  const IDIOM_TYPE_INFO = {
+    story:   { badge: '일화 읽고 맞히기', question: '이 이야기에서 나온 고사성어는?' },
+    meaning: { badge: '뜻 보고 맞히기',   question: '이런 뜻을 가진 고사성어는?' },
+    blank:   { badge: '빈칸 채우기',      question: '빈칸(□)에 들어갈 한자는?' },
+    reverse: { badge: '뜻 고르기',        question: '이 고사성어의 뜻은 무엇일까요?' }
+  };
 
   const TYPE_INFO = {
     hunmum:  { badge: '훈음 고르기', question: '이 한자의 훈(뜻)과 음(소리)은?' },
@@ -216,10 +269,15 @@ document.addEventListener('DOMContentLoaded', function () {
   function showQuestion() {
     locked = false;
     const q = quizQueue[qIndex];
+    quizProgress.textContent = `${qIndex + 1} / ${quizQueue.length} 문제`;
+
+    if (mode === 'idiom') {
+      showIdiomQuestion(q);
+      return;
+    }
+
     const h = q.item;
     const type = q.type;
-
-    quizProgress.textContent = `${qIndex + 1} / ${quizQueue.length} 문제`;
 
     if (mode === 'grade') {
       const info = window.getGradeInfo(selectedGrade);
@@ -289,6 +347,102 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 900);
   }
 
+  // ---------- 고사성어 문제 ----------
+  function showIdiomQuestion(q) {
+    const it = q.item;
+    const type = q.type;
+    const info = IDIOM_TYPE_INFO[type];
+    const lv = window.getIdiomLevelInfo(it.level);
+
+    quizTypeBadge.style.display = 'inline-block';
+    quizTypeBadge.textContent = `${lv.badge} ${lv.name} · ${info.badge}`;
+    quizQuestion.textContent = info.question;
+
+    let blankIndex = -1;
+    if (type === 'story') {
+      quizChar.className = 'quiz-char quiz-char-story';
+      quizChar.textContent = it.story;
+    } else if (type === 'meaning') {
+      quizChar.className = 'quiz-char quiz-char-text';
+      quizChar.textContent = it.meaning;
+    } else if (type === 'blank') {
+      blankIndex = Math.floor(Math.random() * 4);
+      quizChar.className = 'quiz-char';
+      quizChar.textContent = it.idiom.split('').map((c, i) => (i === blankIndex ? '□' : c)).join('');
+    } else { // reverse
+      quizChar.className = 'quiz-char';
+      quizChar.textContent = it.idiom;
+    }
+
+    // 보기 만들기
+    let options, labelOf, isCorrectOf;
+    if (type === 'blank') {
+      const answerChar = it.idiom[blankIndex];
+      const seen = { [answerChar]: true };
+      const wrongs = [];
+      for (const cand of shuffle(quizPool)) {
+        if (wrongs.length >= 3) break;
+        const ch = cand.idiom[Math.floor(Math.random() * 4)];
+        if (seen[ch]) continue;
+        seen[ch] = true;
+        wrongs.push(ch);
+      }
+      options = shuffle([answerChar].concat(wrongs));
+      labelOf = (o) => o;
+      isCorrectOf = (o) => o === answerChar;
+    } else if (type === 'reverse') {
+      const wrongs = shuffle(quizPool).filter(x => x.id !== it.id).slice(0, 3);
+      options = shuffle([it].concat(wrongs));
+      labelOf = (o) => o.meaning;
+      isCorrectOf = (o) => o.id === it.id;
+    } else {
+      const wrongs = shuffle(quizPool).filter(x => x.id !== it.id).slice(0, 3);
+      options = shuffle([it].concat(wrongs));
+      labelOf = (o) => `${o.idiom} (${o.reading})`;
+      isCorrectOf = (o) => o.id === it.id;
+    }
+
+    const isHanjaOption = type === 'blank';
+    quizOptions.innerHTML = options.map((o, i) =>
+      `<button class="quiz-option ${isHanjaOption ? 'quiz-option-hanzi' : ''}" data-i="${i}" data-correct="${isCorrectOf(o) ? '1' : '0'}">${labelOf(o)}</button>`
+    ).join('');
+
+    const answerText = type === 'blank'
+      ? `${it.idiom[blankIndex]} (${it.chars[blankIndex].hunmum})`
+      : (type === 'reverse' ? it.meaning : `${it.idiom} (${it.reading})`);
+
+    quizOptions.querySelectorAll('.quiz-option').forEach(btn => {
+      btn.addEventListener('click', () => handleIdiomAnswer(btn, it, info.badge, answerText));
+    });
+  }
+
+  function handleIdiomAnswer(btn, it, typeBadge, answerText) {
+    if (locked) return;
+    locked = true;
+    const isCorrect = btn.dataset.correct === '1';
+    if (isCorrect) {
+      score++;
+    } else {
+      wrongAnswers.push({
+        char: it.idiom,
+        answer: answerText,
+        picked: btn.textContent,
+        type: typeBadge
+      });
+    }
+
+    quizOptions.querySelectorAll('.quiz-option').forEach(b => {
+      if (b.dataset.correct === '1') b.classList.add('correct');
+      else if (b === btn) b.classList.add('wrong');
+    });
+
+    setTimeout(() => {
+      qIndex++;
+      if (qIndex < quizQueue.length) showQuestion();
+      else showResult();
+    }, 1000);
+  }
+
   // ---------- 결과 ----------
   function showResult() {
     playBox.style.display = 'none';
@@ -321,6 +475,13 @@ document.addEventListener('DOMContentLoaded', function () {
       resultLearnLink.innerHTML = `<i class="fa-solid fa-book-open"></i> ${info.name} 한자 배우러 가기`;
       resultPrintLink.style.display = 'inline-flex';
       resultPrintLink.href = `worksheet.html?type=grade&grade=${selectedGrade}&limit=20`;
+    } else if (mode === 'idiom') {
+      passBadge.innerHTML = '';
+      resultLearnLink.href = 'idiom.html';
+      resultLearnLink.innerHTML = '<i class="fa-solid fa-book-open"></i> 고사성어 이야기 읽으러 가기';
+      resultPrintLink.style.display = 'inline-flex';
+      resultPrintLink.href = `worksheet.html?type=idiom&level=${idiomLevel}&limit=10`;
+      resultPrintLink.innerHTML = '<i class="fa-solid fa-print"></i> 성어 A4 연습장 인쇄';
     } else {
       passBadge.innerHTML = '';
       resultLearnLink.href = 'learn.html';
@@ -333,7 +494,7 @@ document.addEventListener('DOMContentLoaded', function () {
       wrongNote.style.display = 'block';
       wrongList.innerHTML = wrongAnswers.map(w => `
         <div class="wrong-item">
-          <span class="wrong-char">${w.char}</span>
+          <span class="wrong-char ${w.char.length > 1 ? 'wrong-char-idiom' : ''}">${w.char}</span>
           <span class="wrong-answer">정답: <strong>${w.answer}</strong></span>
           <span class="wrong-picked">내 답: ${w.picked}</span>
           <span class="wrong-type">${w.type}</span>
@@ -355,5 +516,6 @@ document.addEventListener('DOMContentLoaded', function () {
   // ---------- 초기화 ----------
   renderCatFilter();
   renderGradePicker();
+  renderIdiomFilter();
   updateRangeInfo();
 });
