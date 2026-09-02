@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
   let idiomLevel = 'all';
   let reviewKind = 'all';
   let selectedCat = 'all';
-  let selectedGrade = 9;
+  let selectedGrade = 'g8';
   let quizPool = [];
   let quizQueue = [];
   let qIndex = 0;
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }).join('');
     gradePicker.querySelectorAll('.grade-card').forEach(btn => {
       btn.addEventListener('click', () => {
-        selectedGrade = Number(btn.dataset.grade);
+        selectedGrade = btn.dataset.grade;
         renderGradePicker();
         updateRangeInfo();
       });

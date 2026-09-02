@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const no = parseInt(urlParams.get('no') || '1', 10);
   const from = parseInt(urlParams.get('from') || '1', 10);
   const to = parseInt(urlParams.get('to') || '1', 10);
-  const gradeParam = parseInt(urlParams.get('grade') || '9', 10);
+  const gradeParam = urlParams.get('grade') || 'g8';
   const idiomNo = parseInt(urlParams.get('no') || '0', 10);
   const idiomLevel = urlParams.get('level') || 'all';
   const limitParam = urlParams.get('limit') || '40';
@@ -202,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function renderGradeSheets(useUrlParams) {
     if (!window.getGradeChars) return;
 
-    const gradeId = gradeSelector ? Number(gradeSelector.value) : gradeParam;
+    const gradeId = gradeSelector ? gradeSelector.value : gradeParam;
     const info = window.getGradeInfo(gradeId);
     const all = window.getGradeChars(gradeId);
 

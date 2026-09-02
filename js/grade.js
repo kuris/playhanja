@@ -33,8 +33,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // URL 파라미터로 급수 지정 가능 (예: grade.html?grade=7)
   const params = new URLSearchParams(location.search);
-  let currentGrade = Number(params.get('grade')) || 9;
-  if (!GRADES.some(g => g.id === currentGrade)) currentGrade = 9;
+  let currentGrade = params.get('grade') || 'g8';
+  if (!GRADES.some(g => g.id === currentGrade)) currentGrade = 'g8';
 
   let currentList = [];
   let currentIndex = -1;
@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     picker.querySelectorAll('.grade-card').forEach(btn => {
       btn.addEventListener('click', () => {
-        currentGrade = Number(btn.dataset.grade);
+        currentGrade = btn.dataset.grade;
         renderPicker();
         renderGrid();
         window.scrollTo({ top: picker.offsetTop - 20, behavior: 'smooth' });

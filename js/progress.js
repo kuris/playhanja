@@ -4,6 +4,52 @@
 
 (function () {
   const STORAGE_KEY = 'hanzi_learned_ids';
+  const MIGRATION_KEY = 'hanzi_id_migration_v2';
+
+  // 급수 체계 개편(어문회 기준)으로 급수 한자 id가 g9_一 → gh_一 로 바뀌었습니다.
+  // 기존 학습 기록이 사라지지 않도록 최초 1회 변환합니다.
+  (function migrateIds() {
+    try {
+      if (localStorage.getItem(MIGRATION_KEY)) return;
+      const conv = (id) => {
+        const m = /^g\d+_(.)$/.exec(id || '');
+        return m ? 'gh_' + m[1] : id;
+      };
+      // 학습 진도
+      const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      if (Array.isArray(raw)) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(new Set(raw.map(conv)))));
+      }
+      // 오답 노트
+      const notes = JSON.parse(localStorage.getItem('hanzi_wrong_notes') || '[]');
+      if (Array.isArray(notes)) {
+        notes.forEach(n => { if (n && n.id) n.id = conv(n.id); });
+        localStorage.setItem('hanzi_wrong_notes', JSON.stringify(notes));
+      }
+      // 복습 카드
+      const srs = JSON.parse(localStorage.getItem('hanzi_srs_cards') || '{}');
+      if (srs && typeof srs === 'object') {
+        const next = {};
+        Object.keys(srs).forEach(k => {
+          const nk = conv(k);
+          srs[k].id = nk;
+          next[nk] = srs[k];
+        });
+        localStorage.setItem('hanzi_srs_cards', JSON.stringify(next));
+      }
+      // 학습 목표(급수 번호 → 급수 id)
+      const goal = JSON.parse(localStorage.getItem('hanzi_study_goal') || 'null');
+      if (goal && typeof goal.grade === 'number') {
+        const map = { 9: 'g8', 8: 'g8', 7: 'g7', 6: 'g6', 5: 'g5', 4: 'g4', 3: 'adv', 2: 'adv', 1: 'adv' };
+        goal.grade = map[goal.grade] || 'g8';
+        localStorage.setItem('hanzi_study_goal', JSON.stringify(goal));
+      }
+      localStorage.setItem(MIGRATION_KEY, String(Date.now()));
+      console.info('[한자야 놀자] 급수 체계 개편에 맞춰 학습 기록을 옮겼습니다.');
+    } catch (e) {
+      console.warn('[한자야 놀자] 학습 기록 변환 실패:', e);
+    }
+  })();
 
   function getLearnedIds() {
     try {

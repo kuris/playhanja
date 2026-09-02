@@ -45,7 +45,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const goal = getGoal();
     if (!goal) return null;
 
-    const all = (window.GRADE_HANJA || []).filter(h => h.grade === goal.grade);
+    // 시험은 아래 급수 한자까지 함께 나오므로 누적 범위로 계산합니다
+    const all = window.getCumulativeChars ? window.getCumulativeChars(goal.grade)
+              : (window.GRADE_HANJA || []).filter(h => h.grade === goal.grade);
     const notLearned = all.filter(h => !PROGRESS.isLearned(h.id));
     const newChars = notLearned.slice(0, goal.daily);
 
@@ -229,7 +231,7 @@ document.addEventListener('DOMContentLoaded', function () {
       document.getElementById('goal-daily').value = cur.daily;
       document.getElementById('goal-idiom').value = cur.idiom;
     } else {
-      gradeSel.value = '8';
+      gradeSel.value = 'g8';
     }
     modal.classList.add('open');
     document.body.classList.add('nav-open');
@@ -243,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function () {
   modal.addEventListener('click', e => { if (e.target === modal) closeGoalModal(); });
   document.getElementById('goal-save').addEventListener('click', () => {
     setGoal({
-      grade: Number(document.getElementById('goal-grade').value),
+      grade: document.getElementById('goal-grade').value,
       daily: Number(document.getElementById('goal-daily').value),
       idiom: Number(document.getElementById('goal-idiom').value),
       startedAt: (getGoal() && getGoal().startedAt) || Date.now()

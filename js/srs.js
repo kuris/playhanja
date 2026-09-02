@@ -203,7 +203,7 @@
 
     function fromGrade(gradeId) {
       const all = window.GRADE_HANJA || [];
-      const list = gradeId ? all.filter(h => h.grade === Number(gradeId)) : all;
+      const list = gradeId ? all.filter(h => h.grade === gradeId) : all;
       return list.map(h => ({
         id: h.id, kind: 'grade', char: h.char,
         front: h.char,
@@ -233,7 +233,7 @@
     }
 
     if (deck.startsWith('grade')) {
-      items = fromGrade(deck.split(':')[1]);
+      items = fromGrade(deck.slice(deck.indexOf(':') + 1) || null);
     } else if (deck.startsWith('idiom')) {
       items = fromIdiom(deck.split(':')[1]);
     } else if (deck === 'hanja') {
