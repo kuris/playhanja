@@ -83,6 +83,14 @@
     document.dispatchEvent(new CustomEvent('hanja:auth-changed', { detail: { user: null } }));
   }
 
+  // 메일 링크로 들어와 새 비밀번호를 저장
+  async function updatePassword(newPassword) {
+    if (!isReady()) throw new Error('서버 연결을 준비하지 못했어요.');
+    const { error } = await sb().auth.updateUser({ password: newPassword });
+    if (error) throw error;
+    return true;
+  }
+
   async function resetPassword(email) {
     if (!isReady()) throw new Error('서버 연결을 준비하지 못했어요.');
     const { error } = await sb().auth.resetPasswordForEmail(email, {
@@ -298,6 +306,13 @@
     }
 
     sb().auth.onAuthStateChange(async (event, session) => {
+      // 비밀번호 재설정 메일 링크로 들어온 경우
+      if (event === 'PASSWORD_RECOVERY') {
+        currentUser = session ? session.user : null;
+        document.dispatchEvent(new CustomEvent('hanja:password-recovery', { detail: { user: currentUser } }));
+        return;
+      }
+
       const prevId = currentUser && currentUser.id;
       currentUser = session ? session.user : null;
       let membership = null;
@@ -314,7 +329,7 @@
   }
 
   window.HanjaAuth = {
-    signUp, signIn, signInWithGoogle, signOut, resetPassword,
+    signUp, signIn, signInWithGoogle, signOut, resetPassword, updatePassword,
     updateNickname, loadProfile, fetchQuizResults, saveQuizResult,
     syncItem, syncProgressOnLogin, ensureMembership,
     isNewToService: () => joinedNow,

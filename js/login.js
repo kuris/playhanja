@@ -98,7 +98,8 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!email) { showMsg('먼저 이메일을 입력해 주세요.', 'error'); return; }
     try {
       await AUTH.resetPassword(email);
-      showMsg('비밀번호 재설정 메일을 보냈어요! 📧', 'ok');
+      showMsg('비밀번호 재설정 메일을 보냈어요! 📧<br>'
+            + '<small>메일함(스팸함도 확인)에서 링크를 누르면 새 비밀번호를 정할 수 있어요. 링크는 1시간 동안 유효해요.</small>', 'ok');
     } catch (err) {
       showMsg(translateError(err), 'error');
     }
@@ -119,7 +120,11 @@ document.addEventListener('DOMContentLoaded', function () {
     if (m.includes('password should be')) return '비밀번호는 6자 이상이어야 해요.';
     if (m.includes('email not confirmed')) return '이메일 인증이 아직 안 됐어요. 메일함을 확인해 주세요.';
     if (m.includes('unable to validate email') || m.includes('invalid email')) return '이메일 형식을 다시 확인해 주세요.';
-    if (m.includes('rate limit') || m.includes('too many')) return '요청이 너무 잦아요. 잠시 후 다시 시도해 주세요.';
+    if (m.includes('rate limit') || m.includes('too many') || m.includes('for security purposes'))
+      return '메일 발송 요청이 너무 잦아요. 잠시 뒤에 다시 시도해 주세요.';
+    if (m.includes('new password should be different')) return '이전과 다른 비밀번호를 입력해 주세요.';
+    if (m.includes('auth session missing') || m.includes('session_not_found'))
+      return '재설정 링크가 만료되었어요. 비밀번호 재설정 메일을 다시 요청해 주세요.';
     return '문제가 생겼어요: ' + (err.message || '알 수 없는 오류');
   }
 
@@ -239,8 +244,67 @@ document.addEventListener('DOMContentLoaded', function () {
       : '<p class="dash-empty">아직 시험 기록이 없어요.</p>';
   }
 
+  // ---------- 비밀번호 재설정 (메일 링크) ----------
+  const resetView = document.getElementById('reset-view');
+  const resetForm = document.getElementById('reset-form');
+  const resetMsg = document.getElementById('reset-msg');
+  let recoveryMode = false;
+
+  function showResetMsg(text, type) {
+    resetMsg.className = 'auth-msg show ' + (type || 'info');
+    resetMsg.innerHTML = text;
+  }
+
+  function enterRecoveryMode() {
+    recoveryMode = true;
+    authView.style.display = 'none';
+    dashView.style.display = 'none';
+    resetView.style.display = 'block';
+    document.getElementById('new-password').focus();
+  }
+
+  // URL에 복구 토큰이 실려 오는 경우도 처리 (해시·쿼리 양쪽)
+  (function checkRecoveryUrl() {
+    const hash = location.hash || '';
+    const qs = location.search || '';
+    if (hash.includes('type=recovery') || qs.includes('type=recovery')) enterRecoveryMode();
+    if (hash.includes('error_description')) {
+      const msg = decodeURIComponent((hash.split('error_description=')[1] || '').split('&')[0]).replace(/\+/g, ' ');
+      showMsg('링크가 만료되었거나 이미 사용되었어요. 다시 요청해 주세요.<br><small>' + msg + '</small>', 'error');
+    }
+  })();
+
+  document.addEventListener('hanja:password-recovery', enterRecoveryMode);
+
+  resetForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const pw = document.getElementById('new-password').value;
+    const pw2 = document.getElementById('new-password2').value;
+    if (pw !== pw2) { showResetMsg('두 비밀번호가 서로 달라요. 다시 확인해 주세요.', 'error'); return; }
+    if (pw.length < 6) { showResetMsg('비밀번호는 6자 이상이어야 해요.', 'error'); return; }
+
+    const btn = resetForm.querySelector('.auth-submit');
+    btn.disabled = true;
+    showResetMsg('비밀번호를 바꾸는 중이에요...', 'info');
+    try {
+      await AUTH.updatePassword(pw);
+      showResetMsg('비밀번호를 바꿨어요! 🎉 잠시 후 학습 화면으로 이동할게요.', 'ok');
+      recoveryMode = false;
+      setTimeout(() => {
+        history.replaceState(null, '', location.pathname);
+        resetView.style.display = 'none';
+        renderDashboard();
+      }, 1600);
+    } catch (err) {
+      showResetMsg(translateError(err), 'error');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
   // ---------- 로그인 상태 반영 ----------
   document.addEventListener('hanja:auth-changed', (e) => {
+    if (recoveryMode) return;   // 새 비밀번호 입력 중에는 화면을 바꾸지 않음
     if (e.detail && e.detail.user) renderDashboard(e.detail.membership);
     else { authView.style.display = 'block'; dashView.style.display = 'none'; }
   });
