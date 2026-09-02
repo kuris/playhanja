@@ -157,6 +157,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const box = modal.querySelector('.modal-box');
     if (box) box.scrollTop = 0;
 
+    // 한자 상단 읽어주기 버튼
+    if (window.HanjaSpeech) {
+      window.HanjaSpeech.attachButton(mChar, () => `${h.char}, ${h.meaning} ${h.sound}`, 'g-speak-btn');
+    }
+
     mGrade.textContent = `${info.badge} ${info.name} (${info.title})`;
     mChar.textContent = h.char;
     mHunmum.textContent = `${h.meaning} ${h.sound}`;

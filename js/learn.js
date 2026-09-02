@@ -200,6 +200,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     modal.classList.add('open');
     const lvlInfo = LEVELS.find(l => l.id === hanzi.level);
+    // 한자 상단 읽어주기 버튼
+    if (window.HanjaSpeech) {
+      window.HanjaSpeech.attachButton(detailSound, () => `${hanzi.char}, ${hanzi.meaning} ${hanzi.sound}`, 'l-speak-btn');
+    }
+
     detailSound.textContent = `${hanzi.sound} · ${lvlInfo?.badge || ''} ${lvlInfo?.name || ''} (${hanzi.strokes}획)`;
     detailMeaning.textContent = `${hanzi.char}  —  ${hanzi.meaning}`;
 

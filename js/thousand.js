@@ -97,6 +97,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const modalBox = modal.querySelector('.modal-box');
     if (modalBox) modalBox.scrollTop = 0;
 
+    // 구절 상단 읽어주기 버튼
+    if (window.HanjaSpeech) {
+      window.HanjaSpeech.attachButton(modalVerse, () => `${item.reading}. ${item.meaning}`, 'v-speak-btn');
+    }
+
     modalNo.textContent = `천자문 제 ${item.no}구 (총 250구)`;
     modalVerse.textContent = item.verse;
     modalReading.textContent = item.reading;

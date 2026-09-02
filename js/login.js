@@ -104,6 +104,36 @@ document.addEventListener('DOMContentLoaded', function () {
     return '문제가 생겼어요: ' + (err.message || '알 수 없는 오류');
   }
 
+  // ---------- 구글 로그인 (Supabase에서 provider를 켜면 자동 노출) ----------
+  const oauthBox = document.getElementById('auth-oauth');
+  const googleBtn = document.getElementById('google-login-btn');
+
+  async function setupGoogleLogin() {
+    if (!oauthBox || !googleBtn || !window.SUPABASE_URL) return;
+    try {
+      const res = await fetch(window.SUPABASE_URL + '/auth/v1/settings', {
+        headers: { apikey: window.SUPABASE_PUBLISHABLE_KEY }
+      });
+      const settings = await res.json();
+      if (settings && settings.external && settings.external.google) {
+        oauthBox.style.display = 'block';
+      }
+    } catch (e) {
+      // 설정을 확인하지 못하면 버튼을 숨긴 채로 둡니다 (이메일 로그인은 정상 동작)
+    }
+  }
+
+  googleBtn && googleBtn.addEventListener('click', async () => {
+    try {
+      showMsg('구글 로그인 창으로 이동할게요...', 'info');
+      await AUTH.signInWithGoogle();
+    } catch (err) {
+      showMsg(translateError(err), 'error');
+    }
+  });
+
+  setupGoogleLogin();
+
   // ---------- 대시보드 ----------
   function countLearned(prefixTest) {
     return PROGRESS.getLearnedIds().filter(prefixTest).length;

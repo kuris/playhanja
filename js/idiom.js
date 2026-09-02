@@ -127,6 +127,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const box = modal.querySelector('.modal-box');
     if (box) box.scrollTop = 0;
 
+    // 성어 상단 읽어주기 버튼
+    if (window.HanjaSpeech) {
+      window.HanjaSpeech.attachButton(mIdiom, () => `${it.reading}. ${it.meaning}`, 'i-speak-btn');
+    }
+
     mLevel.textContent = `${lv.badge} ${lv.name} · ${it.tag}`;
     mIdiom.textContent = it.idiom;
     mReading.textContent = it.reading;
