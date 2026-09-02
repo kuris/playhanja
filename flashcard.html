@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>빠른 복습 카드 - 한자야 놀자!</title>
+<meta name="description" content="앙키처럼 카드를 슥슥 넘기며 한자와 고사성어를 빠르게 복습하세요. 모르는 카드는 다시, 아는 카드는 점점 길게 나옵니다.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@500;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-wrap">
+    <a href="index.html" class="logo">
+      <span class="logo-char">漢</span>
+      <span>한자야 놀자!</span>
+    </a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="메뉴 열기"><i class="fa-solid fa-bars"></i></button>
+    <nav class="main-nav" id="main-nav">
+      <ul>
+        <li><a href="index.html">홈</a></li>
+        <li><a href="planner.html">🗓️ 학습 플래너</a></li>
+        <li><a href="flashcard.html" class="active">⚡ 빠른 복습</a></li>
+        <li><a href="learn.html">한자 배우기</a></li>
+        <li><a href="grade.html">🏅 급수별 한자</a></li>
+        <li><a href="idiom.html">📖 고사성어</a></li>
+        <li><a href="thousand.html">📜 천자문 250구</a></li>
+        <li><a href="worksheet.html">📄 쓰기 연습장(A4)</a></li>
+        <li><a href="quiz.html">퀴즈로 복습</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main class="section" style="padding-top:26px;">
+  <div class="container">
+
+    <!-- ============ 덱 고르기 ============ -->
+    <div id="deck-view">
+      <div class="section-head" style="margin-bottom:20px;">
+        <span class="eyebrow">FLASHCARDS</span>
+        <h2>⚡ 빠른 복습 카드</h2>
+        <p>카드를 <strong>슥슥 넘기며</strong> 빠르게 복습해요. 모르는 카드는 오늘 다시, 아는 카드는 점점 뒤에 나와요.</p>
+      </div>
+
+      <div class="srs-summary" id="srs-summary"></div>
+
+      <h3 class="deck-title">복습할 카드 묶음을 고르세요</h3>
+      <div class="deck-grid" id="deck-grid"></div>
+
+      <div class="deck-options">
+        <label>한 번에 볼 카드 수
+          <select id="deck-limit" class="grade-print-select">
+            <option value="10">10장 (짧게)</option>
+            <option value="20" selected>20장</option>
+            <option value="40">40장</option>
+            <option value="0">전부</option>
+          </select>
+        </label>
+        <label class="deck-check">
+          <input type="checkbox" id="only-due"> 복습할 때가 된 카드만
+        </label>
+      </div>
+    </div>
+
+    <!-- ============ 카드 넘기기 ============ -->
+    <div id="card-view" style="display:none;">
+      <div class="card-topbar">
+        <button class="card-exit" id="card-exit" aria-label="나가기"><i class="fa-solid fa-xmark"></i></button>
+        <div class="card-progress-track"><div class="card-progress-fill" id="card-progress"></div></div>
+        <div class="card-counter" id="card-counter">1 / 20</div>
+      </div>
+
+      <div class="card-stage" id="card-stage">
+        <div class="flip-card" id="flip-card">
+          <div class="flip-inner">
+            <!-- 앞면: 한자 -->
+            <div class="flip-face flip-front">
+              <span class="fc-deck" id="fc-deck"></span>
+              <span class="fc-char" id="fc-front"></span>
+              <span class="fc-hint">눌러서 뜻 보기 👆</span>
+            </div>
+            <!-- 뒷면: 훈음 -->
+            <div class="flip-face flip-back">
+              <span class="fc-char small" id="fc-back-char"></span>
+              <span class="fc-answer" id="fc-back"></span>
+              <span class="fc-extra" id="fc-extra"></span>
+              <button class="speak-btn" id="fc-speak" type="button"><i class="fa-solid fa-volume-high"></i> 읽어주기</button>
+            </div>
+          </div>
+        </div>
+        <div class="swipe-hint left"><i class="fa-solid fa-rotate-left"></i> 다시</div>
+        <div class="swipe-hint right">알아요 <i class="fa-solid fa-check"></i></div>
+      </div>
+
+      <!-- 채점 버튼 -->
+      <div class="grade-bar" id="grade-bar">
+        <button class="grade-btn again" data-grade="0">
+          <span class="gb-label">모르겠어요</span><span class="gb-when" id="when-again">오늘 다시</span>
+        </button>
+        <button class="grade-btn hard" data-grade="1">
+          <span class="gb-label">알쏭달쏭</span><span class="gb-when" id="when-hard">내일</span>
+        </button>
+        <button class="grade-btn good" data-grade="2">
+          <span class="gb-label">알아요</span><span class="gb-when" id="when-good">3일 뒤</span>
+        </button>
+      </div>
+      <p class="card-keyhint">💡 스페이스바로 뒤집기 · ← 모르겠어요 · ↓ 알쏭달쏭 · → 알아요 · 모바일은 좌우로 슥 넘기기</p>
+    </div>
+
+    <!-- ============ 세션 결과 ============ -->
+    <div id="done-view" style="display:none;">
+      <div class="quiz-box" style="text-align:center;">
+        <div class="result-emoji" id="done-emoji">🎉</div>
+        <h3 id="done-title">복습 완료!</h3>
+        <p id="done-desc"></p>
+        <div class="done-stats" id="done-stats"></div>
+        <div class="hero-actions" style="justify-content:center; margin-top:20px;">
+          <button class="btn btn-primary" id="again-btn"><i class="fa-solid fa-rotate-right"></i> 한 번 더</button>
+          <button class="btn btn-outline" id="back-deck-btn"><i class="fa-solid fa-layer-group"></i> 다른 묶음 고르기</button>
+          <a href="planner.html" class="btn btn-secondary"><i class="fa-solid fa-calendar-check"></i> 오늘의 학습 보기</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/hanzi-data.js"></script>
+<script src="js/grade-data.js"></script>
+<script src="js/idiom-data.js"></script>
+<script src="js/wrong-notes.js"></script>
+<script src="js/srs.js"></script>
+<script src="js/speech.js"></script>
+<script src="js/progress.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/flashcard.js"></script>
+</body>
+</html>

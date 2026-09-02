@@ -29,9 +29,12 @@
 
   function markLearned(id) {
     const list = getLearnedIds();
-    if (!list.includes(id)) {
+    const isNew = !list.includes(id);
+    if (isNew) {
       list.push(id);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+      // 플래너 스트릭/달력을 위해 날짜별 학습 기록 남기기
+      if (window.HanjaSRS) window.HanjaSRS.addLog('new', 1);
     }
     syncToCloud(id, true);
   }

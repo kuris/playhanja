@@ -595,6 +595,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const total = quizQueue.length;
     const pct = Math.round((score / total) * 100);
+    if (window.HanjaSRS) window.HanjaSRS.addLog('quiz', total);
 
     let emoji = '🙂', title = '조금만 더 연습해요!';
     if (pct === 100) { emoji = '🏆'; title = '만점이에요! 최고예요!'; }

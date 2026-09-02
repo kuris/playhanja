@@ -72,3 +72,43 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 });
+
+
+/* ---------- 홈 화면 '오늘의 학습' 요약 (플래너와 연동) ---------- */
+document.addEventListener('DOMContentLoaded', function () {
+  const box = document.getElementById('home-today');
+  const section = document.getElementById('today-section');
+  if (!box || !window.HanjaSRS) return;
+
+  let goal = null;
+  try { goal = JSON.parse(localStorage.getItem('hanzi_study_goal') || 'null'); } catch (e) {}
+
+  const streak = window.HanjaSRS.streak();
+  const due = window.HanjaSRS.buildDeck('due', { shuffle: false }).length;
+  const wrong = window.HanjaWrongNotes ? window.HanjaWrongNotes.count() : 0;
+  const log = window.HanjaSRS.getTodayLog();
+  const studiedToday = (log.new || 0) + (log.review || 0) + (log.quiz || 0);
+
+  // 목표도 없고 학습 기록도 없으면 숨김 (처음 방문자에게는 안 보이게)
+  if (!goal && studiedToday === 0 && streak === 0 && due === 0 && wrong === 0) return;
+
+  section.style.display = 'block';
+
+  const info = goal && window.getGradeInfo ? window.getGradeInfo(goal.grade) : null;
+  box.innerHTML = `
+    <div class="ht-head">
+      <h3>🗓️ 오늘의 학습</h3>
+      ${streak > 0 ? `<span class="streak-badge">🔥 ${streak}일 연속</span>` : ''}
+    </div>
+    <div class="ht-row">
+      ${goal ? `<a class="ht-item" href="planner.html"><span class="hi-num">${info.badge}</span><span class="hi-label">${info.name} 목표</span></a>` : ''}
+      <a class="ht-item ${due > 0 ? 'urgent' : ''}" href="flashcard.html?deck=due"><span class="hi-num">${due}</span><span class="hi-label">복습할 카드</span></a>
+      <a class="ht-item ${wrong > 0 ? 'urgent' : ''}" href="quiz.html"><span class="hi-num">${wrong}</span><span class="hi-label">복습할 오답</span></a>
+      <a class="ht-item" href="planner.html"><span class="hi-num">${studiedToday}</span><span class="hi-label">오늘 공부한 개수</span></a>
+    </div>
+    <div class="ht-actions">
+      <a href="planner.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-calendar-check"></i> 오늘 할 일 보기</a>
+      <a href="flashcard.html" class="btn btn-secondary btn-sm"><i class="fa-solid fa-bolt"></i> 카드 슥슥 넘기기</a>
+    </div>
+  `;
+});

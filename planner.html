@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>학습 플래너 - 한자야 놀자!</title>
+<meta name="description" content="목표 급수와 하루 학습량만 정하면 오늘 공부할 한자와 복습 카드를 자동으로 정해줍니다. 체크하며 연속 학습 기록을 쌓아보세요.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@500;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-wrap">
+    <a href="index.html" class="logo">
+      <span class="logo-char">漢</span>
+      <span>한자야 놀자!</span>
+    </a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="메뉴 열기"><i class="fa-solid fa-bars"></i></button>
+    <nav class="main-nav" id="main-nav">
+      <ul>
+        <li><a href="index.html">홈</a></li>
+        <li><a href="planner.html" class="active">🗓️ 학습 플래너</a></li>
+        <li><a href="flashcard.html">⚡ 빠른 복습</a></li>
+        <li><a href="learn.html">한자 배우기</a></li>
+        <li><a href="grade.html">🏅 급수별 한자</a></li>
+        <li><a href="idiom.html">📖 고사성어</a></li>
+        <li><a href="thousand.html">📜 천자문 250구</a></li>
+        <li><a href="worksheet.html">📄 쓰기 연습장(A4)</a></li>
+        <li><a href="quiz.html">퀴즈로 복습</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main class="section" style="padding-top:26px;">
+  <div class="container">
+
+    <!-- 목표 설정 배너 -->
+    <div class="goal-bar" id="goal-bar"></div>
+
+    <!-- 오늘의 학습 -->
+    <div class="today-head">
+      <h2 id="today-title">오늘의 학습</h2>
+      <div class="streak-badge" id="streak-badge">🔥 0일</div>
+    </div>
+
+    <div class="today-card" id="today-card"></div>
+
+    <!-- 이번 주 달력 -->
+    <div class="planner-grid">
+      <div class="dash-card">
+        <h3><i class="fa-solid fa-calendar-check"></i> 학습 달력 (최근 5주)</h3>
+        <div class="cal-heatmap" id="cal-heatmap"></div>
+        <div class="cal-legend"><span>적음</span><i class="lv0"></i><i class="lv1"></i><i class="lv2"></i><i class="lv3"></i><span>많음</span></div>
+      </div>
+      <div class="dash-card">
+        <h3><i class="fa-solid fa-bullseye"></i> 목표까지</h3>
+        <div id="goal-progress"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- 목표 설정 모달 -->
+<div class="modal-overlay" id="goal-modal">
+  <div class="modal-box">
+    <button class="modal-close" id="goal-modal-close"><i class="fa-solid fa-xmark"></i></button>
+    <div class="section-head" style="margin-bottom:18px;">
+      <h2 style="font-size:1.4rem;">학습 목표 정하기</h2>
+      <p>목표만 정하면 <strong>오늘 뭘 공부할지 자동으로</strong> 정해드려요.</p>
+    </div>
+
+    <div class="goal-form">
+      <label>목표 급수
+        <select id="goal-grade" class="grade-print-select"></select>
+      </label>
+      <label>하루에 배울 새 한자
+        <select id="goal-daily" class="grade-print-select">
+          <option value="3">3자 (가볍게)</option>
+          <option value="5" selected>5자 (추천)</option>
+          <option value="10">10자 (열심히)</option>
+          <option value="15">15자 (도전)</option>
+        </select>
+      </label>
+      <label>고사성어도 함께 배울까요?
+        <select id="goal-idiom" class="grade-print-select">
+          <option value="0">한자만 공부할래요</option>
+          <option value="1" selected>하루 1개씩</option>
+          <option value="2">하루 2개씩</option>
+        </select>
+      </label>
+      <button class="btn btn-primary" id="goal-save" style="justify-content:center; margin-top:6px;">
+        <i class="fa-solid fa-check"></i> 이 목표로 시작하기
+      </button>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container foot-grid">
+    <div>
+      <h4>漢 한자야 놀자!</h4>
+      <p>매일 조금씩, 꾸준히!<br>목표 급수까지 함께 가요</p>
+    </div>
+    <div>
+      <h4>바로가기</h4>
+      <p><a href="flashcard.html">빠른 복습</a> · <a href="grade.html">급수별 한자</a> · <a href="quiz.html">퀴즈</a></p>
+    </div>
+    <div>
+      <h4>안내</h4>
+      <p>학습 기록은 기기에 저장되고, 로그인하면 계정에도 함께 저장돼요.</p>
+    </div>
+  </div>
+  <div class="container foot-bottom">© 2026 한자야 놀자! 어린이를 위한 한자 학습 사이트</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/hanzi-data.js"></script>
+<script src="js/grade-data.js"></script>
+<script src="js/idiom-data.js"></script>
+<script src="js/wrong-notes.js"></script>
+<script src="js/srs.js"></script>
+<script src="js/progress.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/planner.js"></script>
+</body>
+</html>
