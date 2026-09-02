@@ -1544,3 +1544,157 @@ img { max-width: 100%; display: block; }
   margin: 0 auto 6px;
 }
 .wrong-char.wrong-char-idiom { font-size: 1.15rem; min-width: 78px; letter-spacing: 1px; }
+
+/* ============================================================
+   기기별 UI 대응 (Device Tiers)
+   ① 소형폰 · 폴드 커버화면    :        ~ 400px
+   ② 일반 스마트폰             : 401px ~ 640px
+   ③ 폴드 펼침 · 태블릿        : 641px ~ 1024px
+   ④ PC · 노트북               : 1025px ~
+   ============================================================ */
+
+/* ---------- ①②③ 공통: 1024px 이하는 햄버거 드로어 내비 ---------- */
+@media (max-width: 1024px) {
+  .site-header .nav-wrap { position: relative; padding: 12px 16px; }
+  .nav-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    cursor: pointer;
+  }
+  .nav-toggle[aria-expanded="true"] { background: var(--color-primary); color: #fff; }
+  .main-nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--color-bg);
+    border-bottom: 3px solid var(--color-border);
+    box-shadow: 0 14px 24px rgba(60, 40, 20, .18);
+    max-height: calc(100vh - 100%);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: none;
+    z-index: 120;
+  }
+  .main-nav.open { display: block; animation: navSlideDown .18s ease-out; }
+  .main-nav ul { flex-direction: column; gap: 0; padding: 6px 12px 12px; }
+  .main-nav li + li { border-top: 1px solid rgba(160, 130, 100, .18); }
+  .main-nav a { display: block; width: 100%; padding: 14px; border-radius: 12px; font-size: 1.05rem; }
+  body.nav-open { overflow: hidden; }
+
+  /* 본문 레이아웃 */
+  .hero-grid { grid-template-columns: 1fr; }
+  .learn-layout { grid-template-columns: 1fr; }
+  .filter-panel { position: static; }
+  .modal-box.modal-wide { max-width: 94vw; }
+}
+
+/* ---------- ③ 폴드 펼침 · 태블릿 (641px ~ 1024px) ---------- */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .container { max-width: 100%; padding: 0 24px; }
+  .section { padding: 46px 0; }
+
+  .steps-grid { grid-template-columns: repeat(2, 1fr); }
+  .category-grid { grid-template-columns: repeat(3, 1fr); }
+  .hanzi-grid { grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); }
+  .thousand-grid { grid-template-columns: repeat(4, 1fr); }
+  .idiom-grid { grid-template-columns: repeat(3, 1fr); }
+  .grade-picker { grid-template-columns: repeat(5, 1fr); }
+  .grade-grid { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); }
+
+  /* 폴드를 펼치면 화면이 넓어지므로 쓰기 영역도 크게 */
+  .write-canvas-wrap { max-width: 360px; }
+  .quiz-options { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ---------- ② 일반 스마트폰 (401px ~ 640px) ---------- */
+@media (max-width: 640px) {
+  .section { padding: 34px 0; }
+  .container { padding: 0 16px; }
+
+  .steps-grid { grid-template-columns: 1fr; }
+  .category-grid { grid-template-columns: 1fr; }
+  .hanzi-grid { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); }
+  .thousand-grid { grid-template-columns: repeat(2, 1fr); }
+  .idiom-grid { grid-template-columns: 1fr; }
+  .quiz-options { grid-template-columns: 1fr; }
+
+  /* 터치 목표 크기 확보 */
+  .btn { min-height: 44px; }
+  .filter-chip { min-height: 40px; }
+  .v-char-tab { min-height: 56px; }
+
+  .thousand-toolbar { flex-direction: column; align-items: stretch; }
+  .thousand-toolbar > div { justify-content: center; }
+  .site-footer .foot-grid { flex-direction: column; }
+}
+
+/* ---------- ① 소형폰 · 폴드 커버화면 (~400px) ---------- */
+@media (max-width: 400px) {
+  .container { padding: 0 12px; }
+  .section { padding: 26px 0; }
+
+  .logo { font-size: 1.12rem; gap: 6px; }
+  .logo .logo-char { width: 36px; height: 36px; font-size: 1.4rem; }
+
+  .section-head h2 { font-size: 1.45rem; line-height: 1.35; }
+  .section-head p { font-size: .9rem; }
+  .hero h1 { font-size: 1.72rem; }
+  .hero .lead { font-size: .92rem; }
+
+  .hanzi-grid { grid-template-columns: repeat(2, 1fr); }
+  .grade-picker { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .grade-grid { grid-template-columns: repeat(3, 1fr); gap: 7px; }
+  .grade-char-card { padding: 10px 4px 8px; }
+  .grade-char-card .gc-char { font-size: 1.85rem; }
+  .grade-char-card .gc-hunmum { font-size: .72rem; }
+  .idiom-card { padding: 26px 10px 12px; }
+  .idiom-card .ic-idiom { font-size: 1.62rem; }
+  .thousand-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+
+  /* 모달·쓰기 영역을 좁은 화면에 맞춤 */
+  .modal-box { padding: 18px 12px; border-radius: 18px; }
+  .v-modal-big-verse { font-size: 2.1rem; letter-spacing: 2px; }
+  .write-canvas-wrap { max-width: 260px; }
+  .stroke-controls, .write-actions { flex-wrap: wrap; justify-content: center; }
+  .quiz-char { font-size: 3.4rem; }
+  .quiz-char.quiz-char-story { font-size: .92rem; padding: 12px; }
+}
+
+/* ---------- ④ PC · 노트북 (1025px ~) ---------- */
+@media (min-width: 1025px) {
+  .grade-picker { grid-template-columns: repeat(9, 1fr); }
+  .idiom-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+  .write-canvas-wrap { max-width: 420px; }
+  .modal-box.modal-wide { max-width: 860px; }
+}
+
+/* 가로 배치용 필터 행(고사성어·퀴즈)에서는 칩이 내용 폭만 차지 */
+.idiom-filter-row .filter-chip,
+#quiz-category-filter .filter-chip {
+  width: auto;
+  flex: 0 0 auto;
+  border: 2px solid var(--color-border);
+  background: #fff;
+  border-radius: 999px;
+  padding: 9px 16px;
+  margin-bottom: 0;
+}
+.idiom-filter-row .filter-chip.active,
+#quiz-category-filter .filter-chip.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+#quiz-category-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+.idiom-filter-row .filter-chip .chip-count,
+#quiz-category-filter .filter-chip .chip-count { opacity: .75; font-size: .84em; }

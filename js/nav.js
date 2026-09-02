@@ -17,7 +17,7 @@
     navToggle.setAttribute('aria-controls', 'main-nav');
 
     function isMobile() {
-      return window.matchMedia('(max-width: 640px)').matches;
+      return window.matchMedia('(max-width: 1024px)').matches;
     }
 
     function openNav() {

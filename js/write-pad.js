@@ -398,7 +398,10 @@
 
     resize() {
       if (!this.wrap) return;
-      const size = Math.min(this.wrap.clientWidth || 280, 280);
+      // 기기 화면 폭에 따라 쓰기 캔버스 최대 크기를 다르게 (폴드 펼침·PC에서 더 크게)
+      const vw = window.innerWidth || 400;
+      const maxSize = vw <= 400 ? 260 : (vw <= 640 ? 300 : (vw <= 1024 ? 360 : 420));
+      const size = Math.min(this.wrap.clientWidth || maxSize, maxSize);
       const dpr = window.devicePixelRatio || 1;
 
       this.bgCanvas.width = size * dpr;
