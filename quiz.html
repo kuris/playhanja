@@ -46,6 +46,7 @@
       <button class="quiz-mode-tab active" data-mode="category"><i class="fa-solid fa-shapes"></i> 주제별 뜻 맞히기</button>
       <button class="quiz-mode-tab" data-mode="grade"><i class="fa-solid fa-medal"></i> 급수별 모의시험 (1~9급)</button>
       <button class="quiz-mode-tab" data-mode="idiom"><i class="fa-solid fa-book-open"></i> 고사성어 문제은행</button>
+      <button class="quiz-mode-tab" data-mode="review"><i class="fa-solid fa-rotate-left"></i> 오답 복습 <span class="tab-badge" id="review-badge"></span></button>
     </div>
 
     <div id="quiz-setup" class="quiz-box">
@@ -110,6 +111,20 @@
         </div>
       </div>
 
+      <!-- 오답 복습 -->
+      <div id="setup-review" style="display:none;">
+        <h3 style="margin-top:0;">📒 내 오답 노트</h3>
+        <p style="color:var(--color-text-soft); font-size:.92rem; margin-top:6px;">틀린 문제가 자동으로 모여요. <strong>다시 풀어서 맞히면 하나씩 졸업</strong>하고, 또 틀리면 횟수가 올라가요.</p>
+        <div class="filter-group" style="text-align:center; margin-top:14px;">
+          <div id="review-kind-filter" class="idiom-filter-row"></div>
+        </div>
+        <div class="review-list" id="review-list"></div>
+        <div class="review-actions">
+          <button type="button" class="btn btn-secondary btn-sm" id="print-notes-btn"><i class="fa-solid fa-print"></i> 오답 A4 연습장 인쇄</button>
+          <button type="button" class="btn btn-outline btn-sm" id="clear-notes-btn"><i class="fa-solid fa-trash"></i> 오답 노트 비우기</button>
+        </div>
+      </div>
+
       <button class="btn btn-primary" id="start-quiz-btn" style="margin-top:10px;"><i class="fa-solid fa-play"></i> 퀴즈 시작!</button>
       <p style="margin-top:14px; color:var(--color-text-soft); font-size:.9rem;" id="quiz-range-info"></p>
     </div>
@@ -164,6 +179,7 @@
 <script src="js/hanzi-data.js"></script>
 <script src="js/grade-data.js"></script>
 <script src="js/idiom-data.js"></script>
+<script src="js/wrong-notes.js"></script>
 <script src="js/progress.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/quiz.js"></script>

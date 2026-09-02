@@ -115,6 +115,13 @@
       }
 
       setLocalIds(merged);
+
+      // 서버에 저장된 시험 기록의 오답을 오답 노트로 합치기
+      if (window.HanjaWrongNotes) {
+        const results = await fetchQuizResults(30);
+        window.HanjaWrongNotes.mergeFromResults(results);
+      }
+
       document.dispatchEvent(new CustomEvent('hanja:progress-synced', { detail: { count: merged.length } }));
     } catch (e) {
       console.warn('[한자야 놀자] 진도 동기화 실패:', e.message || e);

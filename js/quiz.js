@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const GRADE_HANJA = window.GRADE_HANJA || [];
   const IDIOMS = window.IDIOMS || [];
   const IDIOM_LEVELS = window.IDIOM_LEVELS || [];
+  const NOTES = window.HanjaWrongNotes;
   const PROGRESS = window.HanziProgress;
 
   const BEST_KEY = 'hanzi_grade_best_scores';
@@ -22,6 +23,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const setupCategory = document.getElementById('setup-category');
   const setupGrade = document.getElementById('setup-grade');
   const setupIdiom = document.getElementById('setup-idiom');
+  const setupReview = document.getElementById('setup-review');
+  const reviewListBox = document.getElementById('review-list');
+  const reviewKindFilter = document.getElementById('review-kind-filter');
   const idiomFilterBox = document.getElementById('idiom-level-filter-quiz');
   const idiomCount = document.getElementById('idiom-count');
   const idiomQtype = document.getElementById('idiom-qtype');
@@ -47,8 +51,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const resultLearnLink = document.getElementById('result-learn-link');
   const resultPrintLink = document.getElementById('result-print-link');
 
-  let mode = 'category';        // 'category' | 'grade' | 'idiom'
+  let mode = 'category';        // 'category' | 'grade' | 'idiom' | 'review'
   let idiomLevel = 'all';
+  let reviewKind = 'all';
   let selectedCat = 'all';
   let selectedGrade = 9;
   let quizPool = [];
@@ -93,9 +98,13 @@ document.addEventListener('DOMContentLoaded', function () {
       setupCategory.style.display = mode === 'category' ? 'block' : 'none';
       setupGrade.style.display = mode === 'grade' ? 'block' : 'none';
       if (setupIdiom) setupIdiom.style.display = mode === 'idiom' ? 'block' : 'none';
+      if (setupReview) setupReview.style.display = mode === 'review' ? 'block' : 'none';
       if (mode === 'grade') startBtn.innerHTML = '<i class="fa-solid fa-file-pen"></i> 급수 시험 시작!';
       else if (mode === 'idiom') startBtn.innerHTML = '<i class="fa-solid fa-book-open"></i> 성어 문제 풀기!';
+      else if (mode === 'review') startBtn.innerHTML = '<i class="fa-solid fa-rotate-left"></i> 오답만 다시 풀기!';
       else startBtn.innerHTML = '<i class="fa-solid fa-play"></i> 퀴즈 시작!';
+      startBtn.disabled = false;
+      if (mode === 'review') renderReviewList();
       updateRangeInfo();
     });
   });
@@ -162,8 +171,92 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // ---------- 오답 복습 ----------
+  function resolveWrongItem(w) {
+    if (!w) return null;
+    if (w.kind === 'idiom') return IDIOMS.find(i => i.id === w.id);
+    if (w.kind === 'grade') return GRADE_HANJA.find(h => h.id === w.id);
+    return DATA.find(h => h.id === w.id);
+  }
+
+  const KIND_LABEL = { hanja: '생활 한자', grade: '급수 한자', idiom: '고사성어' };
+
+  function renderReviewList() {
+    if (!reviewListBox || !NOTES) return;
+
+    // 종류 필터 칩
+    if (reviewKindFilter) {
+      const all = NOTES.list();
+      const kinds = [['all', '전체', '🗂️'], ['grade', '급수 한자', '🏅'], ['idiom', '고사성어', '📖'], ['hanja', '생활 한자', '📚']];
+      reviewKindFilter.innerHTML = kinds.map(k => {
+        const n = k[0] === 'all' ? all.length : all.filter(w => w.kind === k[0]).length;
+        return `<button class="filter-chip ${reviewKind === k[0] ? 'active' : ''}" data-kind="${k[0]}"><span class="chip-icon">${k[2]}</span> ${k[1]} <span class="chip-count">(${n})</span></button>`;
+      }).join('');
+      reviewKindFilter.querySelectorAll('.filter-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          reviewKind = btn.dataset.kind;
+          renderReviewList();
+          updateRangeInfo();
+        });
+      });
+    }
+
+    const list = NOTES.listByKind(reviewKind);
+    if (list.length === 0) {
+      reviewListBox.innerHTML = `<p class="dash-empty" style="text-align:center;">아직 틀린 문제가 없어요! 퀴즈를 풀고 나면 틀린 문제가 여기에 모여요. 🎉</p>`;
+      // 오답 복습 모드일 때만 시작 버튼을 잠근다 (다른 모드까지 잠기면 안 됨)
+      if (mode === 'review') startBtn.disabled = true;
+      return;
+    }
+    startBtn.disabled = false;
+
+    reviewListBox.innerHTML = list.map(w => `
+      <div class="review-item" data-id="${w.id}">
+        <span class="rv-char ${w.char && w.char.length > 1 ? 'rv-char-long' : ''}">${w.char || '?'}</span>
+        <span class="rv-info">
+          <strong>${w.answer || ''}</strong>
+          <small>${KIND_LABEL[w.kind] || ''} · ${w.type || ''}</small>
+        </span>
+        <span class="rv-count" title="틀린 횟수">${w.count}번 틀림</span>
+        <button class="rv-del" data-del="${w.id}" title="이 문제 지우기"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    `).join('');
+
+    reviewListBox.querySelectorAll('.rv-del').forEach(btn => {
+      btn.addEventListener('click', () => {
+        NOTES.remove(btn.dataset.del);
+        renderReviewList();
+        updateRangeInfo();
+      });
+    });
+  }
+
+  const clearNotesBtn = document.getElementById('clear-notes-btn');
+  if (clearNotesBtn) {
+    clearNotesBtn.addEventListener('click', () => {
+      if (confirm('오답 노트를 모두 지울까요? 되돌릴 수 없어요.')) {
+        NOTES.clear();
+        renderReviewList();
+        updateRangeInfo();
+      }
+    });
+  }
+
+  const printNotesBtn = document.getElementById('print-notes-btn');
+  if (printNotesBtn) {
+    printNotesBtn.addEventListener('click', () => {
+      window.open('worksheet.html?type=wrong&kind=' + reviewKind, '_blank');
+    });
+  }
+
   // ---------- 출제 범위 안내 ----------
   function getPool() {
+    if (mode === 'review') {
+      return NOTES.listByKind(reviewKind).map(w => {
+        const item = resolveWrongItem(w);
+        return item ? { note: w, item: item } : null;
+      }).filter(Boolean);
+    }
     if (mode === 'idiom') {
       return idiomLevel === 'all' ? IDIOMS.slice() : IDIOMS.filter(i => i.level === Number(idiomLevel));
     }
@@ -175,6 +268,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function updateRangeInfo() {
     const pool = getPool();
+    if (mode === 'review') {
+      rangeInfo.textContent = pool.length
+        ? `복습할 오답 ${pool.length}개 · 맞히면 오답 노트에서 하나씩 졸업해요!`
+        : '오답 노트가 비어 있어요.';
+      return;
+    }
     if (mode === 'idiom') {
       const learned = pool.filter(i => PROGRESS.isLearned(i.id)).length;
       rangeInfo.textContent = `출제 범위 ${pool.length}개 성어 · 학습 완료 ${learned}개 · 유래 일화는 고사성어 페이지에서 읽을 수 있어요.`;
@@ -201,11 +300,33 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    if (mode === 'idiom') {
+    if (mode === 'review') {
+      quizQueue = shuffle(quizPool).slice(0, 20).map(entry => ({
+        item: entry.item,
+        kind: entry.note.kind,
+        noteId: entry.note.id,
+        type: entry.note.kind === 'idiom' ? pickIdiomType() : pickType()
+      }));
+    } else if (mode === 'review') {
+      const left = NOTES ? NOTES.count() : 0;
+      passBadge.innerHTML = `
+        <div class="pass-badge ${left === 0 ? 'pass' : 'fail'}">
+          ${left === 0 ? '🎉 오답 노트를 모두 졸업했어요!' : `📒 남은 오답 ${left}개`}
+          <small>맞힌 문제는 오답 노트에서 하나씩 사라져요</small>
+        </div>
+      `;
+      resultLearnLink.href = 'quiz.html';
+      resultLearnLink.innerHTML = '<i class="fa-solid fa-list-check"></i> 오답 노트 다시 보기';
+      resultPrintLink.style.display = 'inline-flex';
+      resultPrintLink.href = 'worksheet.html?type=wrong&kind=all';
+      resultPrintLink.innerHTML = '<i class="fa-solid fa-print"></i> 오답 A4 연습장 인쇄';
+    } else if (mode === 'idiom') {
       const count = Math.min(Number(idiomCount.value) || 10, quizPool.length);
       const qt = idiomQtype.value;
       quizQueue = shuffle(quizPool).slice(0, count).map(it => ({
         item: it,
+        kind: 'idiom',
+        noteId: it.id,
         type: qt === 'mix' ? pickIdiomType() : qt
       }));
     } else if (mode === 'grade') {
@@ -213,6 +334,8 @@ document.addEventListener('DOMContentLoaded', function () {
       const qtype = qtypeSelect.value;
       quizQueue = shuffle(quizPool).slice(0, count).map(h => ({
         item: h,
+        kind: 'grade',
+        noteId: h.id,
         type: qtype === 'mix' ? pickType() : qtype
       }));
     } else {
@@ -220,7 +343,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const learned = quizPool.filter(h => PROGRESS.isLearned(h.id));
       const notLearned = quizPool.filter(h => !PROGRESS.isLearned(h.id));
       const ordered = shuffle(learned).concat(shuffle(notLearned));
-      quizQueue = ordered.slice(0, Math.min(10, ordered.length)).map(h => ({ item: h, type: 'meaning' }));
+      quizQueue = ordered.slice(0, Math.min(10, ordered.length)).map(h => ({ item: h, kind: 'hanja', noteId: h.id, type: 'meaning' }));
     }
 
     qIndex = 0;
@@ -271,7 +394,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const q = quizQueue[qIndex];
     quizProgress.textContent = `${qIndex + 1} / ${quizQueue.length} 문제`;
 
-    if (mode === 'idiom') {
+    if (q.kind === 'idiom') {
       showIdiomQuestion(q);
       return;
     }
@@ -283,6 +406,9 @@ document.addEventListener('DOMContentLoaded', function () {
       const info = window.getGradeInfo(selectedGrade);
       quizTypeBadge.style.display = 'inline-block';
       quizTypeBadge.textContent = `${info.badge} ${info.name} · ${TYPE_INFO[type].badge}`;
+    } else if (mode === 'review') {
+      quizTypeBadge.style.display = 'inline-block';
+      quizTypeBadge.textContent = `🔁 오답 복습 · ${TYPE_INFO[type].badge}`;
     } else {
       quizTypeBadge.style.display = 'none';
     }
@@ -301,7 +427,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const correctLabel = optionLabel(h, type);
     const seen = { [correctLabel]: true };
     const wrongs = [];
-    for (const cand of shuffle(quizPool)) {
+    for (const cand of shuffle(optionPool(q.kind))) {
       if (wrongs.length >= 3) break;
       if (cand.char === h.char) continue;
       const lbl = optionLabel(cand, type);
@@ -316,23 +442,37 @@ document.addEventListener('DOMContentLoaded', function () {
     ).join('');
 
     quizOptions.querySelectorAll('.quiz-option').forEach(btn => {
-      btn.addEventListener('click', () => handleAnswer(btn, h, type));
+      btn.addEventListener('click', () => handleAnswer(btn, h, type, q));
     });
   }
 
-  function handleAnswer(btn, h, type) {
+  // 보기(오답 선택지)를 뽑아올 후보 풀 - 오답 복습은 종류별 전체에서 뽑음
+  function optionPool(kind) {
+    if (mode !== 'review') return quizPool;
+    if (kind === 'grade') return GRADE_HANJA;
+    if (kind === 'idiom') return IDIOMS;
+    return DATA;
+  }
+
+  function handleAnswer(btn, h, type, q) {
     if (locked) return;
     locked = true;
+    const kind = (q && q.kind) || (mode === 'grade' ? 'grade' : 'hanja');
     const isCorrect = btn.dataset.correct === '1';
     if (isCorrect) {
       score++;
+      if (NOTES) NOTES.markCorrect(h.id);   // 맞히면 오답 노트에서 한 단계 졸업
     } else {
-      wrongAnswers.push({
+      const entry = {
+        id: h.id,
+        kind: kind,
         char: h.char,
         answer: `${h.meaning} ${h.sound}`,
         picked: btn.textContent,
         type: TYPE_INFO[type].badge
-      });
+      };
+      wrongAnswers.push(entry);
+      if (NOTES) NOTES.addWrong(entry);
     }
 
     quizOptions.querySelectorAll('.quiz-option').forEach(b => {
@@ -355,7 +495,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const lv = window.getIdiomLevelInfo(it.level);
 
     quizTypeBadge.style.display = 'inline-block';
-    quizTypeBadge.textContent = `${lv.badge} ${lv.name} · ${info.badge}`;
+    quizTypeBadge.textContent = (mode === 'review' ? '🔁 오답 복습 · ' : `${lv.badge} ${lv.name} · `) + info.badge;
     quizQuestion.textContent = info.question;
 
     let blankIndex = -1;
@@ -380,7 +520,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const answerChar = it.idiom[blankIndex];
       const seen = { [answerChar]: true };
       const wrongs = [];
-      for (const cand of shuffle(quizPool)) {
+      for (const cand of shuffle(optionPool('idiom'))) {
         if (wrongs.length >= 3) break;
         const ch = cand.idiom[Math.floor(Math.random() * 4)];
         if (seen[ch]) continue;
@@ -391,12 +531,12 @@ document.addEventListener('DOMContentLoaded', function () {
       labelOf = (o) => o;
       isCorrectOf = (o) => o === answerChar;
     } else if (type === 'reverse') {
-      const wrongs = shuffle(quizPool).filter(x => x.id !== it.id).slice(0, 3);
+      const wrongs = shuffle(optionPool('idiom')).filter(x => x.id !== it.id).slice(0, 3);
       options = shuffle([it].concat(wrongs));
       labelOf = (o) => o.meaning;
       isCorrectOf = (o) => o.id === it.id;
     } else {
-      const wrongs = shuffle(quizPool).filter(x => x.id !== it.id).slice(0, 3);
+      const wrongs = shuffle(optionPool('idiom')).filter(x => x.id !== it.id).slice(0, 3);
       options = shuffle([it].concat(wrongs));
       labelOf = (o) => `${o.idiom} (${o.reading})`;
       isCorrectOf = (o) => o.id === it.id;
@@ -422,13 +562,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const isCorrect = btn.dataset.correct === '1';
     if (isCorrect) {
       score++;
+      if (NOTES) NOTES.markCorrect(it.id);
     } else {
-      wrongAnswers.push({
+      const entry = {
+        id: it.id,
+        kind: 'idiom',
         char: it.idiom,
         answer: answerText,
         picked: btn.textContent,
         type: typeBadge
-      });
+      };
+      wrongAnswers.push(entry);
+      if (NOTES) NOTES.addWrong(entry);
     }
 
     quizOptions.querySelectorAll('.quiz-option').forEach(b => {
@@ -475,6 +620,19 @@ document.addEventListener('DOMContentLoaded', function () {
       resultLearnLink.innerHTML = `<i class="fa-solid fa-book-open"></i> ${info.name} 한자 배우러 가기`;
       resultPrintLink.style.display = 'inline-flex';
       resultPrintLink.href = `worksheet.html?type=grade&grade=${selectedGrade}&limit=20`;
+    } else if (mode === 'review') {
+      const left = NOTES ? NOTES.count() : 0;
+      passBadge.innerHTML = `
+        <div class="pass-badge ${left === 0 ? 'pass' : 'fail'}">
+          ${left === 0 ? '🎉 오답 노트를 모두 졸업했어요!' : `📒 남은 오답 ${left}개`}
+          <small>맞힌 문제는 오답 노트에서 하나씩 사라져요</small>
+        </div>
+      `;
+      resultLearnLink.href = 'quiz.html';
+      resultLearnLink.innerHTML = '<i class="fa-solid fa-list-check"></i> 오답 노트 다시 보기';
+      resultPrintLink.style.display = 'inline-flex';
+      resultPrintLink.href = 'worksheet.html?type=wrong&kind=all';
+      resultPrintLink.innerHTML = '<i class="fa-solid fa-print"></i> 오답 A4 연습장 인쇄';
     } else if (mode === 'idiom') {
       passBadge.innerHTML = '';
       resultLearnLink.href = 'idiom.html';
@@ -506,6 +664,12 @@ document.addEventListener('DOMContentLoaded', function () {
     // 오답 노트
     if (wrongAnswers.length > 0) {
       wrongNote.style.display = 'block';
+      const oldNotice = wrongNote.querySelector('.wrong-saved');
+      if (oldNotice) oldNotice.remove();
+      if (NOTES) {
+        wrongNote.querySelector('h4').insertAdjacentHTML('afterend',
+          `<p class="wrong-saved">✅ 틀린 ${wrongAnswers.length}문제를 <strong>오답 노트</strong>에 저장했어요. 위쪽 <strong>오답 복습</strong> 탭에서 다시 풀 수 있어요!</p>`);
+      }
       wrongList.innerHTML = wrongAnswers.map(w => `
         <div class="wrong-item">
           <span class="wrong-char ${w.char.length > 1 ? 'wrong-char-idiom' : ''}">${w.char}</span>
@@ -531,5 +695,19 @@ document.addEventListener('DOMContentLoaded', function () {
   renderCatFilter();
   renderGradePicker();
   renderIdiomFilter();
+  renderReviewList();
   updateRangeInfo();
+  updateReviewBadge();
+
+  function updateReviewBadge() {
+    const badge = document.getElementById('review-badge');
+    if (!badge || !NOTES) return;
+    const n = NOTES.count();
+    badge.textContent = n > 0 ? n : '';
+    badge.style.display = n > 0 ? 'inline-flex' : 'none';
+  }
+  document.addEventListener('hanja:wrong-changed', () => {
+    updateReviewBadge();
+    if (mode === 'review') renderReviewList();
+  });
 });

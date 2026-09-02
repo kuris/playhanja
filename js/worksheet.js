@@ -6,6 +6,7 @@
      1) 천자문 모드 : ?type=verse&no=1  /  ?type=verse_range&from=1&to=5
      2) 급수 모드   : ?type=grade&grade=7&limit=40  /  ?type=grade&grade=7&from=5&limit=4
      3) 성어 모드   : ?type=idiom&no=1  /  ?type=idiom&level=all&limit=10
+     4) 오답 모드   : ?type=wrong&kind=all  (오답 노트에 쌓인 글자만 인쇄)
    ============================================================ */
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -114,7 +115,10 @@ document.addEventListener('DOMContentLoaded', function () {
   if (idiomRange) idiomRange.addEventListener('change', renderIdiomSheets);
 
   // ---------- 초기 렌더링 ----------
-  if (type === 'grade') {
+  if (type === 'wrong') {
+    applyMode('verse');
+    renderWrongSheets();
+  } else if (type === 'grade') {
     applyMode('grade');
     renderGradeSheets(true);
   } else if (type === 'idiom') {
@@ -322,6 +326,95 @@ document.addEventListener('DOMContentLoaded', function () {
         footerRight: `${idx + 1} / ${targets.length}장`
       });
     }).join('');
+  }
+
+  /* ============================================================
+     4) 오답 노트 모드
+     ============================================================ */
+  function renderWrongSheets() {
+    const NOTES = window.HanjaWrongNotes;
+    const kind = urlParams.get('kind') || 'all';
+    const notes = NOTES ? NOTES.listByKind(kind) : [];
+
+    // 성어 오답은 4글자 성어 1장씩, 한자 오답은 4글자씩 묶어 1장
+    const idiomNotes = notes.filter(n => n.kind === 'idiom');
+    const charNotes = notes.filter(n => n.kind !== 'idiom');
+
+    if (notes.length === 0) {
+      mount.innerHTML = `<div style="color:#fff; padding:60px 20px; text-align:center; font-size:1.05rem;">
+        📒 오답 노트가 비어 있어요.<br><br>퀴즈를 풀고 틀린 문제가 생기면 여기에서 연습장을 인쇄할 수 있어요.
+      </div>`;
+      return;
+    }
+
+    const pages = [];
+
+    // (1) 한자 오답 4글자씩
+    for (let i = 0; i < charNotes.length; i += CHARS_PER_PAGE) {
+      const chunk = charNotes.slice(i, i + CHARS_PER_PAGE);
+      const rows = chunk.map(n => {
+        const g = (window.GRADE_HANJA || []).find(h => h.id === n.id);
+        const dbInfo = HANZI_DATA.find(d => d.char === n.char);
+        const meaning = g ? g.meaning : (dbInfo ? dbInfo.meaning.split(',')[0] : '');
+        const sound = g ? g.sound : (dbInfo ? dbInfo.sound : '');
+        return {
+          char: n.char,
+          sound: sound,
+          meaning: meaning,
+          strokes: dbInfo ? `${dbInfo.strokes}획` : '',
+          words: dbInfo && dbInfo.words && dbInfo.words.length
+            ? buildWordsHtml(dbInfo, null)
+            : buildHunmumPracticeHtml({ meaning: meaning, sound: sound })
+        };
+      });
+      pages.push(generatePageHTML({
+        title: '오답 복습 쓰기 연습장',
+        titleSmall: '(틀린 한자 집중 연습)',
+        bannerLeft: chunk.map(n => n.char).join(' '),
+        bannerRight: `내가 틀린 한자 ${chunk.length}자 · 여러 번 쓰면서 확실하게 익혀요!`,
+        rows: rows,
+        quizItems: chunk.map(n => ({ label: `${n.answer || ''}:` })),
+        quizTitle: '✍️ 【 오답 다시쓰기 】 훈과 음을 보고 알맞은 한자를 적어보세요:',
+        quizHint: '틀린 횟수: ' + chunk.map(n => `${n.char}(${n.count}번)`).join(', '),
+        footerMiddle: '오답 복습 워크시트 · A4 규격',
+        footerRight: ''
+      }));
+    }
+
+    // (2) 성어 오답 1개당 1장
+    idiomNotes.forEach(n => {
+      const it = (window.IDIOMS || []).find(i => i.id === n.id);
+      if (!it) return;
+      const rows = it.chars.map(c => {
+        const dbInfo = HANZI_DATA.find(d => d.char === c.char);
+        return {
+          char: c.char,
+          sound: c.sound,
+          meaning: c.meaning,
+          strokes: dbInfo ? `${dbInfo.strokes}획` : '',
+          words: dbInfo && dbInfo.words && dbInfo.words.length
+            ? buildWordsHtml(dbInfo, null)
+            : buildHunmumPracticeHtml(c)
+        };
+      });
+      pages.push(generatePageHTML({
+        title: '오답 복습 쓰기 연습장',
+        titleSmall: '(틀린 고사성어)',
+        bannerLeft: `【 ${it.idiom} 】 (${it.reading})`,
+        bannerRight: it.meaning,
+        rows: rows,
+        quizItems: it.chars.map(c => ({ label: `${c.meaning} ${c.sound}:` })),
+        quizTitle: '✍️ 【 성어 통쓰기 】 네 글자를 순서대로 적어보세요:',
+        quizHint: `${it.reading} · ${n.count}번 틀림`,
+        storyNote: `📖 ${it.story}<br><strong>💡 ${it.lesson}</strong>`,
+        footerMiddle: '오답 복습 워크시트 · A4 규격',
+        footerRight: ''
+      }));
+    });
+
+    mount.innerHTML = pages.map((html, i) =>
+      html.replace('<span></span>\n        </div>\n      </div>', `<span>${i + 1} / ${pages.length}장</span>\n        </div>\n      </div>`)
+    ).join('');
   }
 
   /* ============================================================

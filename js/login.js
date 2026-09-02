@@ -122,16 +122,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const gradeDone = ids.filter(i => /^g\d/.test(i)).length;
     const idiomDone = ids.filter(i => i.startsWith('idiom_')).length;
 
+    const wrongCount = window.HanjaWrongNotes ? window.HanjaWrongNotes.count() : 0;
     document.getElementById('dash-stats').innerHTML = [
       { icon: '📚', label: '생활 한자', done: hanziDone, total: hanziTotal, href: 'learn.html' },
       { icon: '🏅', label: '급수 한자', done: gradeDone, total: gradeTotal, href: 'grade.html' },
-      { icon: '📖', label: '고사성어', done: idiomDone, total: idiomTotal, href: 'idiom.html' }
+      { icon: '📖', label: '고사성어', done: idiomDone, total: idiomTotal, href: 'idiom.html' },
+      { icon: '📒', label: '복습할 오답', done: wrongCount, total: null, href: 'quiz.html' }
     ].map(s => `
       <a class="dash-stat" href="${s.href}">
         <span class="ds-icon">${s.icon}</span>
-        <span class="ds-num">${s.done}<small>/${s.total}</small></span>
+        <span class="ds-num">${s.done}${s.total ? `<small>/${s.total}</small>` : '<small>개</small>'}</span>
         <span class="ds-label">${s.label}</span>
-        <span class="ds-bar"><span style="width:${s.total ? Math.round(s.done / s.total * 100) : 0}%"></span></span>
+        <span class="ds-bar"><span style="width:${s.total ? Math.round(s.done / s.total * 100) : (s.done ? 100 : 0)}%"></span></span>
       </a>
     `).join('');
 
