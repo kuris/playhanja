@@ -1272,3 +1272,31 @@ img { max-width: 100%; display: block; }
   .grade-char-card .gc-hunmum { font-size: .78rem; }
   .grade-print-select { width: 100%; }
 }
+
+/* 획순 데이터가 없는 한자 안내 (글꼴 가이드 대체) */
+.stroke-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 100%;
+  padding: 10px;
+  text-align: center;
+}
+.stroke-fallback-char {
+  font-family: var(--font-hanzi);
+  font-size: 5.5rem;
+  line-height: 1;
+  color: #cbbba4;
+}
+.stroke-fallback-msg {
+  font-size: .85rem;
+  color: var(--color-text-soft);
+  font-weight: 700;
+  line-height: 1.5;
+}
+.stroke-controls.is-disabled {
+  opacity: .4;
+  pointer-events: none;
+}

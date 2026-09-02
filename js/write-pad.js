@@ -6,6 +6,23 @@
    ============================================================ */
 
 (function () {
+  /* ------------------------------------------------------------
+     획순 데이터(hanzi-writer-data) 이체자 매핑 테이블
+     한국에서 쓰는 전통 자형(예: 敎 U+654E)은 획순 데이터가 없어서
+     동일 글자의 표준 자형(예: 教 U+6559)으로 바꿔 획순을 재생합니다.
+     ------------------------------------------------------------ */
+  const STROKE_VARIANT_MAP = {
+    '姉': '姊', '敎': '教', '爲': '為', '愼': '慎', '顚': '顛',
+    '眞': '真', '旣': '既', '隷': '隸', '覇': '霸', '幷': '并',
+    '玆': '茲', '勅': '敕', '皐': '皋', '卽': '即', '晩': '晚',
+    '擧': '舉', '竝': '並', '姸': '妍', '窓': '窗', '淸': '清',
+    '氷': '冰', '査': '查', '硏': '研', '絶': '絕', '鄕': '鄉',
+    '郞': '郎', '裵': '裴', '兪': '俞', '楡': '榆'
+  };
+
+  // 획순 데이터가 아예 없는 한자 (국자·희귀 이체자) - 글꼴 가이드로 대체 안내
+  const NO_STROKE_DATA = ['岾', '旻', '昞', '燁', '祐', '凊', '俶', '寔', '磻', '輶', '飡'];
+
   class HanziWritePad {
     constructor(container, options = {}) {
       this.container = typeof container === 'string' ? document.querySelector(container) : container;
@@ -217,9 +234,20 @@
       this.writerTarget.innerHTML = '';
       const size = this.size || 280;
 
+      // 획순 데이터가 있는 표준 자형으로 변환 (없으면 원래 글자 그대로)
+      const strokeChar = STROKE_VARIANT_MAP[this.currentChar] || this.currentChar;
+      this.strokeChar = strokeChar;
+      this.hideStrokeNotice();
+
+      if (NO_STROKE_DATA.indexOf(this.currentChar) !== -1) {
+        this.writer = null;
+        this.showStrokeNotice();
+        return;
+      }
+
       if (window.HanziWriter) {
         try {
-          this.writer = window.HanziWriter.create(this.writerTarget, this.currentChar, {
+          this.writer = window.HanziWriter.create(this.writerTarget, strokeChar, {
             width: size,
             height: size,
             padding: 16,
@@ -245,6 +273,7 @@
             onLoadCharDataError: (err) => {
               console.warn('HanziWriter fallback for character:', this.currentChar, err);
               this.writer = null;
+              this.showStrokeNotice();
             }
           });
         } catch (e) {
@@ -388,6 +417,22 @@
       this.size = size;
       this.initHanziWriter();
       this.renderBackground();
+    }
+
+    // 획순 데이터가 없을 때: 글꼴 가이드 글자와 안내 문구 표시
+    showStrokeNotice() {
+      if (!this.writerTarget) return;
+      this.writerTarget.innerHTML = `
+        <div class="stroke-fallback">
+          <div class="stroke-fallback-char">${this.currentChar}</div>
+          <p class="stroke-fallback-msg">이 글자는 표준 획순 데이터가 없어요.<br>글자 모양을 보면서 <strong>직접 쓰기</strong>로 연습해 보세요!</p>
+        </div>
+      `;
+      if (this.strokeControls) this.strokeControls.classList.add('is-disabled');
+    }
+
+    hideStrokeNotice() {
+      if (this.strokeControls) this.strokeControls.classList.remove('is-disabled');
     }
 
     renderBackground() {
