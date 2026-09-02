@@ -8,6 +8,7 @@
 (function () {
   const LOCAL_KEY = 'hanzi_learned_ids';
   const BEST_KEY = 'hanzi_grade_best_scores';
+  const SERVICE = 'hanja';   // 이 프로젝트는 여러 서비스가 계정을 공유합니다
 
   let currentUser = null;
   let currentProfile = null;
@@ -33,7 +34,26 @@
       password: password,
       options: { data: { nickname: nickname || email.split('@')[0] } }
     });
-    if (error) throw error;
+
+    if (error) {
+      // 다른 서비스(예: justseoul)에서 이미 같은 이메일로 계정을 만든 경우
+      // 계정은 함께 쓰므로, 입력한 비밀번호로 바로 로그인을 시도해 자연스럽게 이어줍니다.
+      const msg = (error.message || '').toLowerCase();
+      if (msg.includes('already registered') || msg.includes('already been registered') || msg.includes('user already exists')) {
+        try {
+          await signIn(email, password);
+          return { existingAccount: true, joinedNow: true, user: currentUser };
+        } catch (e2) {
+          // 비밀번호가 달라 로그인에 실패한 경우 - 안내만 하고 로그인 탭으로 유도
+          const err = new Error('EXISTING_ACCOUNT');
+          err.code = 'EXISTING_ACCOUNT';
+          err.email = email;
+          throw err;
+        }
+      }
+      throw error;
+    }
+
     // 이메일 인증이 켜져 있으면 세션 없이 확인 메일만 발송됩니다
     return { needsEmailConfirm: !!(data.user && !data.session), user: data.user };
   }
@@ -69,6 +89,46 @@
       redirectTo: location.origin + '/login.html'
     });
     if (error) throw error;
+  }
+
+  // ---------- 서비스 멤버십 ----------
+  // 계정은 여러 서비스가 공유하므로, "이 서비스에 처음 들어왔는지"를 여기서 판단합니다.
+  let joinedNow = false;
+
+  async function ensureMembership() {
+    if (!currentUser || !isReady()) return { isNew: false, status: 'active' };
+    try {
+      const { data: rows } = await sb().schema('public').from('service_members')
+        .select('*').eq('user_id', currentUser.id).eq('service', SERVICE);
+
+      const existing = rows && rows[0];
+      if (existing) {
+        joinedNow = false;
+        // 접속 시각만 갱신
+        sb().schema('public').from('service_members')
+          .update({ last_seen_at: new Date().toISOString() })
+          .eq('user_id', currentUser.id).eq('service', SERVICE)
+          .then(() => {}, () => {});
+        return { isNew: false, status: existing.status, role: existing.role };
+      }
+
+      // 이 서비스에는 처음 - 지금 가입 처리
+      const meta = currentUser.user_metadata || {};
+      const nick = meta.nickname || (currentUser.email || '').split('@')[0];
+      await sb().schema('public').from('service_members').insert({
+        user_id: currentUser.id,
+        service: SERVICE,
+        nickname: nick,
+        last_seen_at: new Date().toISOString()
+      });
+      // 서비스 전용 프로필도 함께 생성
+      await sb().from('profiles').upsert({ id: currentUser.id, nickname: nick }, { onConflict: 'id' });
+      joinedNow = true;
+      return { isNew: true, status: 'active' };
+    } catch (e) {
+      console.warn('[한자야 놀자] 서비스 가입 확인 실패:', e.message || e);
+      return { isNew: false, status: 'active' };
+    }
   }
 
   // ---------- 프로필 ----------
@@ -228,28 +288,37 @@
     const { data } = await sb().auth.getSession();
     if (data && data.session) {
       currentUser = data.session.user;
+      const membership = await ensureMembership();
       await loadProfile();
       renderAuthBox();
       await syncProgressOnLogin();
-      document.dispatchEvent(new CustomEvent('hanja:auth-changed', { detail: { user: currentUser } }));
+      document.dispatchEvent(new CustomEvent('hanja:auth-changed', {
+        detail: { user: currentUser, membership: membership }
+      }));
     }
 
     sb().auth.onAuthStateChange(async (event, session) => {
       const prevId = currentUser && currentUser.id;
       currentUser = session ? session.user : null;
+      let membership = null;
       if (currentUser && currentUser.id !== prevId) {
+        membership = await ensureMembership();
         await loadProfile();
         await syncProgressOnLogin();
       }
       renderAuthBox();
-      document.dispatchEvent(new CustomEvent('hanja:auth-changed', { detail: { user: currentUser } }));
+      document.dispatchEvent(new CustomEvent('hanja:auth-changed', {
+        detail: { user: currentUser, membership: membership }
+      }));
     });
   }
 
   window.HanjaAuth = {
     signUp, signIn, signInWithGoogle, signOut, resetPassword,
     updateNickname, loadProfile, fetchQuizResults, saveQuizResult,
-    syncItem, syncProgressOnLogin,
+    syncItem, syncProgressOnLogin, ensureMembership,
+    isNewToService: () => joinedNow,
+    SERVICE: SERVICE,
     getUser: () => currentUser,
     getProfile: () => currentProfile,
     displayName: displayName,

@@ -6,16 +6,22 @@
 
 const SUPABASE_URL = 'https://ybhiznlelnpwaicyoifa.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_H4gFRiLEjE8h8s_EX4tKzg__ZKpsBR1';
+const SUPABASE_SCHEMA = 'hanja';   // 이 서비스 전용 스키마
 
 (function () {
   if (typeof window === 'undefined') return;
 
   window.SUPABASE_URL = SUPABASE_URL;
   window.SUPABASE_PUBLISHABLE_KEY = SUPABASE_PUBLISHABLE_KEY;
+  window.SUPABASE_SCHEMA = SUPABASE_SCHEMA;
 
   // supabase-js UMD 번들이 로드되면 전역 client 생성
   if (window.supabase && typeof window.supabase.createClient === 'function') {
     window.sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+      // 이 Supabase 프로젝트는 여러 서비스가 계정(auth.users)을 공유합니다.
+      // 한자야 놀자의 데이터는 'hanja' 스키마에만 저장됩니다.
+      // (다른 서비스는 각자의 스키마를 사용 - docs/supabase-multi-service.md 참고)
+      db: { schema: 'hanja' },
       auth: {
         persistSession: true,
         autoRefreshToken: true,

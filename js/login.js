@@ -57,18 +57,36 @@ document.addEventListener('DOMContentLoaded', function () {
     btn.disabled = true;
     showMsg('가입 처리 중이에요...', 'info');
     try {
+      const email = document.getElementById('signup-email').value.trim();
       const res = await AUTH.signUp(
-        document.getElementById('signup-email').value.trim(),
+        email,
         document.getElementById('signup-password').value,
         document.getElementById('signup-nickname').value.trim()
       );
-      if (res.needsEmailConfirm) {
+      if (res.existingAccount) {
+        // 다른 서비스에서 이미 만든 계정으로 자연스럽게 이어진 경우
+        showMsg('이미 만들어 두신 계정이 있어서 <strong>그 계정으로 시작</strong>했어요! 🎉<br>'
+              + '<small>저희 서비스들은 계정을 함께 써서, 한 번 가입하면 모두 이용할 수 있어요.</small>', 'ok');
+      } else if (res.needsEmailConfirm) {
         showMsg('가입 확인 메일을 보냈어요! 📧<br>메일함에서 링크를 눌러 인증한 뒤 로그인해 주세요.', 'ok');
       } else {
         showMsg('가입 완료! 바로 시작할게요 🎉', 'ok');
       }
     } catch (err) {
-      showMsg(translateError(err), 'error');
+      if (err && err.code === 'EXISTING_ACCOUNT') {
+        // 이미 계정이 있는데 비밀번호가 달라 자동 로그인에 실패한 경우
+        tabs.forEach(t => t.classList.remove('active'));
+        document.querySelector('.auth-tab[data-tab="login"]').classList.add('active');
+        loginForm.style.display = 'flex';
+        signupForm.style.display = 'none';
+        document.getElementById('login-email').value = err.email || '';
+        document.getElementById('login-password').focus();
+        showMsg('이 이메일로 만든 계정이 <strong>이미 있어요</strong> 🙂<br>'
+              + '저희 서비스들은 계정을 함께 쓰기 때문에, <strong>기존 비밀번호로 로그인</strong>하면 바로 시작할 수 있어요.<br>'
+              + '<small>비밀번호가 기억나지 않으면 아래 “비밀번호를 잊으셨나요?”를 눌러주세요.</small>', 'info');
+      } else {
+        showMsg(translateError(err), 'error');
+      }
     } finally {
       btn.disabled = false;
     }
@@ -96,7 +114,8 @@ document.addEventListener('DOMContentLoaded', function () {
   function translateError(err) {
     const m = (err && (err.message || err.error_description) || '').toLowerCase();
     if (m.includes('invalid login')) return '이메일 또는 비밀번호가 올바르지 않아요.';
-    if (m.includes('already registered') || m.includes('already been registered')) return '이미 가입된 이메일이에요. 로그인해 주세요.';
+    if (m.includes('already registered') || m.includes('already been registered'))
+      return '이 이메일로 만든 계정이 이미 있어요. 기존 비밀번호로 로그인해 주세요.';
     if (m.includes('password should be')) return '비밀번호는 6자 이상이어야 해요.';
     if (m.includes('email not confirmed')) return '이메일 인증이 아직 안 됐어요. 메일함을 확인해 주세요.';
     if (m.includes('unable to validate email') || m.includes('invalid email')) return '이메일 형식을 다시 확인해 주세요.';
@@ -139,10 +158,22 @@ document.addEventListener('DOMContentLoaded', function () {
     return PROGRESS.getLearnedIds().filter(prefixTest).length;
   }
 
-  async function renderDashboard() {
+  async function renderDashboard(membership) {
     authView.style.display = 'none';
     dashView.style.display = 'block';
     document.getElementById('dash-greeting').textContent = `${AUTH.displayName()}님, 반가워요! 👋`;
+
+    // 다른 서비스 계정으로 처음 들어온 경우 안내
+    const welcome = document.getElementById('service-welcome');
+    if (welcome) {
+      if (membership && membership.isNew) {
+        welcome.style.display = 'block';
+        welcome.innerHTML = '🎉 <strong>한자야 놀자에 오신 걸 환영해요!</strong> 기존 계정으로 바로 시작했어요. '
+                          + '학습 기록은 이 서비스에만 저장되니 안심하세요.';
+      } else {
+        welcome.style.display = 'none';
+      }
+    }
 
     const ids = PROGRESS.getLearnedIds();
     const hanziTotal = (window.HANZI_DATA || []).length;
@@ -210,7 +241,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ---------- 로그인 상태 반영 ----------
   document.addEventListener('hanja:auth-changed', (e) => {
-    if (e.detail && e.detail.user) renderDashboard();
+    if (e.detail && e.detail.user) renderDashboard(e.detail.membership);
     else { authView.style.display = 'block'; dashView.style.display = 'none'; }
   });
   document.addEventListener('hanja:progress-synced', () => {

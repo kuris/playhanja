@@ -106,5 +106,16 @@ npx serve .
 
 ---
 
+## 🔐 회원 관리 (Supabase)
+
+이 서비스는 여러 서비스가 계정을 공유하는 Supabase 프로젝트를 사용합니다.
+계정(`auth.users`)은 공통, 데이터는 `hanja` 스키마에 분리 보관됩니다.
+
+- 아키텍처: [docs/supabase-multi-service.md](docs/supabase-multi-service.md)
+- 구글 로그인 설정: [docs/google-login-setup.md](docs/google-login-setup.md)
+- 스키마: [supabase/](supabase/)
+
+---
+
 ## 📄 라이선스
 MIT License
