@@ -131,7 +131,92 @@ document.addEventListener('DOMContentLoaded', function () {
       return w;
     }
 
-    if (type === '독음' || type === '훈음' || type === '한자쓰기') {
+    if (type === '독음') {
+      // 실제 시험처럼 한자어(두 글자)를 읽는 문제
+      const words = window.getWordsForGrade ? window.getWordsForGrade(selectedGrade) : [];
+      const wordPool = shuffle(words);
+      for (const wd of wordPool) {
+        if (out.length >= n) break;
+        if (used.has(wd.word)) continue;
+        used.add(wd.word);
+        const wrongs = [];
+        const seen = { [wd.reading]: true };
+        for (const cand of shuffle(words)) {
+          if (wrongs.length >= 3) break;
+          if (seen[cand.reading]) continue;
+          seen[cand.reading] = true;
+          wrongs.push(cand.reading);
+        }
+        if (wrongs.length < 3) continue;
+        const firstChar = pool.find(h => h.char === wd.word[0]);
+        out.push({
+          type: '독음', prompt: '다음 한자어의 <b>읽는 소리(독음)</b>는?', subject: wd.word,
+          options: shuffle([wd.reading].concat(wrongs)),
+          answer: wd.reading, itemId: firstChar ? firstChar.id : null, char: wd.word,
+          explain: `${wd.word} = ${wd.reading}`
+        });
+      }
+      // 한자어가 모자라면 낱글자 독음으로 보충
+      if (out.length < n) {
+        for (const h of shuffle(own).concat(shuffle(pool))) {
+          if (out.length >= n) break;
+          if (used.has(h.char)) continue;
+          used.add(h.char);
+          const w = others(h, x => x.sound);
+          if (w.length < 3) continue;
+          out.push({
+            type: '독음', prompt: '다음 한자의 <b>음(소리)</b>은?', subject: h.char,
+            options: shuffle([h].concat(w)).map(x => x.sound),
+            answer: h.sound, itemId: h.id, char: h.char, explain: `${h.char} = ${h.hunmum}`
+          });
+        }
+      }
+    }
+
+    else if (type === '부수') {
+      for (const h of shuffle(own).concat(shuffle(pool))) {
+        if (out.length >= n) break;
+        if (used.has(h.char)) continue;
+        const info = window.getRadical ? window.getRadical(h.char) : null;
+        if (!info) continue;
+        used.add(h.char);
+        const seen = { [info.radical]: true };
+        const wrongs = [];
+        for (const c of shuffle(pool)) {
+          if (wrongs.length >= 3) break;
+          const ri = window.getRadical(c.char);
+          if (!ri || seen[ri.radical]) continue;
+          seen[ri.radical] = true;
+          wrongs.push(ri.radical);
+        }
+        if (wrongs.length < 3) continue;
+        out.push({
+          type: '부수', prompt: '다음 한자의 <b>부수</b>는?', subject: h.char,
+          options: shuffle([info.radical].concat(wrongs)), optionHanja: true,
+          answer: info.radical, itemId: h.id, char: h.char,
+          explain: `${h.char}(${h.hunmum})의 부수는 ${info.radical}(${info.name})입니다.`
+        });
+      }
+    }
+
+    else if (type === '약자') {
+      const inPool = new Set(pool.map(h => h.char));
+      const pairs = (window.ABBREV_PAIRS || []).filter(p => inPool.has(p[0]));
+      for (const [full, abbr] of shuffle(pairs)) {
+        if (out.length >= n) break;
+        const h = pool.find(x => x.char === full);
+        const others2 = shuffle((window.ABBREV_PAIRS || []).filter(p => p[1] !== abbr)).slice(0, 3).map(p => p[1]);
+        if (others2.length < 3) continue;
+        out.push({
+          type: '약자', prompt: '다음 한자의 <b>약자(略字)</b>는?', subject: full,
+          options: shuffle([abbr].concat(others2)), optionHanja: true,
+          answer: abbr, itemId: h ? h.id : null, char: full,
+          explain: `${full}(${h ? h.hunmum : ''})의 약자는 ${abbr}입니다.`
+        });
+      }
+    }
+
+    else if (type === '훈음' || type === '한자쓰기') {
       // 해당 급수 글자를 우선 출제하고 모자라면 하위 급수에서 보충
       const src = shuffle(own).concat(shuffle(pool));
       for (const h of src) {
@@ -139,15 +224,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (used.has(h.char)) continue;
         used.add(h.char);
 
-        if (type === '독음') {
-          const w = others(h, x => x.sound);
-          if (w.length < 3) continue;
-          out.push({
-            type: '독음', prompt: `다음 한자의 <b>음(소리)</b>은?`, subject: h.char,
-            options: shuffle([h].concat(w)).map(x => x.sound),
-            answer: h.sound, itemId: h.id, char: h.char, explain: `${h.char} = ${h.hunmum}`
-          });
-        } else if (type === '훈음') {
+        if (type === '훈음') {
           const w = others(h, x => x.hunmum);
           if (w.length < 3) continue;
           out.push({
