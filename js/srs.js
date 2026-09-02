@@ -25,6 +25,60 @@
     document.dispatchEvent(new CustomEvent('hanja:srs-changed'));
   }
 
+  // 로그인 상태면 카드 한 장을 서버에 반영
+  function pushCard(card) {
+    if (!window.HanjaAuth || !window.HanjaAuth.isLoggedIn() || !window.sb) return;
+    const user = window.HanjaAuth.getUser();
+    window.sb.from('srs_cards').upsert({
+      user_id: user.id,
+      card_id: card.id,
+      kind: card.kind || null,
+      char_text: card.char || null,
+      interval_days: card.interval || 0,
+      ease: card.ease || 2.3,
+      reps: card.reps || 0,
+      lapses: card.lapses || 0,
+      due: new Date(card.due || Date.now()).toISOString(),
+      last_at: card.lastAt ? new Date(card.lastAt).toISOString() : null,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'user_id,card_id' }).then(() => {}, () => {});
+  }
+
+  // 로그인 상태면 오늘 학습량을 서버에 반영
+  // 짧은 시간에 여러 번 기록될 수 있으므로 묶어서(디바운스) 한 번만 보냅니다.
+  let logPushTimer = null;
+  let pendingLogDay = null;
+
+  function flushLogPush() {
+    if (logPushTimer) { clearTimeout(logPushTimer); logPushTimer = null; }
+    if (!pendingLogDay) return;
+    if (!window.HanjaAuth || !window.HanjaAuth.isLoggedIn() || !window.sb) { pendingLogDay = null; return; }
+
+    const day = pendingLogDay;
+    pendingLogDay = null;
+    const rec = loadLog()[day] || { new: 0, review: 0, quiz: 0 };
+    const user = window.HanjaAuth.getUser();
+    window.sb.from('study_log').upsert({
+      user_id: user.id,
+      day: day,
+      new_count: rec.new || 0,
+      review_count: rec.review || 0,
+      quiz_count: rec.quiz || 0,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'user_id,day' }).then(() => {}, () => {});
+  }
+
+  function pushLog(dayKey) {
+    if (!window.HanjaAuth || !window.HanjaAuth.isLoggedIn() || !window.sb) return;
+    pendingLogDay = dayKey;
+    if (logPushTimer) clearTimeout(logPushTimer);
+    logPushTimer = setTimeout(flushLogPush, 700);
+  }
+
+  // 페이지를 벗어나기 직전에 남은 기록을 즉시 전송
+  document.addEventListener('visibilitychange', () => { if (document.hidden) flushLogPush(); });
+  window.addEventListener('pagehide', flushLogPush);
+
   function todayKey(d) {
     const t = d ? new Date(d) : new Date();
     return t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
@@ -48,6 +102,7 @@
     if (!log[k]) log[k] = { new: 0, review: 0, quiz: 0 };
     log[k][kind] = (log[k][kind] || 0) + (n || 1);
     saveLog(log);
+    pushLog(k);
   }
   function getLog() { return loadLog(); }
   function getTodayLog() { return loadLog()[todayKey()] || { new: 0, review: 0, quiz: 0 }; }
@@ -112,6 +167,7 @@
 
     map[id] = card;
     saveAll(map);
+    pushCard(card);
 
     return {
       interval: interval,
@@ -235,8 +291,88 @@
 
   function reset() { saveAll({}); }
 
+  /**
+   * 로그인 시 서버와 병합
+   * - 카드: 더 최근에 복습한 쪽(lastAt)을 채택
+   * - 학습 로그: 날짜별로 큰 값을 채택 (기기 두 대에서 각각 공부한 경우 대비)
+   */
+  async function syncWithServer() {
+    if (!window.HanjaAuth || !window.HanjaAuth.isLoggedIn() || !window.sb) return;
+    const user = window.HanjaAuth.getUser();
+
+    try {
+      // ---- 카드 상태 ----
+      const local = loadAll();
+      const { data: rows } = await window.sb.from('srs_cards').select('*').eq('user_id', user.id);
+      const merged = Object.assign({}, local);
+
+      (rows || []).forEach(r => {
+        const remote = {
+          id: r.card_id,
+          kind: r.kind,
+          char: r.char_text,
+          interval: r.interval_days || 0,
+          ease: r.ease || 2.3,
+          reps: r.reps || 0,
+          lapses: r.lapses || 0,
+          due: new Date(r.due).getTime(),
+          lastAt: r.last_at ? new Date(r.last_at).getTime() : 0
+        };
+        const mine = merged[r.card_id];
+        if (!mine || (remote.lastAt || 0) > (mine.lastAt || 0)) merged[r.card_id] = remote;
+      });
+      saveAll(merged);
+
+      // 서버에 없거나 오래된 카드 올리기
+      const remoteMap = {};
+      (rows || []).forEach(r => { remoteMap[r.card_id] = new Date(r.last_at || 0).getTime(); });
+      const toPush = Object.keys(merged)
+        .filter(id => (merged[id].lastAt || 0) > (remoteMap[id] || 0))
+        .map(id => merged[id]);
+      if (toPush.length) {
+        await window.sb.from('srs_cards').upsert(toPush.map(c => ({
+          user_id: user.id, card_id: c.id, kind: c.kind || null, char_text: c.char || null,
+          interval_days: c.interval || 0, ease: c.ease || 2.3, reps: c.reps || 0, lapses: c.lapses || 0,
+          due: new Date(c.due || Date.now()).toISOString(),
+          last_at: c.lastAt ? new Date(c.lastAt).toISOString() : null,
+          updated_at: new Date().toISOString()
+        })), { onConflict: 'user_id,card_id' });
+      }
+
+      // ---- 학습 로그 ----
+      const localLog = loadLog();
+      const { data: logRows } = await window.sb.from('study_log').select('*').eq('user_id', user.id);
+      const mergedLog = Object.assign({}, localLog);
+
+      (logRows || []).forEach(r => {
+        const cur = mergedLog[r.day] || { new: 0, review: 0, quiz: 0 };
+        mergedLog[r.day] = {
+          new: Math.max(cur.new || 0, r.new_count || 0),
+          review: Math.max(cur.review || 0, r.review_count || 0),
+          quiz: Math.max(cur.quiz || 0, r.quiz_count || 0)
+        };
+      });
+      saveLog(mergedLog);
+
+      const logToPush = Object.keys(mergedLog).map(day => ({
+        user_id: user.id, day: day,
+        new_count: mergedLog[day].new || 0,
+        review_count: mergedLog[day].review || 0,
+        quiz_count: mergedLog[day].quiz || 0,
+        updated_at: new Date().toISOString()
+      }));
+      if (logToPush.length) {
+        await window.sb.from('study_log').upsert(logToPush, { onConflict: 'user_id,day' });
+      }
+
+      document.dispatchEvent(new CustomEvent('hanja:srs-synced'));
+    } catch (e) {
+      console.warn('[한자야 놀자] 복습 카드 동기화 실패:', e.message || e);
+    }
+  }
+
   window.HanjaSRS = {
     GRADE, review, getCard, isDue, buildDeck, previewIntervals, stats, reset,
-    addLog, getLog, getTodayLog, streak, todayKey
+    addLog, getLog, getTodayLog, streak, todayKey, syncWithServer
   };
 })();

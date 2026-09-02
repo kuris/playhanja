@@ -122,6 +122,26 @@
         window.HanjaWrongNotes.mergeFromResults(results);
       }
 
+      // 복습 카드 상태와 학습 달력 동기화
+      if (window.HanjaSRS && window.HanjaSRS.syncWithServer) {
+        await window.HanjaSRS.syncWithServer();
+      }
+
+      // 학습 목표(프로필)를 기기에 반영
+      if (currentProfile && currentProfile.grade_goal) {
+        try {
+          const localGoal = JSON.parse(localStorage.getItem('hanzi_study_goal') || 'null');
+          if (!localGoal) {
+            localStorage.setItem('hanzi_study_goal', JSON.stringify({
+              grade: currentProfile.grade_goal,
+              daily: currentProfile.daily_goal || 5,
+              idiom: currentProfile.idiom_goal != null ? currentProfile.idiom_goal : 1,
+              startedAt: Date.now()
+            }));
+          }
+        } catch (e) {}
+      }
+
       document.dispatchEvent(new CustomEvent('hanja:progress-synced', { detail: { count: merged.length } }));
     } catch (e) {
       console.warn('[한자야 놀자] 진도 동기화 실패:', e.message || e);

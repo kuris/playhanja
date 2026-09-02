@@ -29,7 +29,13 @@ document.addEventListener('DOMContentLoaded', function () {
     if (window.HanjaAuth && window.HanjaAuth.isLoggedIn() && window.sb) {
       const user = window.HanjaAuth.getUser();
       window.sb.from('profiles')
-        .upsert({ id: user.id, grade_goal: goal.grade, updated_at: new Date().toISOString() })
+        .upsert({
+          id: user.id,
+          grade_goal: goal.grade,
+          daily_goal: goal.daily,
+          idiom_goal: goal.idiom,
+          updated_at: new Date().toISOString()
+        })
         .then(() => {}, () => {});
     }
   }
