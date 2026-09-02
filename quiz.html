@@ -36,21 +36,58 @@
   <div class="container">
     <div class="section-head" style="margin-bottom:24px;">
       <span class="eyebrow">QUIZ TIME</span>
-      <h2>퀴즈로 복습하기</h2>
-      <p>한자를 보고 알맞은 뜻을 맞혀보세요. 학습한 한자가 우선 출제돼요!</p>
+      <h2>퀴즈로 복습하기 & 급수 모의시험</h2>
+      <p>주제별 뜻 맞히기부터 <strong>1급~9급 급수 모의시험</strong>까지! 틀린 문제는 오답 노트로 확인할 수 있어요.</p>
+    </div>
+
+    <!-- 퀴즈 유형 선택 탭 -->
+    <div class="quiz-mode-tabs" id="quiz-mode-tabs">
+      <button class="quiz-mode-tab active" data-mode="category"><i class="fa-solid fa-shapes"></i> 주제별 뜻 맞히기</button>
+      <button class="quiz-mode-tab" data-mode="grade"><i class="fa-solid fa-medal"></i> 급수별 모의시험 (1~9급)</button>
     </div>
 
     <div id="quiz-setup" class="quiz-box">
-      <h3 style="margin-top:0;">퀴즈 범위를 골라주세요</h3>
-      <div class="filter-group" style="text-align:left; margin-top:20px;">
-        <div id="quiz-category-filter"></div>
+      <!-- 주제별 설정 -->
+      <div id="setup-category">
+        <h3 style="margin-top:0;">퀴즈 범위를 골라주세요</h3>
+        <div class="filter-group" style="text-align:left; margin-top:20px;">
+          <div id="quiz-category-filter"></div>
+        </div>
       </div>
+
+      <!-- 급수별 설정 -->
+      <div id="setup-grade" style="display:none;">
+        <h3 style="margin-top:0;">응시할 급수를 골라주세요</h3>
+        <div class="grade-picker" id="quiz-grade-picker" style="margin-top:18px;"></div>
+
+        <div class="quiz-option-row">
+          <label>문항 수
+            <select id="quiz-count" class="grade-print-select">
+              <option value="10">10문항 (짧게)</option>
+              <option value="20" selected>20문항 (표준)</option>
+              <option value="30">30문항 (실전)</option>
+              <option value="50">50문항 (도전)</option>
+            </select>
+          </label>
+          <label>출제 유형
+            <select id="quiz-qtype" class="grade-print-select">
+              <option value="mix" selected>혼합 (실전과 동일)</option>
+              <option value="hunmum">한자 → 훈음 고르기</option>
+              <option value="char">훈음 → 한자 고르기</option>
+              <option value="sound">한자 → 음(소리) 고르기</option>
+            </select>
+          </label>
+        </div>
+        <p class="quiz-pass-note">💯 100점 만점 · <strong>70점 이상이면 합격</strong>이에요! 최고 점수는 기기에 저장돼요.</p>
+      </div>
+
       <button class="btn btn-primary" id="start-quiz-btn" style="margin-top:10px;"><i class="fa-solid fa-play"></i> 퀴즈 시작!</button>
       <p style="margin-top:14px; color:var(--color-text-soft); font-size:.9rem;" id="quiz-range-info"></p>
     </div>
 
     <div class="quiz-box" id="quiz-play" style="display:none;">
       <div class="quiz-progress" id="quiz-progress"></div>
+      <div class="quiz-type-badge" id="quiz-type-badge" style="display:none;"></div>
       <div class="quiz-char" id="quiz-char"></div>
       <div class="quiz-question" id="quiz-question">이 한자의 뜻은 무엇일까요?</div>
       <div class="quiz-options" id="quiz-options"></div>
@@ -60,9 +97,15 @@
       <div class="result-emoji" id="result-emoji">🎉</div>
       <h3 id="result-title"></h3>
       <p id="result-desc"></p>
+      <div id="result-pass-badge"></div>
+      <div class="wrong-note" id="wrong-note" style="display:none;">
+        <h4><i class="fa-solid fa-pen-to-square"></i> 오답 노트</h4>
+        <div id="wrong-list"></div>
+      </div>
       <div class="hero-actions" style="justify-content:center;">
         <button class="btn btn-primary" id="retry-quiz-btn"><i class="fa-solid fa-rotate-right"></i> 다시 풀기</button>
-        <a href="learn.html" class="btn btn-outline"><i class="fa-solid fa-book-open"></i> 더 배우러 가기</a>
+        <a href="learn.html" class="btn btn-outline" id="result-learn-link"><i class="fa-solid fa-book-open"></i> 더 배우러 가기</a>
+        <a href="worksheet.html" target="_blank" class="btn btn-secondary" id="result-print-link" style="display:none;"><i class="fa-solid fa-print"></i> 오답 A4 연습장 인쇄</a>
       </div>
     </div>
   </div>
@@ -88,6 +131,7 @@
 
 <script src="js/nav.js"></script>
 <script src="js/hanzi-data.js"></script>
+<script src="js/grade-data.js"></script>
 <script src="js/progress.js"></script>
 <script src="js/quiz.js"></script>
 </body>
