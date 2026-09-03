@@ -77,7 +77,7 @@
 
           <!-- 획순 컨트롤 바 (획순 모드일 때 표시) -->
           <div class="stroke-controls" id="stroke-controls">
-            <button class="btn btn-primary btn-sm" id="stroke-play-btn"><i class="fa-solid fa-play"></i> 획순 재생</button>
+            <button class="btn btn-primary btn-sm" id="stroke-play-btn"><i class="fa-solid fa-play"></i> 획순 보기</button>
             <button class="btn btn-secondary btn-sm" id="stroke-slow-btn"><i class="fa-solid fa-gauge-simple"></i> 천천히 보기</button>
             <button class="btn btn-outline btn-sm" id="stroke-loop-btn"><i class="fa-solid fa-rotate"></i> 반복 보기</button>
           </div>
@@ -197,10 +197,7 @@
         this.drawCanvas.style.display = 'none';
         this.strokeControls.style.display = 'flex';
         this.drawToolbar.style.display = 'none';
-        if (this.writer) {
-          this.writer.showOutline();
-        }
-        this.playStrokeAnimation(1);
+        this.showCompletedChar();
       } else {
         this.drawCanvas.style.display = 'block';
         this.strokeControls.style.display = 'none';
@@ -267,7 +264,9 @@
               this.charData = data;
               this.showStrokeCountNote(data);
               if (this.mode === 'stroke') {
-                this.playStrokeAnimation(1);
+                // 글자를 열면 완성된 글자를 보여줍니다.
+                // 획순은 '획순 재생' 버튼을 눌렀을 때만 재생합니다.
+                this.showCompletedChar();
               } else {
                 if (this.showGuide) this.writer.showOutline();
                 else this.writer.hideOutline();
@@ -286,6 +285,17 @@
       }
     }
 
+    // 완성된 글자를 또렷하게 보여준다 (획순 재생 전/후 공통 상태)
+    showCompletedChar() {
+      if (!this.writer) return;
+      if (this.animTimeoutId) clearTimeout(this.animTimeoutId);
+      this.clearNumbers();
+      try {
+        this.writer.showCharacter({ duration: 0 });
+        this.writer.hideOutline();
+      } catch (e) {}
+    }
+
     // 1, 2, 3, 4 숫자 뱃지와 함께 순차 획순 재생!
     playStrokeAnimation(speed = 1, isLoop = false) {
       if (!this.writer) return;
@@ -293,7 +303,7 @@
       this.clearNumbers();
 
       try {
-        this.writer.hideCharacter();
+        this.writer.hideCharacter({ duration: 0 });
         this.writer.showOutline();
       } catch (e) {}
 
@@ -324,8 +334,15 @@
         if (this.mode !== 'stroke') return;
 
         if (currentStroke >= totalStrokes) {
-          // 전체 획순 완성 후 마지막 숫자 버블 즉시 정리
+          // 숫자 뱃지 정리
           if (this.numbersLayer) this.numbersLayer.innerHTML = '';
+
+          // 완성된 글자를 또렷하게 (획을 하나씩 그린 상태에 윤곽선이 겹쳐 보이던 문제 해결)
+          try {
+            this.writer.showCharacter({ duration: 0 });
+            this.writer.hideOutline();
+          } catch (e) {}
+
           if (this.stepCounter) {
             this.stepCounter.innerHTML = `총 ${totalStrokes}획 완성! ✨`;
             this.stepCounter.style.display = 'block';
@@ -337,7 +354,7 @@
           } else {
             this.animTimeoutId = setTimeout(() => {
               if (this.stepCounter) this.stepCounter.style.display = 'none';
-            }, 2500);
+            }, 2000);
           }
           return;
         }
