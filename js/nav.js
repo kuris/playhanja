@@ -14,7 +14,8 @@
         { label: '한자 배우기', href: 'learn.html', icon: '✍️', desc: '부수 애니메이션과 어원 이야기' },
         { label: '급수별 한자', href: 'grade.html', icon: '🏅', desc: '어문회 8급~4급 1,000자' },
         { label: '고사성어', href: 'idiom.html', icon: '📖', desc: '유래 일화와 함께 111선' },
-        { label: '천자문 250구', href: 'thousand.html', icon: '📜', desc: '천자문 1,000자 완주' }
+        { label: '천자문 250구', href: 'thousand.html', icon: '📜', desc: '천자문 1,000자 완주' },
+        { label: '재미로 보는 이야기', href: 'story.html', icon: '🌟', desc: '이야기 속 한자어를 눌러서' }
       ]
     },
     {

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>재미로 보는 이야기 - 한자야 놀자!</title>
+<meta name="description" content="어린 왕자 이야기를 읽으며 한자어를 눌러 한자와 훈음을 익혀요. 한글과 한자를 오가며 자연스럽게 공부합니다.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@500;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-wrap">
+    <a href="index.html" class="logo">
+      <span class="logo-char">漢</span>
+      <span>한자야 놀자!</span>
+    </a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="메뉴 열기"><i class="fa-solid fa-bars"></i></button>
+    <nav class="main-nav" id="main-nav"></nav>
+  </div>
+</header>
+
+<main class="section" style="padding-top:26px;">
+  <div class="container">
+
+    <!-- 이야기 고르기 -->
+    <div id="story-list">
+      <div class="section-head" style="margin-bottom:20px;">
+        <span class="eyebrow">STORY</span>
+        <h2>📖 재미로 보는 이야기</h2>
+        <p>이야기를 읽다가 <strong>한자어를 누르면</strong> 한자로 바뀌고 뜻과 소리를 알려줘요.<br>
+        문맥 속에서 만나면 한자가 훨씬 오래 기억에 남아요!</p>
+      </div>
+      <div class="story-grid" id="story-grid"></div>
+    </div>
+
+    <!-- 읽기 화면 -->
+    <div id="story-read" style="display:none;">
+      <div class="story-bar">
+        <button class="btn btn-outline btn-sm" id="story-back"><i class="fa-solid fa-arrow-left"></i> 목록</button>
+        <div class="sb-title" id="sb-title"></div>
+        <div class="sb-actions">
+          <button class="btn btn-secondary btn-sm" id="toggle-all"><i class="fa-solid fa-language"></i> 전체 한자로</button>
+        </div>
+      </div>
+
+      <div class="chapter-tabs" id="chapter-tabs"></div>
+
+      <article class="story-body" id="story-body"></article>
+
+      <div class="story-words-box">
+        <h3><i class="fa-solid fa-list-check"></i> 이 장에 나온 한자어 <span id="sw-count"></span></h3>
+        <div class="story-words" id="story-words"></div>
+        <div class="story-word-actions">
+          <a class="btn btn-primary btn-sm" id="sw-flash"><i class="fa-solid fa-bolt"></i> 이 한자로 카드 복습</a>
+          <a class="btn btn-secondary btn-sm" id="sw-print" target="_blank"><i class="fa-solid fa-print"></i> A4 연습장 인쇄</a>
+        </div>
+      </div>
+
+      <div class="story-nav">
+        <button class="btn btn-outline" id="prev-ch"><i class="fa-solid fa-arrow-left"></i> 이전 장</button>
+        <button class="btn btn-primary" id="next-ch">다음 장 <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- 한자어 팝오버 -->
+<div class="word-pop" id="word-pop" style="display:none;">
+  <button class="wp-close" id="wp-close"><i class="fa-solid fa-xmark"></i></button>
+  <div class="wp-head">
+    <span class="wp-hanja" id="wp-hanja"></span>
+    <span class="wp-ko" id="wp-ko"></span>
+  </div>
+  <div class="wp-chars" id="wp-chars"></div>
+  <div class="wp-actions">
+    <button class="btn btn-outline btn-sm" id="wp-speak"><i class="fa-solid fa-volume-high"></i> 읽어주기</button>
+    <a class="btn btn-secondary btn-sm" id="wp-learn"><i class="fa-solid fa-pen-nib"></i> 획순 보기</a>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/hanzi-data.js"></script>
+<script src="js/grade-data.js"></script>
+<script src="js/story-data.js"></script>
+<script src="js/speech.js"></script>
+<script src="js/wrong-notes.js"></script>
+<script src="js/srs.js"></script>
+<script src="js/progress.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/story.js"></script>
+</body>
+</html>

@@ -2781,3 +2781,115 @@ img { max-width: 100%; display: block; }
   opacity: .9;
   line-height: 1.6;
 }
+
+/* ============================================================
+   재미로 보는 이야기 (story.html)
+   ============================================================ */
+.story-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.story-card {
+  background: #fff; border: 2px solid var(--color-border); border-radius: 20px;
+  padding: 24px 20px; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  cursor: pointer; text-align: center; transition: all .18s ease; box-shadow: var(--shadow-soft);
+}
+.story-card:hover { transform: translateY(-4px); border-color: var(--sc-color); }
+.story-card .sc-cover { font-size: 3rem; }
+.story-card .sc-title { font-size: 1.3rem; font-weight: 900; }
+.story-card .sc-sub { font-size: .82rem; color: var(--sc-color); font-weight: 800; }
+.story-card .sc-desc { font-size: .86rem; color: var(--color-text-soft); line-height: 1.6; margin-top: 6px; }
+.story-card .sc-meta {
+  margin-top: 8px; font-size: .78rem; font-weight: 800; color: var(--color-primary-dark);
+  background: #fdf3e2; border-radius: 999px; padding: 4px 12px;
+}
+.story-card .sc-author { font-size: .72rem; color: var(--color-text-soft); margin-top: 4px; }
+
+.story-bar {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  background: #fff; border: 2px solid var(--color-border); border-radius: 16px;
+  padding: 10px 14px; margin-bottom: 14px; box-shadow: var(--shadow-soft);
+}
+.story-bar .sb-title { font-weight: 900; font-size: 1.05rem; }
+.story-bar .sb-actions { margin-left: auto; }
+
+.chapter-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.chapter-tab {
+  background: #fff; border: 2px solid var(--color-border); border-radius: 14px;
+  padding: 10px 14px; cursor: pointer; font-family: inherit;
+  display: flex; align-items: center; gap: 8px; transition: all .16s ease;
+}
+.chapter-tab:hover { border-color: var(--color-primary); }
+.chapter-tab.active { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+.chapter-tab .ct-emoji { font-size: 1.1rem; }
+.chapter-tab .ct-no { font-weight: 900; font-size: .86rem; }
+.chapter-tab .ct-title { font-size: .86rem; font-weight: 700; }
+
+.story-body {
+  background: #fffdf8; border: 2px solid var(--color-border); border-radius: 20px;
+  padding: 28px 26px; box-shadow: var(--shadow-soft);
+}
+.story-ch-title { font-size: 1.35rem; margin-bottom: 18px; color: var(--color-primary-dark); }
+.story-para {
+  font-size: 1.08rem; line-height: 2.2; margin-bottom: 20px; color: var(--color-text);
+  word-break: keep-all;
+}
+/* 본문 속 한자어 버튼 */
+.hw {
+  background: #fff3e0; border: none; border-bottom: 2px dashed #f0c98a;
+  border-radius: 6px; padding: 1px 5px; margin: 0 1px;
+  font-family: inherit; font-size: 1em; font-weight: 700; color: var(--color-primary-dark);
+  cursor: pointer; transition: all .14s ease;
+}
+.hw:hover { background: #ffe6c2; }
+.hw.is-hanja {
+  font-family: var(--font-hanzi); font-size: 1.12em;
+  background: #eef4ff; border-bottom-color: #a5c4f5; color: #1e3a8a;
+}
+
+/* 한자어 팝오버 */
+.word-pop {
+  position: absolute; z-index: 500; width: 300px; max-width: calc(100vw - 20px);
+  background: #fff; border: 2px solid var(--color-border); border-radius: 18px;
+  box-shadow: 0 16px 34px rgba(90, 60, 30, .22); padding: 16px;
+}
+.wp-close {
+  position: absolute; top: 8px; right: 10px; background: none; border: none;
+  font-size: 1rem; color: var(--color-text-soft); cursor: pointer;
+}
+.wp-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; }
+.wp-hanja { font-family: var(--font-hanzi); font-size: 2rem; letter-spacing: 2px; }
+.wp-ko { font-size: 1.05rem; font-weight: 900; color: var(--color-primary-dark); }
+.wp-chars { display: flex; flex-direction: column; gap: 8px; }
+.wp-char { display: flex; align-items: center; gap: 10px; }
+.wp-char .wpc-han { font-family: var(--font-hanzi); font-size: 1.7rem; min-width: 34px; text-align: center; }
+.wp-char .wpc-info { display: flex; flex-direction: column; }
+.wp-char .wpc-info strong { font-size: .95rem; }
+.wp-char .wpc-info small { font-size: .76rem; color: var(--color-text-soft); font-weight: 700; }
+.wp-actions { display: flex; gap: 8px; margin-top: 14px; }
+.wp-actions .btn { flex: 1; justify-content: center; }
+
+.story-words-box {
+  background: #fff; border: 2px solid var(--color-border); border-radius: 20px;
+  padding: 18px 20px; margin-top: 18px; box-shadow: var(--shadow-soft);
+}
+.story-words-box h3 { font-size: 1rem; color: var(--color-primary-dark); margin-bottom: 12px; }
+.story-words { display: flex; flex-wrap: wrap; gap: 8px; }
+.sw-item {
+  background: #fffaf2; border: 2px solid var(--color-border); border-radius: 12px;
+  padding: 8px 12px; cursor: pointer; font-family: inherit;
+  display: flex; flex-direction: column; align-items: center; gap: 1px; transition: all .14s ease;
+}
+.sw-item:hover { border-color: var(--color-primary); transform: translateY(-2px); }
+.sw-item .swi-hanja { font-family: var(--font-hanzi); font-size: 1.25rem; letter-spacing: 1px; }
+.sw-item .swi-ko { font-size: .8rem; font-weight: 800; color: var(--color-text-soft); }
+.sw-item .swi-lv { font-size: .68rem; color: var(--color-primary-dark); }
+.story-word-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.story-nav { display: flex; justify-content: space-between; gap: 10px; margin: 22px 0 40px; }
+.story-nav .btn:disabled { opacity: .4; pointer-events: none; }
+
+@media (max-width: 640px) {
+  .story-body { padding: 20px 16px; }
+  .story-para { font-size: 1rem; line-height: 2.1; }
+  .story-bar .sb-actions { margin-left: 0; width: 100%; }
+  .story-bar .sb-actions .btn { width: 100%; justify-content: center; }
+  .chapter-tab .ct-title { display: none; }
+  .story-word-actions .btn { flex: 1 1 100%; justify-content: center; }
+}
