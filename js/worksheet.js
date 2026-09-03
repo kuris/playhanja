@@ -34,6 +34,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const CHARS_PER_PAGE = 4;
 
+  // 획수는 한국어문회 기준(전통 자형)을 우선 사용합니다
+  function officialStrokes(char) {
+    const n = window.getOfficialStrokes ? window.getOfficialStrokes(char) : null;
+    return n ? n + '획' : '';
+  }
+
   // ---------- 셀렉터 초기화 ----------
   // 천자문 구절 셀렉터
   selector.innerHTML = `
@@ -153,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
         char: c.char,
         sound: c.sound,
         meaning: info ? info.meaning.split(',')[0] : '',
-        strokes: info ? `${info.strokes}획` : '',
+        strokes: officialStrokes(c.char) || (info ? `${info.strokes}획` : ''),
         words: buildWordsHtml(info, verseItem)
       };
     });
@@ -231,7 +237,7 @@ document.addEventListener('DOMContentLoaded', function () {
           char: h.char,
           sound: h.sound,
           meaning: h.meaning,
-          strokes: dbInfo ? `${dbInfo.strokes}획` : '',
+          strokes: officialStrokes(h.char) || (dbInfo ? `${dbInfo.strokes}획` : ''),
           words: dbInfo && dbInfo.words && dbInfo.words.length
             ? buildWordsHtml(dbInfo, null)
             : buildHunmumPracticeHtml(h)
@@ -305,7 +311,7 @@ document.addEventListener('DOMContentLoaded', function () {
           char: c.char,
           sound: c.sound,
           meaning: c.meaning,
-          strokes: dbInfo ? `${dbInfo.strokes}획` : '',
+          strokes: officialStrokes(c.char) || (dbInfo ? `${dbInfo.strokes}획` : ''),
           words: dbInfo && dbInfo.words && dbInfo.words.length
             ? buildWordsHtml(dbInfo, null)
             : buildHunmumPracticeHtml(c)
@@ -361,7 +367,7 @@ document.addEventListener('DOMContentLoaded', function () {
           char: n.char,
           sound: sound,
           meaning: meaning,
-          strokes: dbInfo ? `${dbInfo.strokes}획` : '',
+          strokes: officialStrokes(n.char) || (dbInfo ? `${dbInfo.strokes}획` : ''),
           words: dbInfo && dbInfo.words && dbInfo.words.length
             ? buildWordsHtml(dbInfo, null)
             : buildHunmumPracticeHtml({ meaning: meaning, sound: sound })
@@ -391,7 +397,7 @@ document.addEventListener('DOMContentLoaded', function () {
           char: c.char,
           sound: c.sound,
           meaning: c.meaning,
-          strokes: dbInfo ? `${dbInfo.strokes}획` : '',
+          strokes: officialStrokes(c.char) || (dbInfo ? `${dbInfo.strokes}획` : ''),
           words: dbInfo && dbInfo.words && dbInfo.words.length
             ? buildWordsHtml(dbInfo, null)
             : buildHunmumPracticeHtml(c)

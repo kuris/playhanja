@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function () {
       window.HanjaSpeech.attachButton(detailSound, () => `${hanzi.char}, ${hanzi.meaning} ${hanzi.sound}`, 'l-speak-btn');
     }
 
-    detailSound.textContent = `${hanzi.sound} · ${lvlInfo?.badge || ''} ${lvlInfo?.name || ''} (${hanzi.strokes}획)`;
+    detailSound.textContent = `${hanzi.sound} · ${lvlInfo?.badge || ''} ${lvlInfo?.name || ''} (${(window.getOfficialStrokes && window.getOfficialStrokes(hanzi.char)) || hanzi.strokes}획)`;
     detailMeaning.textContent = `${hanzi.char}  —  ${hanzi.meaning}`;
 
     storyBox.innerHTML = `<strong>어떻게 만들어진 한자일까요?</strong><br>${hanzi.story}`;

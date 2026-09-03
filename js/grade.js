@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (match) {
       detailBox.innerHTML = `
         <div class="v-char-info-card">
-          <h4>${match.char} — ${match.meaning} (${match.strokes}획)</h4>
+          <h4>${match.char} — ${match.meaning} (${window.getOfficialStrokes(h.char) || match.strokes}획)</h4>
           <p class="v-char-story"><strong>원리와 어원:</strong> ${match.story}</p>
           <div class="v-char-words">
             <strong>활용 낱말:</strong>
@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       detailBox.innerHTML = `
         <div class="v-char-info-card">
-          <h4>${h.char} — ${h.meaning} ${h.sound} (${info.name})</h4>
+          <h4>${h.char} — ${h.meaning} ${h.sound} · ${h.strokes}획 · 부수 ${h.radical} (${info.name})</h4>
           <p class="v-char-story">“<strong>${h.meaning} ${h.sound}</strong>”이라고 읽고 씁니다. 아래 캔버스에서 표준 획순 애니메이션을 본 뒤 직접 따라 써보세요. 오른쪽 아래 <strong>A4 인쇄</strong> 버튼을 누르면 이 글자가 들어간 쓰기 연습장을 출력할 수 있어요.</p>
         </div>
       `;

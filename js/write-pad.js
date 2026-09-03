@@ -225,6 +225,8 @@
       this.clear();
       this.clearNumbers();
       if (this.animTimeoutId) clearTimeout(this.animTimeoutId);
+      const oldNote = this.container.querySelector('.stroke-count-note');
+      if (oldNote) oldNote.remove();
       this.initHanziWriter();
       this.renderBackground();
     }
@@ -263,6 +265,7 @@
             onLoadCharDataSuccess: (data) => {
               this.isWriterLoaded = true;
               this.charData = data;
+              this.showStrokeCountNote(data);
               if (this.mode === 'stroke') {
                 this.playStrokeAnimation(1);
               } else {
@@ -418,8 +421,34 @@
       this.drawCtx.scale(dpr, dpr);
 
       this.size = size;
+      const oldNote = this.container.querySelector('.stroke-count-note');
+      if (oldNote) oldNote.remove();
       this.initHanziWriter();
       this.renderBackground();
+    }
+
+    /* 이 글꼴의 획순 수와 시험(어문회) 기준 획수가 다를 때 안내
+       예) 道 - 글꼴은 12획으로 그리지만 시험 기준은 13획 (辶=3획 vs 辵=4획) */
+    showStrokeCountNote(data) {
+      const wrap = this.container.querySelector('.write-canvas-wrap');
+      if (!wrap) return;
+      let note = this.container.querySelector('.stroke-count-note');
+      if (note) note.remove();
+
+      const drawn = (data && data.strokes) ? data.strokes.length : 0;
+      const official = window.getOfficialStrokes ? window.getOfficialStrokes(this.currentChar) : null;
+      if (!drawn || official == null) return;
+
+      note = document.createElement('div');
+      note.className = 'stroke-count-note';
+      if (drawn === official) {
+        note.innerHTML = `<i class="fa-solid fa-pen-nib"></i> 모두 <strong>${official}획</strong>이에요.`;
+      } else {
+        note.classList.add('warn');
+        note.innerHTML = `<i class="fa-solid fa-circle-info"></i> 시험 기준으로는 <strong>${official}획</strong>이에요.`
+          + `<small>화면 글꼴은 ${drawn}번에 나눠 그려요. 시험에서는 전통 자형 기준(예: 초두머리 艸는 4획)으로 세니 <strong>${official}획</strong>으로 외우세요.</small>`;
+      }
+      wrap.insertAdjacentElement('afterend', note);
     }
 
     // 획순 데이터가 없을 때: 글꼴 가이드 글자와 안내 문구 표시

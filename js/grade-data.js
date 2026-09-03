@@ -992,6 +992,17 @@ function getCumulativeChars(gradeId) {
   return GRADE_HANJA.filter(function (h) { return h.gradeOrder <= info.order; });
 }
 
+// 한국어문회 기준 획수 (전통 자형). 없으면 null
+const _strokeByChar = {};
+GRADE_HANJA.forEach(function (h) { _strokeByChar[h.char] = h.strokes; });
+function getOfficialStrokes(char) {
+  return _strokeByChar[char] != null ? _strokeByChar[char] : null;
+}
+function getOfficialRadical(char) {
+  const h = GRADE_HANJA.find(function (x) { return x.char === char; });
+  return h ? h.radical : null;
+}
+
 // 예전 id(g9_一 등) → 새 id(gh_一)
 function migrateGradeId(oldId) {
   const m = /^g\d+_(.)$/.exec(oldId || '');
@@ -1007,7 +1018,9 @@ if (typeof window !== 'undefined') {
   window.getGradeCount = getGradeCount;
   window.getCumulativeChars = getCumulativeChars;
   window.migrateGradeId = migrateGradeId;
+  window.getOfficialStrokes = getOfficialStrokes;
+  window.getOfficialRadical = getOfficialRadical;
 }
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { GRADE_LEVELS, GRADE_HANJA, STARTER_CHARS, getGradeChars, getGradeInfo, getGradeCount, getCumulativeChars, migrateGradeId };
+  module.exports = { GRADE_LEVELS, GRADE_HANJA, STARTER_CHARS, getGradeChars, getGradeInfo, getGradeCount, getCumulativeChars, migrateGradeId, getOfficialStrokes, getOfficialRadical };
 }
