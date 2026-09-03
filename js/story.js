@@ -127,8 +127,11 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>`;
     }).join('');
 
-    const first = [...hanja].map(gradeOf).find(Boolean);
-    document.getElementById('wp-learn').href = first ? `grade.html?grade=${first.grade}` : 'grade.html';
+    // '획순 보기'는 이야기를 떠나지 않고 그 자리에서 팝업으로 보여줍니다
+    document.getElementById('wp-learn').onclick = (e) => {
+      e.stopPropagation();
+      openStrokeModal(hanja, ko);
+    };
     document.getElementById('wp-speak').onclick = () => {
       if (window.HanjaSpeech) window.HanjaSpeech.speak(`${ko}. ` + [...hanja].map(c => {
         const g = gradeOf(c); return g ? g.hunmum : c;
@@ -148,8 +151,74 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function hidePop() { pop.style.display = 'none'; }
   document.getElementById('wp-close').addEventListener('click', hidePop);
-  document.addEventListener('click', (e) => { if (!pop.contains(e.target)) hidePop(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') hidePop(); });
+  document.addEventListener('click', (e) => {
+    if (pop.contains(e.target)) return;
+    if (strokeModal && strokeModal.contains(e.target)) return;
+    hidePop();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (strokeModal && strokeModal.classList.contains('open')) closeStrokeModal();
+    else hidePop();
+  });
+
+  // ---------- 획순 보기 팝업 ----------
+  var strokeModal = document.getElementById('stroke-modal');
+  const smTabs = document.getElementById('sm-char-tabs');
+  let strokePad = null;
+  let smChars = [];
+  let smIndex = 0;
+
+  function openStrokeModal(hanja, ko) {
+    smChars = [...hanja];
+    smIndex = 0;
+    document.getElementById('sm-word').textContent = hanja;
+    document.getElementById('sm-ko').textContent = ko;
+
+    strokeModal.classList.add('open');
+    document.body.classList.add('nav-open');
+    hidePop();
+
+    if (!strokePad && window.HanziWritePad) {
+      strokePad = new window.HanziWritePad(document.getElementById('sm-write-mount'), { char: smChars[0] });
+    }
+    renderSmTabs();
+    selectSmChar(0);
+  }
+
+  function renderSmTabs() {
+    smTabs.innerHTML = smChars.map((c, i) => {
+      const g = gradeOf(c);
+      return `<button class="v-char-tab ${i === smIndex ? 'active' : ''}" data-i="${i}">
+        <span class="v-char-tab-hanzi">${c}</span>
+        <span class="v-char-tab-sound">${g ? g.sound : ''}</span>
+      </button>`;
+    }).join('');
+    smTabs.querySelectorAll('.v-char-tab').forEach(b => {
+      b.addEventListener('click', () => selectSmChar(Number(b.dataset.i)));
+    });
+    smTabs.style.display = smChars.length > 1 ? 'flex' : 'none';
+  }
+
+  function selectSmChar(i) {
+    smIndex = i;
+    smTabs.querySelectorAll('.v-char-tab').forEach((b, n) => b.classList.toggle('active', n === i));
+    const c = smChars[i];
+    const g = gradeOf(c);
+    document.getElementById('sm-info').innerHTML = g
+      ? `<strong>${c}</strong> — ${g.hunmum} · ${window.getGradeInfo(g.grade).badge} ${window.getGradeInfo(g.grade).name} · ${g.strokes}획 · 부수 ${g.radical}`
+      : `<strong>${c}</strong>`;
+    if (strokePad) {
+      setTimeout(() => { strokePad.resize(); strokePad.setChar(c); }, 50);
+    }
+  }
+
+  function closeStrokeModal() {
+    strokeModal.classList.remove('open');
+    document.body.classList.remove('nav-open');
+  }
+  document.getElementById('stroke-modal-close').addEventListener('click', closeStrokeModal);
+  strokeModal.addEventListener('click', (e) => { if (e.target === strokeModal) closeStrokeModal(); });
 
   // ---------- 이 장의 한자어 ----------
   function renderWordList(ch) {

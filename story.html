@@ -79,7 +79,21 @@
   <div class="wp-chars" id="wp-chars"></div>
   <div class="wp-actions">
     <button class="btn btn-outline btn-sm" id="wp-speak"><i class="fa-solid fa-volume-high"></i> 읽어주기</button>
-    <a class="btn btn-secondary btn-sm" id="wp-learn"><i class="fa-solid fa-pen-nib"></i> 획순 보기</a>
+    <button class="btn btn-secondary btn-sm" id="wp-learn"><i class="fa-solid fa-pen-nib"></i> 획순 보기</button>
+  </div>
+</div>
+
+<!-- 획순 보기 팝업 (이야기를 떠나지 않고 그 자리에서 확인) -->
+<div class="modal-overlay" id="stroke-modal">
+  <div class="modal-box">
+    <button class="modal-close" id="stroke-modal-close"><i class="fa-solid fa-xmark"></i></button>
+    <div class="sm-head">
+      <span class="sm-word" id="sm-word"></span>
+      <span class="sm-ko" id="sm-ko"></span>
+    </div>
+    <div class="sm-char-tabs" id="sm-char-tabs"></div>
+    <div class="write-pad-wrapper" id="sm-write-mount"></div>
+    <div class="sm-info" id="sm-info"></div>
   </div>
 </div>
 
@@ -89,7 +103,9 @@
 <script src="js/hanzi-data.js"></script>
 <script src="js/grade-data.js"></script>
 <script src="js/story-data.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
 <script src="js/speech.js"></script>
+<script src="js/write-pad.js"></script>
 <script src="js/wrong-notes.js"></script>
 <script src="js/srs.js"></script>
 <script src="js/progress.js"></script>

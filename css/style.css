@@ -2893,3 +2893,14 @@ img { max-width: 100%; display: block; }
   .chapter-tab .ct-title { display: none; }
   .story-word-actions .btn { flex: 1 1 100%; justify-content: center; }
 }
+
+/* 이야기 - 획순 보기 팝업 */
+.sm-head { display: flex; align-items: baseline; gap: 10px; justify-content: center; margin-bottom: 14px; }
+.sm-word { font-family: var(--font-hanzi); font-size: 2rem; letter-spacing: 2px; }
+.sm-ko { font-size: 1.05rem; font-weight: 900; color: var(--color-primary-dark); }
+.sm-char-tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 14px; flex-wrap: wrap; }
+.sm-info {
+  margin-top: 12px; text-align: center; font-size: .9rem; font-weight: 700;
+  color: var(--color-text-soft); line-height: 1.6;
+}
+.sm-info strong { font-family: var(--font-hanzi); font-size: 1.2rem; color: var(--color-text); }
