@@ -199,6 +199,73 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
 
+    else if (type === '장단음') {
+      // 소리가 긴 한자 1개 + 짧은 한자 3개를 보기로 제시
+      const longSet = new Set((window.LONG_SOUND_CHARS || '').split(''));
+      const longs = pool.filter(h => longSet.has(h.char));
+      const shorts = pool.filter(h => !longSet.has(h.char));
+      for (const h of shuffle(longs)) {
+        if (out.length >= n) break;
+        if (used.has(h.char)) continue;
+        used.add(h.char);
+        const w = pick(shorts, 3);
+        if (w.length < 3) break;
+        out.push({
+          type: '장단음', prompt: '다음 한자 중 <b>소리가 긴 것(장음)</b>은?',
+          subject: '보기에서 고르세요', subjectText: true,
+          options: shuffle([h].concat(w)).map(x => `${x.char} (${x.sound})`),
+          answer: `${h.char} (${h.sound})`, itemId: h.id, char: h.char,
+          explain: `${h.char}(${h.hunmum})은 첫소리를 길게 발음합니다. 나머지는 짧게 소리 납니다.`
+        });
+      }
+    }
+
+    else if (type === '동의어') {
+      const inPool = new Set(pool.map(h => h.char));
+      const pairs = (window.SYNONYM_PAIRS || []).filter(p => inPool.has(p[0]) && inPool.has(p[1]));
+      for (const p of shuffle(pairs)) {
+        if (out.length >= n) break;
+        const [a, b] = Math.random() < 0.5 ? p : [p[1], p[0]];
+        const ha = pool.find(h => h.char === a), hb = pool.find(h => h.char === b);
+        if (!ha || !hb || used.has(a)) continue;
+        used.add(a);
+        const w = pool.filter(h => h.char !== a && h.char !== b);
+        out.push({
+          type: '동의어', prompt: '다음 한자와 <b>뜻이 비슷한</b> 한자는?', subject: `${a} (${ha.hunmum})`,
+          options: shuffle([hb].concat(pick(w, 3))).map(x => x.char), optionHanja: true,
+          answer: b, itemId: ha.id, char: a,
+          explain: `${a}(${ha.hunmum}) ≒ ${b}(${hb.hunmum})`
+        });
+      }
+    }
+
+    else if (type === '한문') {
+      // 천자문 구절과 고사성어로 짧은 한문 해석 문제를 만듭니다
+      const verses = (window.THOUSAND_VERSES || []).slice();
+      const idioms = (window.IDIOMS || []).slice();
+      const items = shuffle(
+        verses.map(v => ({ text: v.verse, reading: v.reading, meaning: v.meaning, id: 'verse_' + v.no, src: `천자문 제${v.no}구` }))
+        .concat(idioms.map(i => ({ text: i.idiom, reading: i.reading, meaning: i.meaning, id: i.id, src: i.source })))
+      );
+      for (const it of items) {
+        if (out.length >= n) break;
+        if (used.has(it.text)) continue;
+        used.add(it.text);
+        const others2 = shuffle(items.filter(x => x.id !== it.id)).slice(0, 3);
+        if (others2.length < 3) break;
+        const askReading = Math.random() < 0.4;
+        out.push({
+          type: '한문',
+          prompt: askReading ? '다음 한문 구절을 <b>바르게 읽은 것</b>은?' : '다음 한문 구절의 <b>뜻</b>으로 알맞은 것은?',
+          subject: it.text,
+          options: shuffle([it].concat(others2)).map(x => askReading ? x.reading : x.meaning),
+          answer: askReading ? it.reading : it.meaning,
+          itemId: it.id, char: it.text,
+          explain: `${it.text} (${it.reading}) — ${it.meaning} · ${it.src}`
+        });
+      }
+    }
+
     else if (type === '동음이의어') {
       // 제시된 한자와 음은 같지만 뜻이 다른 한자 고르기
       const bySound = {};
