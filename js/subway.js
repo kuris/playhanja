@@ -17,12 +17,11 @@
     if (!grid) return;
     grid.innerHTML = SUBWAY_LINES.map(function (l) {
       const stations = getLineStations(l.id);
-      const storied = stations.filter(function (s) { return !!s.story; }).length;
       return `
         <button class="line-card" data-line="${l.id}" style="--line-color:${l.color}">
           <span class="lc-badge">${l.name}</span>
           <span class="lc-desc">${l.desc}</span>
-          <span class="lc-meta">${stations.length}개 역 · 이야기 ${storied}개</span>
+          <span class="lc-meta">${stations.length}개 역</span>
         </button>`;
     }).join('');
 
@@ -55,7 +54,6 @@
           <span class="sc-order">${s.order}</span>
           <span class="sc-ko">${s.ko}</span>
           <span class="sc-mixed">${s.mixed}</span>
-          ${s.story ? '<span class="sc-dot" title="이야기가 있어요">💡</span>' : ''}
         </button>`;
     }).join('');
 
@@ -227,9 +225,9 @@
     const el = $('subway-stats');
     if (el) {
       el.innerHTML = `
+        <span><strong>${SUBWAY_LINES.length}</strong>개 노선</span>
         <span><strong>${stats.total}</strong>개 역</span>
         <span><strong>${stats.uniqueChars}</strong>자의 한자</span>
-        <span><strong>${stats.storied}</strong>개 역 이야기</span>
         <span><strong>${stats.pureKorean}</strong>개 순우리말 역</span>`;
     }
 

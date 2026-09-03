@@ -3003,7 +3003,6 @@ img { max-width: 100%; display: block; }
 }
 .station-chip .sc-ko { font-size: 1rem; font-weight: 800; color: var(--color-text); }
 .station-chip .sc-mixed { font-family: var(--font-hanzi); font-size: .9rem; color: var(--color-text-soft); }
-.sc-dot { position: absolute; top: 8px; right: 10px; font-size: .8rem; }
 
 .station-detail {
   position: relative; background: #fff; border: 2px solid var(--color-border);
