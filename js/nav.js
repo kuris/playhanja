@@ -32,6 +32,7 @@
         { label: '퀴즈로 복습', href: 'quiz.html', icon: '🧩', desc: '주제별·급수별·오답 복습' }
       ]
     },
+    { label: '지하철 한자', href: 'subway.html', icon: '🚇' },
     { label: '학습 플래너', href: 'planner.html', icon: '🗓️' }
   ];
 

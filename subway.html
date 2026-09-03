@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>재미로 보는 지하철 역 한자 (1~9호선) - 한자야 놀자!</title>
+<meta name="description" content="매일 지나다니는 지하철 역이름에 숨은 한자를 노선별로 찾아봐요. 왕십리, 잠실, 압구정처럼 이름에 얽힌 이야기와 글자마다의 훈음을 함께 알려줍니다.">
+<link rel="canonical" href="https://hanja.chatgpts.kr/subway.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@500;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+<meta name="google-adsense-account" content="ca-pub-3321070604000141">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321070604000141&tfat=1" crossorigin="anonymous"></script>
+<script>
+  /* 이 사이트는 어린이 학습 사이트입니다.
+     스크립트 주소의 tfat=1 로 모든 광고 요청을 아동 대상으로 표시합니다.
+     태그 단위 설정이 사이트/계정 설정보다 우선하므로,
+     같은 애드센스 계정의 다른 사이트(블로그 등)에는 영향을 주지 않습니다.
+     아래는 개인 맞춤 광고를 추가로 차단하는 보조 설정입니다. */
+  (window.adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds = 1;
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-wrap">
+    <a href="index.html" class="logo">
+      <span class="logo-char">漢</span>
+      <span>한자야 놀자!</span>
+    </a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="메뉴 열기"><i class="fa-solid fa-bars"></i></button>
+    <nav class="main-nav" id="main-nav"></nav>
+  </div>
+</header>
+
+<main class="section" style="padding-top:26px;">
+  <div class="container">
+
+    <!-- 노선 고르기 -->
+    <div id="subway-home">
+      <div class="section-head" style="margin-bottom:20px;">
+        <span class="eyebrow">SUBWAY</span>
+        <h2>🚇 재미로 보는 지하철 역 한자</h2>
+        <p>매일 지나다니는 그 역이름, 사실은 한자로 되어 있어요.<br>
+        노선을 골라 역을 누르면 <strong>글자마다의 뜻과 소리</strong>, 그리고 <strong>이름에 얽힌 이야기</strong>를 알려줘요.</p>
+      </div>
+
+      <div class="subway-stats" id="subway-stats"></div>
+
+      <div class="subway-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="station-search" placeholder="역 이름으로 찾기 (예: 왕십리, 蠶室)" autocomplete="off">
+      </div>
+      <div class="search-result" id="search-result" style="display:none;"></div>
+
+      <div class="line-grid" id="line-grid"></div>
+
+      <div class="subway-tip">
+        <h3><i class="fa-solid fa-lightbulb"></i> 알고 보면 재미있어요</h3>
+        <p>역이름이 모두 한자인 건 아니에요. <strong>애오개, 뚝섬, 학여울, 돌곶이</strong>처럼 순우리말 이름도 있고,
+        <strong>서울역</strong>처럼 우리말과 한자를 나란히 쓰는 곳도 있답니다.
+        2호선 <strong>아현(阿峴)</strong>과 5호선 <strong>애오개</strong>는 같은 고개를 가리키는데,
+        하나는 한자말로 하나는 우리말로 남았어요.</p>
+      </div>
+    </div>
+
+    <!-- 역 목록 -->
+    <div id="subway-line" style="display:none;">
+      <button class="btn btn-outline btn-sm" id="line-back"><i class="fa-solid fa-arrow-left"></i> 노선 고르기</button>
+
+      <div class="line-head" id="line-head"></div>
+
+      <div class="station-list" id="station-list"></div>
+
+      <!-- 역 상세 -->
+      <div class="station-detail" id="station-detail" style="display:none;">
+        <button class="sd-close" id="sd-close" aria-label="닫기"><i class="fa-solid fa-xmark"></i></button>
+
+        <div class="sd-head">
+          <span class="sd-title" id="sd-title"></span>
+          <span class="sd-mixed" id="sd-mixed"></span>
+        </div>
+
+        <div class="sd-transfer" id="sd-transfer"></div>
+
+        <div class="sd-chars" id="sd-chars"></div>
+
+        <div class="sd-pure" id="sd-pure" style="display:none;">
+          <i class="fa-solid fa-seedling"></i>
+          이 역이름은 <strong>순우리말</strong>이에요. 한자로 옮겨 쓰지 않는 소중한 우리말 이름이랍니다.
+        </div>
+
+        <div class="sd-story" id="sd-story" style="display:none;">
+          <h3><i class="fa-solid fa-book-open"></i> 이름에 얽힌 이야기</h3>
+          <p id="sd-story-text"></p>
+        </div>
+
+        <div class="sd-actions">
+          <a class="btn btn-primary btn-sm" id="sd-flash"><i class="fa-solid fa-bolt"></i> 이 급수 카드로 복습</a>
+          <a class="btn btn-secondary btn-sm" id="sd-print" target="_blank"><i class="fa-solid fa-print"></i> A4 연습장 인쇄</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/grade-data.js"></script>
+<script src="js/subway-data.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/subway.js"></script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>
