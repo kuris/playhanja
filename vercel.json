@@ -2,14 +2,14 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "redirects": [
     {
-      "source": "/:path*",
+      "source": "/((?!ads\\.txt|robots\\.txt|sitemap\\.xml).*)",
       "has": [
         {
           "type": "host",
           "value": "playhanja.vercel.app"
         }
       ],
-      "destination": "https://hanja.chatgpts.kr/:path*",
+      "destination": "https://hanja.chatgpts.kr/$1",
       "permanent": false
     }
   ]
