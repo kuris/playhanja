@@ -9,13 +9,19 @@
 
 ---
 
+## ⚠️ 도메인 변경됨 (2026-09)
+
+서비스 주소가 `playhanja.vercel.app` → **`hanja.chatgpts.kr`** 로 바뀌었습니다.
+구글 로그인을 붙이기 전에 **Supabase의 허용 리디렉션 주소부터** 새 도메인으로 갱신해야 합니다.
+(갱신 전에는 비밀번호 재설정 메일 링크도 동작하지 않습니다)
+
 ## 준비물
 
 | 항목 | 값 |
 |---|---|
 | Supabase 프로젝트 URL | `https://ybhiznlelnpwaicyoifa.supabase.co` |
 | Supabase 콜백 URL | `https://ybhiznlelnpwaicyoifa.supabase.co/auth/v1/callback` |
-| 서비스 주소(운영) | `https://playhanja.vercel.app` |
+| 서비스 주소(운영) | `https://hanja.chatgpts.kr` |
 | 서비스 주소(로컬 테스트) | `http://localhost:8899` (포트는 쓰는 것에 맞게) |
 
 > ⚠️ **Supabase 콜백 URL**을 구글에 등록해야 합니다. 우리 사이트 주소가 아닙니다.
@@ -53,7 +59,7 @@
 3. 이름: `playhanja-web`
 4. **승인된 자바스크립트 원본(Authorized JavaScript origins)**
    ```
-   https://playhanja.vercel.app
+   https://hanja.chatgpts.kr
    http://localhost:8899
    ```
 5. **승인된 리디렉션 URI(Authorized redirect URIs)** — ⭐ 가장 중요
@@ -82,8 +88,8 @@
 
 | 항목 | 값 |
 |---|---|
-| Site URL | `https://playhanja.vercel.app` |
-| Redirect URLs | `https://playhanja.vercel.app/login.html`<br>`https://playhanja.vercel.app/**`<br>`http://localhost:8899/login.html` |
+| Site URL | `https://hanja.chatgpts.kr` |
+| Redirect URLs | `https://hanja.chatgpts.kr/login.html`<br>`https://hanja.chatgpts.kr/**`<br>`http://localhost:8899/login.html` |
 
 > 코드에서 `redirectTo`를 `login.html`로 지정하고 있으므로(`js/auth.js`), 이 주소가 목록에 없으면
 > 로그인 후 사이트로 돌아오지 못하고 오류가 납니다.
@@ -92,7 +98,7 @@
 
 ## 3단계. 동작 확인
 
-1. `https://playhanja.vercel.app/login.html` 접속
+1. `https://hanja.chatgpts.kr/login.html` 접속
 2. **"구글로 로그인"** 버튼이 보이는지 확인
    (Supabase에서 provider를 켜면 자동으로 나타납니다. 안 보이면 새로고침)
 3. 버튼 클릭 → 구글 계정 선택 → 사이트로 되돌아와 로그인 완료
