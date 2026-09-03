@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
   let queue = [];        // 이번 세션 카드
   let index = 0;
   let flipped = false;
+  let revealed = false;   // 이 카드의 뜻을 한 번이라도 봤는지
   let sessionStats = { again: 0, hard: 0, good: 0 };
   let currentDeckKey = '';
   let busy = false;
@@ -102,6 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!card) { finish(); return; }
 
     flipped = false;
+    revealed = false;
     busy = false;
     flipCard.classList.remove('flipped');
     flipCard.style.transform = '';
@@ -125,19 +127,24 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('when-good').textContent = p.good;
   }
 
-  function flip() {
-    if (flipped) return;
-    flipped = true;
-    flipCard.classList.add('flipped');
-    gradeBar.classList.add('visible');
+  // 카드 뒤집기 (한 번 뜻을 본 뒤에는 다시 눌러 앞면으로 돌아올 수 있습니다)
+  function setFlipped(v) {
+    flipped = v;
+    flipCard.classList.toggle('flipped', v);
+    if (v) {
+      revealed = true;
+      gradeBar.classList.add('visible');   // 한 번 본 뒤에는 채점 버튼을 계속 쓸 수 있게 유지
+    }
   }
+  function flip() { setFlipped(true); }
+  function toggleFlip() { setFlipped(!flipped); }
 
   // ---------- 채점 ----------
   function grade(g) {
     if (busy) return;
     const card = queue[index];
     if (!card) return;
-    if (!flipped) { flip(); return; }   // 뒤집기 전이면 먼저 뒤집기
+    if (!revealed) { flip(); return; }   // 아직 뜻을 안 봤으면 먼저 뒤집기
     busy = true;
 
     SRS.review(card.id, g, { kind: card.kind, char: card.char });
@@ -177,7 +184,8 @@ document.addEventListener('DOMContentLoaded', function () {
   // ---------- 뒤집기 (탭/클릭) ----------
   flipCard.addEventListener('click', (e) => {
     if (e.target.closest('.speak-btn')) return;
-    flip();
+    if (moved) return;          // 스와이프 중이면 뒤집지 않음
+    toggleFlip();
   });
 
   // 읽어주기
@@ -216,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const dx = (e.clientX || 0) - startX;
 
     if (moved && Math.abs(dx) > 90) {
-      if (!flipped) flip();
+      if (!revealed) flip();
       grade(dx > 0 ? 2 : 0);            // 오른쪽=알아요, 왼쪽=모르겠어요
       return;
     }
@@ -230,7 +238,8 @@ document.addEventListener('DOMContentLoaded', function () {
   // ---------- 키보드 ----------
   document.addEventListener('keydown', (e) => {
     if (cardView.style.display === 'none') return;
-    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flipped ? grade(2) : flip(); }
+    if (e.key === ' ') { e.preventDefault(); toggleFlip(); }
+    else if (e.key === 'Enter') { e.preventDefault(); revealed ? grade(2) : flip(); }
     else if (e.key === 'ArrowLeft') { e.preventDefault(); grade(0); }
     else if (e.key === 'ArrowDown') { e.preventDefault(); grade(1); }
     else if (e.key === 'ArrowRight') { e.preventDefault(); grade(2); }
