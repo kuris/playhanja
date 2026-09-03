@@ -461,6 +461,11 @@
     body {
       background: #ffffff;
     }
+    /* 인쇄물에 광고가 섞이지 않도록 */
+    .adsbygoogle, ins.adsbygoogle, .google-auto-placed,
+    iframe[id^="google_ads"], iframe[name^="google_ads"], #google_esf {
+      display: none !important;
+    }
     /* 화면 축소 배율은 인쇄 시 원래 A4 크기로 되돌림 */
     .a4-page {
       transform: none !important;
@@ -489,6 +494,8 @@
     }
   }
 </style>
+<meta name="google-adsense-account" content="ca-pub-3321070604000141">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321070604000141" crossorigin="anonymous"></script>
 </head>
 <body>
 

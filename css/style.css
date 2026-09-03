@@ -2904,3 +2904,14 @@ img { max-width: 100%; display: block; }
   color: var(--color-text-soft); line-height: 1.6;
 }
 .sm-info strong { font-family: var(--font-hanzi); font-size: 1.2rem; color: var(--color-text); }
+
+
+/* 인쇄할 때는 광고가 나오지 않도록 (A4 연습장 출력 품질 보호) */
+@media print {
+  .adsbygoogle,
+  ins.adsbygoogle,
+  .google-auto-placed,
+  iframe[id^="google_ads"],
+  iframe[name^="google_ads"],
+  #google_esf { display: none !important; }
+}
