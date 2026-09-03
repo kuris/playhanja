@@ -3070,3 +3070,4 @@ img { max-width: 100%; display: block; }
   .sdc-char { font-size: 1.8rem; }
 }
 .sdc-note { font-size: .66rem; color: var(--color-text-soft); font-weight: 700; opacity: .85; }
+.sd-story-caveat { font-size: .8rem; color: var(--color-text-soft); margin: 8px 0 0; line-height: 1.6; }

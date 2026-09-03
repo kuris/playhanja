@@ -122,12 +122,37 @@
         </div>`;
     }).join('');
 
-    // 이야기
+    // 이야기 — 전해오는 유래가 있으면 그것을,
+    // 없으면 글자 뜻을 이어 붙인 '이름 풀이'를 대신 보여 줍니다.
+    const box = $('sd-story');
+    const head = $('sd-story-head');
+    const text = $('sd-story-text');
+    const caveat = $('sd-story-caveat');
+
     if (s.story) {
-      $('sd-story').style.display = '';
-      $('sd-story-text').textContent = s.story;
+      box.style.display = '';
+      head.innerHTML = '<i class="fa-solid fa-book-open"></i> 이름에 얽힌 이야기';
+      text.textContent = s.story;
+      caveat.style.display = 'none';
     } else {
-      $('sd-story').style.display = 'none';
+      const parts = s.hanjaChars.map(function (ch) {
+        const info = lookupHanja(ch);
+        return info ? ch + '(' + info.meaning + ' ' + info.sound + ')' : null;
+      }).filter(Boolean);
+
+      if (parts.length) {
+        const meanings = s.hanjaChars.map(function (ch) {
+          const info = lookupHanja(ch);
+          return info ? info.meaning : null;
+        }).filter(Boolean).join(' ');
+
+        box.style.display = '';
+        head.innerHTML = '<i class="fa-solid fa-puzzle-piece"></i> 글자 뜻으로 풀어보기';
+        text.textContent = parts.join(' · ') + '. 글자 뜻을 이어서 읽으면 “' + meanings + '”가 돼요.';
+        caveat.style.display = '';
+      } else {
+        box.style.display = 'none';
+      }
     }
 
     // 순우리말 안내

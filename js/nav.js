@@ -15,7 +15,8 @@
         { label: '급수별 한자', href: 'grade.html', icon: '🏅', desc: '어문회 8급~4급 1,000자' },
         { label: '고사성어', href: 'idiom.html', icon: '📖', desc: '유래 일화와 함께 111선' },
         { label: '천자문 250구', href: 'thousand.html', icon: '📜', desc: '천자문 1,000자 완주' },
-        { label: '재미로 보는 이야기', href: 'story.html', icon: '🌟', desc: '이야기 속 한자어를 눌러서' }
+        { label: '재미로 보는 이야기', href: 'story.html', icon: '🌟', desc: '이야기 속 한자어를 눌러서' },
+        { label: '재미로 보는 지하철 한자', href: 'subway.html', icon: '🚇', desc: '1~9호선 역이름 속 한자' }
       ]
     },
     {
@@ -32,7 +33,6 @@
         { label: '퀴즈로 복습', href: 'quiz.html', icon: '🧩', desc: '주제별·급수별·오답 복습' }
       ]
     },
-    { label: '지하철 한자', href: 'subway.html', icon: '🚇' },
     { label: '학습 플래너', href: 'planner.html', icon: '🗓️' }
   ];
 
