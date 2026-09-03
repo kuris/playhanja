@@ -2726,3 +2726,30 @@ img { max-width: 100%; display: block; }
   .main-nav .nav-desktop > li > a,
   .main-nav .nav-group-btn { padding: 8px 10px; font-size: .88rem; }
 }
+
+/* 급수가 13개로 늘어난 데 따른 레이아웃 조정 */
+.grade-picker { grid-template-columns: repeat(7, 1fr); }
+.exam-grade-grid { grid-template-columns: repeat(7, 1fr); }
+@media (min-width: 1025px) {
+  .grade-picker { grid-template-columns: repeat(13, 1fr); gap: 6px; }
+  .grade-picker .grade-card { padding: 10px 4px 8px; }
+  .grade-picker .grade-name { font-size: .92rem; }
+  .grade-picker .grade-title { font-size: .66rem; }
+  .grade-picker .grade-count { font-size: .66rem; }
+  .exam-grade-grid { grid-template-columns: repeat(13, 1fr); gap: 5px; }
+  .exam-grade-card { padding: 10px 3px; }
+  .exam-grade-card .egc-name { font-size: .88rem; }
+  .exam-grade-card .egc-sub, .exam-grade-card .egc-spec { font-size: .62rem; }
+}
+@media (max-width: 1024px) {
+  .grade-picker { grid-template-columns: repeat(5, 1fr); }
+  .exam-grade-grid { grid-template-columns: repeat(5, 1fr); }
+}
+@media (max-width: 640px) {
+  .grade-picker { grid-template-columns: repeat(4, 1fr); }
+  .exam-grade-grid { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 400px) {
+  .grade-picker { grid-template-columns: repeat(3, 1fr); }
+  .exam-grade-grid { grid-template-columns: repeat(3, 1fr); }
+}

@@ -199,6 +199,30 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
 
+    else if (type === '동음이의어') {
+      // 제시된 한자와 음은 같지만 뜻이 다른 한자 고르기
+      const bySound = {};
+      pool.forEach(h => { (bySound[h.sound] = bySound[h.sound] || []).push(h); });
+      const groups = Object.keys(bySound).filter(s => bySound[s].length >= 2);
+      for (const s of shuffle(groups)) {
+        if (out.length >= n) break;
+        const g = shuffle(bySound[s]);
+        const q = g[0], ans = g[1];
+        if (used.has(q.char)) continue;
+        used.add(q.char);
+        const wrongs = shuffle(pool.filter(h => h.sound !== s)).slice(0, 3);
+        if (wrongs.length < 3) continue;
+        out.push({
+          type: '동음이의어',
+          prompt: `다음 한자와 <b>음은 같고 뜻이 다른</b> 한자는?`,
+          subject: `${q.char} (${q.hunmum})`,
+          options: shuffle([ans].concat(wrongs)).map(x => x.char), optionHanja: true,
+          answer: ans.char, itemId: q.id, char: q.char,
+          explain: `${q.char}(${q.hunmum})와 ${ans.char}(${ans.hunmum})는 모두 '${s}'으로 읽습니다.`
+        });
+      }
+    }
+
     else if (type === '약자') {
       const inPool = new Set(pool.map(h => h.char));
       const pairs = (window.ABBREV_PAIRS || []).filter(p => inPool.has(p[0]));
@@ -250,11 +274,16 @@ document.addEventListener('DOMContentLoaded', function () {
         if (out.length >= n) break;
         if (!h.strokes || used.has(h.char)) continue;
         used.add(h.char);
+        // 보기 4개를 만든다. 1획 한자처럼 주변 값이 부족하면 범위를 넓혀 무한 반복을 막는다.
         const cand = new Set([h.strokes]);
-        while (cand.size < 4) {
-          const d = h.strokes + (Math.floor(Math.random() * 5) - 2);
+        let spread = 2;
+        let guard = 0;
+        while (cand.size < 4 && guard++ < 200) {
+          const d = h.strokes + (Math.floor(Math.random() * (spread * 2 + 1)) - spread);
           if (d > 0 && d !== h.strokes) cand.add(d);
+          if (guard % 20 === 0) spread++;
         }
+        if (cand.size < 4) continue;
         out.push({
           type: '필순', prompt: `다음 한자는 모두 <b>몇 획</b>일까요?`, subject: h.char,
           options: shuffle(Array.from(cand)).map(v => v + '획'),
