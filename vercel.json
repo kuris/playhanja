@@ -1,5 +1,16 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "comment": "DNS 전파가 끝나면 아래 redirects 주석을 해제해 기존 주소를 새 도메인으로 넘깁니다.",
-  "redirects": []
+  "redirects": [
+    {
+      "source": "/((?!ads\\.txt|robots\\.txt|sitemap\\.xml).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "playhanja.vercel.app"
+        }
+      ],
+      "destination": "https://hanja.chatgpts.kr/$1",
+      "permanent": false
+    }
+  ]
 }
