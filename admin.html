@@ -118,6 +118,37 @@
 
     <!-- ========== 탭 1: 화면 조회수 & 접속 시간대 분석 ========== -->
     <div class="admin-tab-panel" id="panel-traffic">
+
+      <!-- 기간 및 시간대 실시간 필터 컨트롤 -->
+      <div style="background:#fff;border:1.5px solid var(--admin-border);padding:16px 20px;border-radius:20px;margin-bottom:20px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 5px rgba(0,0,0,0.02);">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <span style="font-weight:900;font-size:.92rem;color:#1e293b;"><i class="fa-solid fa-calendar-check" style="color:#0284c7;"></i> 기간 단위:</span>
+            <div class="admin-filter-pills" id="admin-period-filter">
+              <button class="admin-pill-btn active" data-period="all">전체 누적</button>
+              <button class="admin-pill-btn" data-period="month">최근 30일 (월간)</button>
+              <button class="admin-pill-btn" data-period="week">최근 7일 (주간)</button>
+              <button class="admin-pill-btn" data-period="today">오늘</button>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <span style="font-weight:900;font-size:.92rem;color:#1e293b;"><i class="fa-solid fa-clock" style="color:#dc2626;"></i> 시간대 구분:</span>
+            <div class="admin-filter-pills" id="admin-time-slot-filter">
+              <button class="admin-pill-btn active" data-slot="all">전체 (00~23시)</button>
+              <button class="admin-pill-btn" data-slot="morning">아침 (06~12시)</button>
+              <button class="admin-pill-btn" data-slot="afternoon">오후 (12~18시)</button>
+              <button class="admin-pill-btn" data-slot="evening">저녁/밤 (18~24시)</button>
+              <button class="admin-pill-btn" data-slot="night">새벽 (00~06시)</button>
+            </div>
+          </div>
+        </div>
+        <div id="admin-filter-indicator" style="font-size:.82rem;color:#64748b;display:flex;align-items:center;gap:6px;">
+          <i class="fa-solid fa-circle-info" style="color:#0284c7;"></i>
+          <span id="admin-filter-summary">전체 기간 누적 및 전 시간대 통계를 표시 중입니다.</span>
+        </div>
+      </div>
+
       <div class="admin-stat-grid">
         <div class="admin-stat-card">
           <div class="admin-stat-head">

@@ -32,6 +32,12 @@ document.addEventListener('DOMContentLoaded', async function () {
   let cachedMembers = [];
   let cachedPageViews = [];
   let cachedQuizLogs = [];
+  let cachedTotalCount = null;
+
+  // 필터 상태 (기간 및 시간대)
+  let selectedPeriod = 'all';     // 'all' | 'month' | 'week' | 'today'
+  let selectedTimeSlot = 'all';   // 'all' | 'morning' | 'afternoon' | 'evening' | 'night'
+  let selectedExactHour = null;   // null 또는 0~23 (단일 시간대)
 
   function showMsg(text, type) {
     if (!authMsg) return;
@@ -140,6 +146,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
   });
 
+  // 필터 이벤트 바인딩 (기간 및 시간대)
+  setupFilters();
+
   // ---------- 4. 대시보드 전체 데이터 로딩 ----------
   async function loadAllDashboardData() {
     await Promise.allSettled([
@@ -153,7 +162,6 @@ document.addEventListener('DOMContentLoaded', async function () {
   // ---------- 5. [탭 1] 방문자 & 화면 조회수 통계 분석 ----------
   async function loadTrafficAndAnalytics() {
     let pvList = [];
-    let serverTotalCount = null;
     const localStats = getLocalPvStats();
 
     // 1) Supabase hanja.page_views 조회 시도 (count: 'exact'로 전체 누적 건수 실시간 획득)
@@ -163,7 +171,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           .select('*', { count: 'exact' }).order('created_at', { ascending: false }).limit(5000);
         if (!error && data && data.length > 0) {
           pvList = data;
-          serverTotalCount = count;
+          cachedTotalCount = count;
           cachedPageViews = data;
         }
       } catch (e) {
@@ -171,8 +179,91 @@ document.addEventListener('DOMContentLoaded', async function () {
       }
     }
 
-    // 2) Supabase에 데이터가 없거나 미설치 시 로컬 집계 데이터 보완
-    renderTrafficAnalytics(pvList, localStats, serverTotalCount);
+    // 2) 필터 적용 및 렌더링
+    applyTrafficFilters();
+  }
+
+  function setupFilters() {
+    const periodPills = document.querySelectorAll('#admin-period-filter .admin-pill-btn');
+    periodPills.forEach(btn => {
+      btn.addEventListener('click', () => {
+        periodPills.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedPeriod = btn.dataset.period;
+        selectedExactHour = null; // 특정 1시간 필터 해제
+        applyTrafficFilters();
+      });
+    });
+
+    const timeSlotPills = document.querySelectorAll('#admin-time-slot-filter .admin-pill-btn');
+    timeSlotPills.forEach(btn => {
+      btn.addEventListener('click', () => {
+        timeSlotPills.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedTimeSlot = btn.dataset.slot;
+        selectedExactHour = null; // 특정 1시간 필터 해제
+        applyTrafficFilters();
+      });
+    });
+  }
+
+  function applyTrafficFilters() {
+    const today = new Date();
+    const todayStr = today.toISOString().slice(0, 10);
+    const localStats = getLocalPvStats();
+
+    let filteredList = cachedPageViews.slice();
+
+    // 1. 기간 필터링
+    if (selectedPeriod === 'today') {
+      filteredList = filteredList.filter(r => (r.day || (r.created_at || '').slice(0, 10)) === todayStr);
+    } else if (selectedPeriod === 'week') {
+      const sevenDaysAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+      filteredList = filteredList.filter(r => (r.day || (r.created_at || '').slice(0, 10)) >= sevenDaysAgo);
+    } else if (selectedPeriod === 'month') {
+      const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+      filteredList = filteredList.filter(r => (r.day || (r.created_at || '').slice(0, 10)) >= thirtyDaysAgo);
+    }
+
+    // 2. 시간대 필터링
+    if (selectedExactHour !== null) {
+      filteredList = filteredList.filter(r => Number(r.hour) === selectedExactHour);
+    } else if (selectedTimeSlot === 'morning') {
+      filteredList = filteredList.filter(r => Number(r.hour) >= 6 && Number(r.hour) < 12);
+    } else if (selectedTimeSlot === 'afternoon') {
+      filteredList = filteredList.filter(r => Number(r.hour) >= 12 && Number(r.hour) < 18);
+    } else if (selectedTimeSlot === 'evening') {
+      filteredList = filteredList.filter(r => Number(r.hour) >= 18 && Number(r.hour) < 24);
+    } else if (selectedTimeSlot === 'night') {
+      filteredList = filteredList.filter(r => Number(r.hour) >= 0 && Number(r.hour) < 6);
+    }
+
+    // 요약 문구 업데이트
+    updateFilterSummaryText(filteredList.length);
+
+    const isAll = selectedPeriod === 'all' && selectedTimeSlot === 'all' && selectedExactHour === null;
+    const countToUse = isAll && cachedTotalCount != null ? cachedTotalCount : filteredList.length;
+
+    renderTrafficAnalytics(filteredList, localStats, countToUse);
+  }
+
+  function updateFilterSummaryText(count) {
+    const summaryEl = document.getElementById('admin-filter-summary');
+    if (!summaryEl) return;
+    const periodNames = { all: '전체 누적', month: '최근 30일(월간)', week: '최근 7일(주간)', today: '오늘 당일' };
+    const slotNames = { all: '전 시간대', morning: '아침(06~12시)', afternoon: '오후(12~18시)', evening: '저녁/밤(18~24시)', night: '새벽(00~06시)' };
+
+    let label = `[${periodNames[selectedPeriod] || '전체'}]`;
+    if (selectedExactHour !== null) {
+      label += ` · [${selectedExactHour}시 정밀 조회]`;
+    } else if (selectedTimeSlot !== 'all') {
+      label += ` · [${slotNames[selectedTimeSlot]}]`;
+    }
+    label += ` 조건 필터링 결과: 총 ${count.toLocaleString()}회 조회`;
+    if (selectedExactHour !== null) {
+      label += ` (시간대 막대를 다시 누르면 필터가 해제됩니다)`;
+    }
+    summaryEl.textContent = label;
   }
 
   function getLocalPvStats() {
@@ -192,7 +283,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     let todayPv = 0;
 
     if (pvList.length > 0) {
-      // Supabase 실시간 서버 데이터 집계
       totalPv = serverTotalCount != null ? serverTotalCount : pvList.length;
       pvList.forEach(r => {
         const p = (r.path || '').replace(/^\//, '') || 'index.html';
@@ -208,7 +298,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (day === todayStr) todayPv++;
       });
     } else {
-      // 로컬 스토리지 데이터 사용
       const pObj = localStats.pages || {};
       for (const [p, cnt] of Object.entries(pObj)) {
         const title = pageTitleOf(p);
@@ -226,7 +315,6 @@ document.addEventListener('DOMContentLoaded', async function () {
       todayPv = (localStats.days && localStats.days[todayStr]) || Math.round(totalPv * 0.4);
     }
 
-    // 기본 시뮬레이션 베이스라인 (최초 방문 시에도 가독성 보장)
     if (totalPv === 0) {
       totalPv = 1;
       todayPv = 1;
@@ -316,14 +404,29 @@ document.addEventListener('DOMContentLoaded', async function () {
     chartEl.innerHTML = hoursMap.map((cnt, h) => {
       const pct = Math.max(4, Math.round((cnt / safeMax) * 100));
       const isPeak = cnt === maxVal && maxVal > 0;
+      const isSelected = selectedExactHour === h;
       return `
-        <div class="admin-hour-bar-wrap" title="${h}시: ${cnt}회 조회">
+        <div class="admin-hour-bar-wrap" title="${h}시: ${cnt}회 조회 (클릭하여 이 시간대만 필터링)">
           <span class="admin-hour-count">${cnt > 0 ? cnt : ''}</span>
-          <div class="admin-hour-bar ${isPeak ? 'is-peak' : ''}" style="height:${pct}%;"></div>
+          <div class="admin-hour-bar ${isPeak ? 'is-peak' : ''} ${isSelected ? 'is-selected' : ''}"
+               data-hour="${h}" style="height:${pct}%;"></div>
           <span class="admin-hour-label">${h}</span>
         </div>
       `;
     }).join('');
+
+    // 시간대 막대 클릭 시 해당 시간대로 정밀 필터링
+    chartEl.querySelectorAll('.admin-hour-bar').forEach(bar => {
+      bar.addEventListener('click', () => {
+        const h = Number(bar.dataset.hour);
+        if (selectedExactHour === h) {
+          selectedExactHour = null; // 해제
+        } else {
+          selectedExactHour = h; // 선택
+        }
+        applyTrafficFilters();
+      });
+    });
   }
 
   function renderPageRanking(pages, totalPv) {

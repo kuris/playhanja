@@ -300,6 +300,43 @@ body.admin-body {
   padding: 26px 20px 60px;
 }
 
+/* 기간 및 시간대 필터 알약 버튼 */
+.admin-filter-pills {
+  display: inline-flex;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 3px;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+.admin-pill-btn {
+  background: transparent;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: .84rem;
+  font-weight: 700;
+  color: var(--admin-text-soft);
+  cursor: pointer;
+  transition: all .14s ease;
+  white-space: nowrap;
+}
+.admin-pill-btn:hover {
+  color: var(--admin-text);
+}
+.admin-pill-btn.active {
+  background: #fff;
+  color: var(--admin-primary);
+  font-weight: 900;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+.admin-hour-bar.is-selected {
+  outline: 2.5px solid #0f172a;
+  outline-offset: 1px;
+}
+
 /* 통계 카드 그리드 */
 .admin-stat-grid {
   display: grid;
