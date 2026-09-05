@@ -9,6 +9,13 @@
   const LOCAL_KEY = 'hanzi_learned_ids';
   const BEST_KEY = 'hanzi_grade_best_scores';
   const SERVICE = 'hanja';   // 이 프로젝트는 여러 서비스가 계정을 공유합니다
+  const ADMIN_EMAILS = ['phiskim@gmail.com'];
+
+  function isAdmin(user) {
+    if (!user) return false;
+    const email = (user.email || '').toLowerCase().trim();
+    return ADMIN_EMAILS.includes(email);
+  }
 
   let currentUser = null;
   let currentProfile = null;
@@ -65,11 +72,12 @@
     return data.user;
   }
 
-  async function signInWithGoogle() {
+  async function signInWithGoogle(redirectTo) {
     if (!isReady()) throw new Error('서버 연결을 준비하지 못했어요.');
+    const target = redirectTo || (location.origin + '/login.html');
     const { error } = await sb().auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: location.origin + '/login.html' }
+      options: { redirectTo: target }
     });
     if (error) throw error;
   }
@@ -110,14 +118,17 @@
         .select('*').eq('user_id', currentUser.id).eq('service', SERVICE);
 
       const existing = rows && rows[0];
+      const isAdm = isAdmin(currentUser);
       if (existing) {
         joinedNow = false;
-        // 접속 시각만 갱신
+        // 접속 시각 및 관리자 권한 갱신
+        const updatePayload = { last_seen_at: new Date().toISOString() };
+        if (isAdm && existing.role !== 'admin') updatePayload.role = 'admin';
         sb().schema('public').from('service_members')
-          .update({ last_seen_at: new Date().toISOString() })
+          .update(updatePayload)
           .eq('user_id', currentUser.id).eq('service', SERVICE)
           .then(() => {}, () => {});
-        return { isNew: false, status: existing.status, role: existing.role };
+        return { isNew: false, status: existing.status, role: isAdm ? 'admin' : existing.role };
       }
 
       // 이 서비스에는 처음 - 지금 가입 처리
@@ -126,13 +137,14 @@
       await sb().schema('public').from('service_members').insert({
         user_id: currentUser.id,
         service: SERVICE,
+        role: isAdm ? 'admin' : 'member',
         nickname: nick,
         last_seen_at: new Date().toISOString()
       });
       // 서비스 전용 프로필도 함께 생성
       await sb().from('profiles').upsert({ id: currentUser.id, nickname: nick }, { onConflict: 'id' });
       joinedNow = true;
-      return { isNew: true, status: 'active' };
+      return { isNew: true, status: 'active', role: isAdm ? 'admin' : 'member' };
     } catch (e) {
       console.warn('[한자야 놀자] 서비스 가입 확인 실패:', e.message || e);
       return { isNew: false, status: 'active' };
@@ -277,11 +289,13 @@
     }
 
     if (currentUser) {
+      const isAdm = isAdmin(currentUser);
       box.innerHTML = `
         <a class="auth-user" href="login.html" title="내 학습 기록 보기">
           <span class="auth-avatar">${(displayName()[0] || '한').toUpperCase()}</span>
           <span class="auth-name">${displayName()}</span>
         </a>
+        ${isAdm ? `<a class="auth-admin-badge" href="admin.html" title="관리자 대시보드"><i class="fa-solid fa-crown"></i> 관리자</a>` : ''}
       `;
     } else {
       box.innerHTML = `<a class="auth-login-btn" href="login.html"><i class="fa-solid fa-right-to-bracket"></i> 로그인</a>`;
@@ -337,7 +351,9 @@
     getUser: () => currentUser,
     getProfile: () => currentProfile,
     displayName: displayName,
-    isLoggedIn: () => !!currentUser
+    isLoggedIn: () => !!currentUser,
+    isAdmin: () => isAdmin(currentUser),
+    ADMIN_EMAILS: ADMIN_EMAILS
   };
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

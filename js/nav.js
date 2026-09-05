@@ -160,6 +160,54 @@
     window.addEventListener('orientationchange', closeNav);
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initNav);
-  else initNav();
+  // ---------- 화면 조회수 및 접속 시간대 통계 수집 ----------
+  function trackPageView() {
+    try {
+      const f = location.pathname.split('/').pop() || 'index.html';
+      if (f === 'admin.html') return; // 관리자 페이지는 집계 제외
+      const title = document.title.replace(' - 한자야 놀자!', '').trim() || f;
+      const now = new Date();
+      const hour = now.getHours();
+      const day = now.toISOString().slice(0, 10);
+
+      // 1) 브라우저 로컬 통계 (오프라인/즉시 분석용)
+      try {
+        const STATS_KEY = 'hanja_local_pv_stats';
+        const stats = JSON.parse(localStorage.getItem(STATS_KEY) || '{"pages":{},"hours":{},"days":{},"recent":[]}');
+        stats.pages[f] = (stats.pages[f] || 0) + 1;
+        stats.hours[hour] = (stats.hours[hour] || 0) + 1;
+        stats.days[day] = (stats.days[day] || 0) + 1;
+        stats.recent = (stats.recent || []).slice(0, 29);
+        stats.recent.unshift({ path: f, title: title, time: now.toISOString() });
+        localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+      } catch (e) {}
+
+      // 2) Supabase 실시간 서버 통계 (비동기 전송)
+      function sendToSupabase() {
+        if (!window.sb) return;
+        const uid = window.HanjaAuth && window.HanjaAuth.getUser ? (window.HanjaAuth.getUser() || {}).id : null;
+        window.sb.from('page_views').insert({
+          path: '/' + f,
+          page_title: title,
+          referrer: document.referrer || null,
+          user_id: uid || null,
+          hour: hour,
+          day: day
+        }).then(() => {}, () => {});
+      }
+
+      if (window.sb) {
+        sendToSupabase();
+      } else {
+        window.addEventListener('load', () => setTimeout(sendToSupabase, 600), { once: true });
+      }
+    } catch (e) {}
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => { initNav(); trackPageView(); });
+  } else {
+    initNav();
+    trackPageView();
+  }
 })();

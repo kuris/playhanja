@@ -1,5 +1,12 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/admin",
+      "destination": "/admin.html"
+    }
+  ],
   "redirects": [
     {
       "source": "/((?!ads\\.txt|robots\\.txt|sitemap\\.xml).*)",
@@ -14,3 +21,4 @@
     }
   ]
 }
+

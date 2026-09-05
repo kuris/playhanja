@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>관리자 센터 - 한자야 놀자!</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@500;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body">
+
+<!-- ================= 1. 로딩 화면 ================= -->
+<div class="admin-loading-wrap" id="admin-loading">
+  <div class="admin-spinner"></div>
+  <p>관리자 보안 인증 확인 중...</p>
+</div>
+
+<!-- ================= 2. 관리자 로그인 화면 (비로그인 시) ================= -->
+<div class="admin-auth-container" id="admin-auth-view" style="display:none;">
+  <div class="admin-auth-card">
+    <div class="admin-auth-icon"><i class="fa-solid fa-shield-halved"></i></div>
+    <h2>관리자 센터 로그인</h2>
+    <p>시스템 관리자(<strong>phiskim@gmail.com</strong>) 전용 화면입니다.<br>등록된 계정으로 로그인해 주세요.</p>
+
+    <!-- Google 로그인 -->
+    <button type="button" class="admin-btn-google" id="admin-google-btn">
+      <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+        <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.9 2.4 30.4 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.2C12.4 13.6 17.7 9.5 24 9.5z"/>
+        <path fill="#4285F4" d="M46.1 24.6c0-1.6-.1-3.1-.4-4.6H24v9.1h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.2 5.6c4.2-3.9 6.6-9.6 6.6-17z"/>
+        <path fill="#FBBC05" d="M10.5 28.6c-.5-1.4-.8-2.9-.8-4.6s.3-3.2.8-4.6l-7.9-6.2C1 16.3 0 20 0 24s1 7.7 2.6 10.8l7.9-6.2z"/>
+        <path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.2-5.6c-2 1.4-4.6 2.2-8.7 2.2-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.2C6.5 42.6 14.6 48 24 48z"/>
+      </svg>
+      Google 계정으로 관리자 로그인
+    </button>
+
+    <div class="admin-divider"><span>또는 이메일 비밀번호</span></div>
+
+    <!-- 이메일 로그인 폼 -->
+    <form id="admin-login-form">
+      <div class="admin-form-group">
+        <label>관리자 이메일</label>
+        <input type="email" id="admin-input-email" class="admin-input" value="phiskim@gmail.com" required autocomplete="username">
+      </div>
+      <div class="admin-form-group">
+        <label>비밀번호</label>
+        <input type="password" id="admin-input-pass" class="admin-input" required placeholder="비밀번호 입력" autocomplete="current-password">
+      </div>
+      <button type="submit" class="admin-btn-submit"><i class="fa-solid fa-right-to-bracket"></i> 관리자 로그인</button>
+    </form>
+
+    <div id="admin-auth-msg" style="margin-top:16px;"></div>
+
+    <div style="margin-top:20px;">
+      <a href="index.html" class="admin-btn-outline"><i class="fa-solid fa-arrow-left"></i> 서비스 홈으로 돌아가기</a>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 3. 접근 권한 없음 화면 (일반 회원 로그인 시) ================= -->
+<div class="admin-auth-container" id="admin-denied-view" style="display:none;">
+  <div class="admin-auth-card">
+    <div class="admin-auth-icon" style="background:#fee2e2;color:#dc2626;"><i class="fa-solid fa-lock"></i></div>
+    <h2>접근 권한이 없습니다</h2>
+    <p>현재 로그인된 계정(<strong id="denied-user-email"></strong>)은 관리자 권한이 없습니다.<br>
+    이 페이지는 최고 관리자(<strong>phiskim@gmail.com</strong>) 전용입니다.</p>
+
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <button type="button" class="admin-btn-submit js-admin-logout" style="background:#475569;">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i> 다른 계정으로 로그인 (로그아웃)
+      </button>
+      <a href="index.html" class="admin-btn-outline"><i class="fa-solid fa-house"></i> 홈으로 이동</a>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 4. 관리자 대시보드 화면 (phiskim@gmail.com 인증 완료 시) ================= -->
+<div id="admin-dashboard-view" style="display:none;">
+
+  <!-- 관리자 상단 헤더 -->
+  <header class="admin-header">
+    <div class="admin-header-inner">
+      <div class="admin-brand">
+        <span class="admin-logo-badge">漢</span>
+        <div class="admin-title-wrap">
+          <h1>한자야 놀자! <span class="admin-title-tag">ADMIN</span></h1>
+        </div>
+      </div>
+
+      <div class="admin-header-actions">
+        <span class="admin-user-pill">
+          <i class="fa-solid fa-crown"></i>
+          <span id="admin-current-email">phiskim@gmail.com</span>
+        </span>
+        <button class="admin-btn-outline" id="admin-refresh-btn"><i class="fa-solid fa-rotate"></i> 새로고침</button>
+        <a href="index.html" class="admin-btn-outline" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> 사이트 보기</a>
+        <button class="admin-btn-outline js-admin-logout" style="color:#b91c1c;border-color:#fca5a5;"><i class="fa-solid fa-right-from-bracket"></i> 로그아웃</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 탭 메뉴 -->
+  <nav class="admin-tabs-nav">
+    <div class="admin-tabs-inner">
+      <button class="admin-tab-btn active" data-tab="traffic"><i class="fa-solid fa-chart-line"></i> 화면 조회수 & 접속 시간대</button>
+      <button class="admin-tab-btn" data-tab="members"><i class="fa-solid fa-users"></i> 회원 및 접속 현황</button>
+      <button class="admin-tab-btn" data-tab="quizzes"><i class="fa-solid fa-clipboard-check"></i> 시험 & 학습 로그</button>
+      <button class="admin-tab-btn" data-tab="content"><i class="fa-solid fa-book-open"></i> 콘텐츠 현황 & 검색기</button>
+      <button class="admin-tab-btn" data-tab="system"><i class="fa-solid fa-database"></i> 시스템 & SQL 가이드</button>
+    </div>
+  </nav>
+
+  <!-- 대시보드 본문 -->
+  <main class="admin-content">
+
+    <!-- ========== 탭 1: 화면 조회수 & 접속 시간대 분석 ========== -->
+    <div class="admin-tab-panel" id="panel-traffic">
+      <div class="admin-stat-grid">
+        <div class="admin-stat-card">
+          <div class="admin-stat-head">
+            <span>총 누적 페이지뷰</span>
+            <span class="admin-stat-icon" style="background:#e0f2fe;color:#0284c7;"><i class="fa-solid fa-eye"></i></span>
+          </div>
+          <div class="admin-stat-num" id="stat-total-pv">0회</div>
+          <div class="admin-stat-sub">전체 화면 누적 집계</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-head">
+            <span>오늘 페이지뷰</span>
+            <span class="admin-stat-icon" style="background:#dcfce7;color:#16a34a;"><i class="fa-solid fa-calendar-day"></i></span>
+          </div>
+          <div class="admin-stat-num" id="stat-today-pv">0회</div>
+          <div class="admin-stat-sub">당일 접속 트래픽</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-head">
+            <span>최다 접속 시간대</span>
+            <span class="admin-stat-icon" style="background:#fee2e2;color:#dc2626;"><i class="fa-solid fa-clock"></i></span>
+          </div>
+          <div class="admin-stat-num" id="stat-peak-hour" style="font-size:1.4rem;">분석 중...</div>
+          <div class="admin-stat-sub">24시간 중 피크 시간</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-head">
+            <span>등록된 콘텐츠</span>
+            <span class="admin-stat-icon" style="background:#fef3c7;color:#d97706;"><i class="fa-solid fa-layer-group"></i></span>
+          </div>
+          <div class="admin-stat-num">3,500자</div>
+          <div class="admin-stat-sub">이야기 6편 · 지하철 350역</div>
+        </div>
+      </div>
+
+      <!-- 24시간 접속 시간대 분석 차트 -->
+      <div class="admin-panel">
+        <div class="admin-panel-head">
+          <h3 class="admin-panel-title"><i class="fa-solid fa-chart-column" style="color:#0284c7;"></i> 24시간 접속 시간대 분포 (00시 ~ 23시 KST)</h3>
+          <span style="font-size:.84rem;color:#64748b;">어느 시간대에 사용자가 가장 많이 방문하는지 시각화합니다.</span>
+        </div>
+        <div class="admin-hourly-chart" id="admin-hourly-chart"></div>
+      </div>
+
+      <!-- 2열 그리드: 인기 화면 랭킹 & 최근 방문 피드 -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(360px, 1fr));gap:20px;">
+        <div class="admin-panel">
+          <div class="admin-panel-head">
+            <h3 class="admin-panel-title"><i class="fa-solid fa-trophy" style="color:#eab308;"></i> 사용자가 자주 보는 화면 순위</h3>
+          </div>
+          <div class="admin-page-rank-list" id="admin-page-ranking"></div>
+        </div>
+
+        <div class="admin-panel">
+          <div class="admin-panel-head">
+            <h3 class="admin-panel-title"><i class="fa-solid fa-bolt" style="color:#10b981;"></i> 실시간 최근 방문 화면 로그</h3>
+          </div>
+          <div id="admin-recent-visits" style="max-height:360px;overflow-y:auto;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 탭 2: 회원 및 접속 현황 ========== -->
+    <div class="admin-tab-panel" id="panel-members" style="display:none;">
+      <div class="admin-stat-grid">
+        <div class="admin-stat-card">
+          <div class="admin-stat-head">
+            <span>총 등록 회원수</span>
+            <span class="admin-stat-icon" style="background:#e0f2fe;color:#0284c7;"><i class="fa-solid fa-users"></i></span>
+          </div>
+          <div class="admin-stat-num" id="stat-total-users">0명</div>
+          <div class="admin-stat-sub">service_members 기준</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-head">
+            <span>오늘 접속 회원</span>
+            <span class="admin-stat-icon" style="background:#dcfce7;color:#16a34a;"><i class="fa-solid fa-user-clock"></i></span>
+          </div>
+          <div class="admin-stat-num" id="stat-active-today">0명</div>
+          <div class="admin-stat-sub">24시간 내 접속 회원</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-head">
+            <span>최근 7일 활성 회원</span>
+            <span class="admin-stat-icon" style="background:#fef3c7;color:#d97706;"><i class="fa-solid fa-chart-user"></i></span>
+          </div>
+          <div class="admin-stat-num" id="stat-active-week">0명</div>
+          <div class="admin-stat-sub">주간 활성 유저 (WAU)</div>
+        </div>
+      </div>
+
+      <div class="admin-panel">
+        <div class="admin-panel-head">
+          <h3 class="admin-panel-title"><i class="fa-solid fa-address-book" style="color:#dc2626;"></i> 회원 목록 및 최근 접속 시각</h3>
+          <div class="admin-search-bar">
+            <i class="fa-solid fa-magnifying-glass" style="color:#94a3b8;"></i>
+            <input type="text" id="admin-member-search" placeholder="닉네임 / ID 검색...">
+          </div>
+        </div>
+
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>별명 (닉네임)</th>
+                <th>사용자 ID</th>
+                <th>상태</th>
+                <th>역할</th>
+                <th>가입일</th>
+                <th>최근 접속 일시</th>
+              </tr>
+            </thead>
+            <tbody id="admin-members-tbody">
+              <tr><td colspan="6" style="text-align:center;padding:20px;">회원 데이터를 불러오는 중...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 탭 3: 시험 & 학습 로그 ========== -->
+    <div class="admin-tab-panel" id="panel-quizzes" style="display:none;">
+      <div class="admin-stat-grid">
+        <div class="admin-stat-card">
+          <div class="admin-stat-head">
+            <span>최근 시험 응시 건수</span>
+            <span class="admin-stat-icon" style="background:#e0f2fe;color:#0284c7;"><i class="fa-solid fa-pen-nib"></i></span>
+          </div>
+          <div class="admin-stat-num" id="stat-total-quizzes">0건</div>
+          <div class="admin-stat-sub">모의고사 및 퀴즈 결과</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-head">
+            <span>평균 정답률</span>
+            <span class="admin-stat-icon" style="background:#dcfce7;color:#16a34a;"><i class="fa-solid fa-percent"></i></span>
+          </div>
+          <div class="admin-stat-num" id="stat-avg-score">—</div>
+          <div class="admin-stat-sub">전체 응시자 평균 점수</div>
+        </div>
+      </div>
+
+      <div class="admin-panel">
+        <div class="admin-panel-head">
+          <h3 class="admin-panel-title"><i class="fa-solid fa-list-check" style="color:#0284c7;"></i> 실시간 시험 응시 로그 (최근 50건)</h3>
+        </div>
+
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>응시 일시</th>
+                <th>시험 모드</th>
+                <th>급수 / 레벨</th>
+                <th>득점</th>
+                <th>결과</th>
+                <th>오답 수</th>
+              </tr>
+            </thead>
+            <tbody id="admin-quiz-tbody">
+              <tr><td colspan="6" style="text-align:center;padding:20px;">시험 기록을 불러오는 중...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 탭 4: 콘텐츠 현황 & 검색기 ========== -->
+    <div class="admin-tab-panel" id="panel-content" style="display:none;">
+      <div class="admin-stat-grid">
+        <div class="admin-stat-card">
+          <div class="admin-stat-head">
+            <span>배정한자 (8급~1급)</span>
+            <span class="admin-stat-icon" style="background:#f1f5f9;color:#0f172a;"><i class="fa-solid fa-font"></i></span>
+          </div>
+          <div class="admin-stat-num" id="stat-content-hanja">3,500자</div>
+          <div class="admin-stat-sub">한국어문회 공식 기준 100%</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-head">
+            <span>재미로 보는 이야기</span>
+            <span class="admin-stat-icon" style="background:#fef3c7;color:#d97706;"><i class="fa-solid fa-book"></i></span>
+          </div>
+          <div class="admin-stat-num" id="stat-content-stories">6편 (47장)</div>
+          <div class="admin-stat-sub">어린왕자·오디세이·삼국지·전래동화</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-head">
+            <span>지하철 역 한자 어원</span>
+            <span class="admin-stat-icon" style="background:#e0f2fe;color:#0284c7;"><i class="fa-solid fa-train-subway"></i></span>
+          </div>
+          <div class="admin-stat-num" id="stat-content-subway">350개 역</div>
+          <div class="admin-stat-sub">수도권 1~9호선 전 역 100%</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-head">
+            <span>고사성어 컬렉션</span>
+            <span class="admin-stat-icon" style="background:#fee2e2;color:#dc2626;"><i class="fa-solid fa-quote-left"></i></span>
+          </div>
+          <div class="admin-stat-num" id="stat-content-idiom">153선</div>
+          <div class="admin-stat-sub">유래 일화와 교훈 수록</div>
+        </div>
+      </div>
+
+      <!-- 실시간 한자 진단기 -->
+      <div class="admin-panel">
+        <div class="admin-panel-head">
+          <h3 class="admin-panel-title"><i class="fa-solid fa-magnifying-glass-chart" style="color:#0284c7;"></i> 실시간 한자 데이터 & 이야기 출현 탐색기</h3>
+        </div>
+        <p style="color:#64748b;font-size:.9rem;margin-top:0;">한자 1글자 또는 한글음을 입력하면 훈음, 부수, 획수 및 6개 이야기 중 어디에 나오는지 즉시 검색합니다.</p>
+        
+        <div style="display:flex;gap:10px;max-width:400px;margin-bottom:14px;">
+          <input type="text" id="admin-hanja-query" class="admin-input" placeholder="예: 海, 英雄, 智, 王...">
+          <button class="admin-btn-submit" id="admin-hanja-search-btn" style="width:auto;padding:0 22px;">검색</button>
+        </div>
+
+        <div id="admin-hanja-result"></div>
+      </div>
+    </div>
+
+    <!-- ========== 탭 5: 시스템 정보 & SQL 가이드 ========== -->
+    <div class="admin-tab-panel" id="panel-system" style="display:none;">
+      <div class="admin-panel">
+        <div class="admin-panel-head">
+          <h3 class="admin-panel-title"><i class="fa-solid fa-server" style="color:#10b981;"></i> 시스템 및 인프라 연동 정보</h3>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:14px;margin-bottom:20px;">
+          <div style="background:#f8fafc;padding:14px 18px;border-radius:14px;border:1px solid #e2e8f0;">
+            <div style="font-size:.8rem;color:#64748b;font-weight:700;">운영 도메인</div>
+            <div style="font-size:1.05rem;font-weight:900;margin-top:4px;">hanja.chatgpts.kr</div>
+          </div>
+          <div style="background:#f8fafc;padding:14px 18px;border-radius:14px;border:1px solid #e2e8f0;">
+            <div style="font-size:.8rem;color:#64748b;font-weight:700;">Supabase 프로젝트</div>
+            <div style="font-size:1.05rem;font-weight:900;margin-top:4px;">ybhiznlelnpwaicyoifa</div>
+          </div>
+          <div style="background:#f8fafc;padding:14px 18px;border-radius:14px;border:1px solid #e2e8f0;">
+            <div style="font-size:.8rem;color:#64748b;font-weight:700;">데이터베이스 스키마</div>
+            <div style="font-size:1.05rem;font-weight:900;margin-top:4px;">hanja (공유 auth)</div>
+          </div>
+          <div style="background:#f8fafc;padding:14px 18px;border-radius:14px;border:1px solid #e2e8f0;">
+            <div style="font-size:.8rem;color:#64748b;font-weight:700;">관리자 지정 계정</div>
+            <div style="font-size:1.05rem;font-weight:900;margin-top:4px;color:#dc2626;">phiskim@gmail.com</div>
+          </div>
+        </div>
+
+        <div class="admin-callout">
+          <div class="admin-callout-icon"><i class="fa-solid fa-circle-info"></i></div>
+          <div class="admin-callout-body">
+            <h4>Supabase 관리자 RLS 정책 가이드</h4>
+            <p>Supabase 대시보드(SQL Editor)에서 아래 SQL을 실행하면, <strong>phiskim@gmail.com</strong> 계정에 전체 회원 목록 조회 및 접속 현황 읽기 권한이 부여됩니다.</p>
+          </div>
+        </div>
+
+        <div class="admin-code-box">
+          <button class="admin-copy-btn" id="admin-copy-sql">SQL 복사</button>
+          <pre id="admin-sql-code" style="margin:0;font-family:inherit;">-- 1. phiskim@gmail.com 에 role='admin' 부여
+update public.service_members sm
+set role = 'admin', updated_at = now()
+from auth.users u
+where sm.user_id = u.id
+  and lower(u.email) = 'phiskim@gmail.com'
+  and sm.service = 'hanja';
+
+-- 2. 관리자는 모든 회원 조회 및 상태 변경 가능
+drop policy if exists "members_select_admin" on public.service_members;
+create policy "members_select_admin" on public.service_members
+  for select using ((auth.jwt()->>'email' = 'phiskim@gmail.com'));
+
+-- 3. 관리자는 전체 시험 결과 조회 가능
+drop policy if exists "quiz_select_admin" on hanja.quiz_results;
+create policy "quiz_select_admin" on hanja.quiz_results
+  for select using ((auth.jwt()->>'email' = 'phiskim@gmail.com'));
+
+-- 4. 화면 조회수 및 접속 시간대 통계 테이블 생성
+create table if not exists hanja.page_views (
+  id bigint generated always as identity primary key,
+  path text not null,
+  page_title text,
+  referrer text,
+  user_id uuid references auth.users on delete set null,
+  hour int not null default extract(hour from (now() at time zone 'Asia/Seoul')),
+  day date not null default (current_date at time zone 'Asia/Seoul')::date,
+  created_at timestamptz not null default now()
+);
+alter table hanja.page_views enable row level security;
+
+create policy "page_views_insert_all" on hanja.page_views for insert with check (true);
+create policy "page_views_select_admin" on hanja.page_views for select using ((auth.jwt()->>'email' = 'phiskim@gmail.com'));
+
+grant all on table hanja.page_views to anon, authenticated, service_role;</pre>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- 스크립트 의존성 -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/grade-data.js"></script>
+<script src="js/story-data.js"></script>
+<script src="js/subway-data.js"></script>
+<script src="js/idiom-data.js"></script>
+<script src="js/thousand-data.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>
