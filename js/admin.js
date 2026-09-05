@@ -153,15 +153,17 @@ document.addEventListener('DOMContentLoaded', async function () {
   // ---------- 5. [탭 1] 방문자 & 화면 조회수 통계 분석 ----------
   async function loadTrafficAndAnalytics() {
     let pvList = [];
+    let serverTotalCount = null;
     const localStats = getLocalPvStats();
 
-    // 1) Supabase hanja.page_views 조회 시도
+    // 1) Supabase hanja.page_views 조회 시도 (count: 'exact'로 전체 누적 건수 실시간 획득)
     if (sb()) {
       try {
-        const { data, error } = await sb().from('page_views')
-          .select('*').order('created_at', { ascending: false }).limit(2000);
+        const { data, count, error } = await sb().from('page_views')
+          .select('*', { count: 'exact' }).order('created_at', { ascending: false }).limit(5000);
         if (!error && data && data.length > 0) {
           pvList = data;
+          serverTotalCount = count;
           cachedPageViews = data;
         }
       } catch (e) {
@@ -170,7 +172,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     // 2) Supabase에 데이터가 없거나 미설치 시 로컬 집계 데이터 보완
-    renderTrafficAnalytics(pvList, localStats);
+    renderTrafficAnalytics(pvList, localStats, serverTotalCount);
   }
 
   function getLocalPvStats() {
@@ -181,16 +183,17 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
   }
 
-  function renderTrafficAnalytics(pvList, localStats) {
+  function renderTrafficAnalytics(pvList, localStats, serverTotalCount) {
     const todayStr = new Date().toISOString().slice(0, 10);
     const pagesMap = {};
     const hoursMap = Array(24).fill(0);
+    const daysMap = {};
     let totalPv = 0;
     let todayPv = 0;
 
     if (pvList.length > 0) {
       // Supabase 실시간 서버 데이터 집계
-      totalPv = pvList.length;
+      totalPv = serverTotalCount != null ? serverTotalCount : pvList.length;
       pvList.forEach(r => {
         const p = (r.path || '').replace(/^\//, '') || 'index.html';
         const title = r.page_title || p;
@@ -200,7 +203,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         const h = Number(r.hour);
         if (!isNaN(h) && h >= 0 && h < 24) hoursMap[h]++;
 
-        const day = (r.day || '').slice(0, 10);
+        const day = (r.day || (r.created_at || '').slice(0, 10)) || todayStr;
+        daysMap[day] = (daysMap[day] || 0) + 1;
         if (day === todayStr) todayPv++;
       });
     } else {
@@ -215,6 +219,10 @@ document.addEventListener('DOMContentLoaded', async function () {
       for (let i = 0; i < 24; i++) {
         hoursMap[i] = hObj[i] || 0;
       }
+      const dObj = localStats.days || {};
+      for (const [d, cnt] of Object.entries(dObj)) {
+        daysMap[d] = cnt;
+      }
       todayPv = (localStats.days && localStats.days[todayStr]) || Math.round(totalPv * 0.4);
     }
 
@@ -224,6 +232,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       todayPv = 1;
       pagesMap['story.html'] = { path: 'story.html', title: '재미로 보는 이야기', count: 1 };
       hoursMap[new Date().getHours()] = 1;
+      daysMap[todayStr] = 1;
     }
 
     // 카드 통계 반영
@@ -242,11 +251,42 @@ document.addEventListener('DOMContentLoaded', async function () {
     // 24시간 접속 시간대 바 차트 렌더링
     renderHourlyChart(hoursMap, maxHourVal);
 
+    // 일자별 방문 추이 렌더링 (영구 누적)
+    renderDailyChart(daysMap);
+
     // 자주 보는 화면 랭킹 렌더링
     renderPageRanking(Object.values(pagesMap), totalPv);
 
     // 최근 방문 로그 렌더링
     renderRecentVisits(pvList, localStats.recent || []);
+  }
+
+  function renderDailyChart(daysMap) {
+    const el = document.getElementById('admin-daily-chart');
+    if (!el) return;
+    const sortedDays = Object.keys(daysMap).sort().reverse().slice(0, 14);
+    if (sortedDays.length === 0) {
+      el.innerHTML = '<p style="color:#64748b;font-size:.86rem;margin:6px 0;">아직 일자별 누적 데이터가 없습니다.</p>';
+      return;
+    }
+    const maxVal = Math.max(...sortedDays.map(d => daysMap[d]), 1);
+
+    el.innerHTML = sortedDays.map(d => {
+      const cnt = daysMap[d];
+      const pct = Math.max(5, Math.round((cnt / maxVal) * 100));
+      const isToday = d === new Date().toISOString().slice(0, 10);
+      return `
+        <div style="display:flex;align-items:center;gap:12px;font-size:.88rem;">
+          <span style="min-width:96px;font-weight:${isToday ? '800' : '600'};color:${isToday ? '#dc2626' : '#334155'};">
+            ${d} ${isToday ? '<small style="background:#fee2e2;color:#b91c1c;padding:1px 6px;border-radius:999px;font-size:.7rem;margin-left:2px;">오늘</small>' : ''}
+          </span>
+          <div style="flex:1;height:12px;background:#f1f5f9;border-radius:999px;overflow:hidden;">
+            <div style="width:${pct}%;height:100%;background:${isToday ? '#10b981' : '#0284c7'};border-radius:999px;"></div>
+          </div>
+          <span style="min-width:60px;text-align:right;font-weight:800;color:#0f172a;">${cnt.toLocaleString()}회</span>
+        </div>
+      `;
+    }).join('');
   }
 
   function pageTitleOf(path) {

@@ -162,6 +162,15 @@
         <div class="admin-hourly-chart" id="admin-hourly-chart"></div>
       </div>
 
+      <!-- 일자별 방문 추이 (누적) -->
+      <div class="admin-panel">
+        <div class="admin-panel-head">
+          <h3 class="admin-panel-title"><i class="fa-solid fa-calendar-days" style="color:#10b981;"></i> 일자별 방문 추이 (오늘부터 영구 누적)</h3>
+          <span class="admin-badge admin-badge-info"><i class="fa-solid fa-database"></i> Supabase 실시간 영구 누적 기록 중</span>
+        </div>
+        <div id="admin-daily-chart" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+
       <!-- 2열 그리드: 인기 화면 랭킹 & 최근 방문 피드 -->
       <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(360px, 1fr));gap:20px;">
         <div class="admin-panel">
@@ -173,7 +182,7 @@
 
         <div class="admin-panel">
           <div class="admin-panel-head">
-            <h3 class="admin-panel-title"><i class="fa-solid fa-bolt" style="color:#10b981;"></i> 실시간 최근 방문 화면 로그</h3>
+            <h3 class="admin-panel-title"><i class="fa-solid fa-bolt" style="color:#0ea5e9;"></i> 실시간 최근 방문 화면 로그</h3>
           </div>
           <div id="admin-recent-visits" style="max-height:360px;overflow-y:auto;"></div>
         </div>
