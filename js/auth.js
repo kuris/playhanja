@@ -72,9 +72,31 @@
     return data.user;
   }
 
+  // ---------- 콜백 & 리디렉션 주소 관리 (한자/보카 분리) ----------
+  function getHanjaRedirectUrl() {
+    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+      return location.origin + '/login.html';
+    }
+    return 'https://hanja.chatgpts.kr/login.html';
+  }
+
+  function cleanCallbackUrl() {
+    try {
+      if (window.location.hash && (window.location.hash.includes('access_token=') || window.location.hash.includes('refresh_token=') || window.location.hash.includes('error='))) {
+        window.history.replaceState(null, '', window.location.pathname + window.location.search);
+      }
+      if (window.location.search && window.location.search.includes('code=')) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('code');
+        const qs = url.searchParams.toString();
+        window.history.replaceState(null, '', url.pathname + (qs ? '?' + qs : '') + url.hash);
+      }
+    } catch (e) {}
+  }
+
   async function signInWithGoogle(redirectTo) {
     if (!isReady()) throw new Error('서버 연결을 준비하지 못했어요.');
-    const target = redirectTo || (location.origin + '/login.html');
+    const target = redirectTo || getHanjaRedirectUrl();
     const { error } = await sb().auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: target }
@@ -102,7 +124,7 @@
   async function resetPassword(email) {
     if (!isReady()) throw new Error('서버 연결을 준비하지 못했어요.');
     const { error } = await sb().auth.resetPasswordForEmail(email, {
-      redirectTo: location.origin + '/login.html'
+      redirectTo: getHanjaRedirectUrl()
     });
     if (error) throw error;
   }
@@ -310,6 +332,7 @@
     const { data } = await sb().auth.getSession();
     if (data && data.session) {
       currentUser = data.session.user;
+      cleanCallbackUrl();
       const membership = await ensureMembership();
       await loadProfile();
       renderAuthBox();
@@ -331,6 +354,7 @@
       currentUser = session ? session.user : null;
       let membership = null;
       if (currentUser && currentUser.id !== prevId) {
+        cleanCallbackUrl();
         membership = await ensureMembership();
         await loadProfile();
         await syncProgressOnLogin();
