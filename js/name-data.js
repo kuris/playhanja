@@ -1077,6 +1077,61 @@ const NAME_HANJA_LIST = [
     desc: '칭찬할 허, 허락할 허. 관대하게 포용하며 타인의 장점을 북돋는 덕망입니다.',
     category: '바름과 덕', popularSound: '허', tag: ['both'],
     corePhrase: '관대하게 포용하고 칭찬하는 덕망'
+  },
+  // ==================== 다빈도 인명 한자 보강 (미, 숙, 희, 옥, 순, 영 등) ====================
+  {
+    char: '美', sound: '미', meaning: '아름다울',
+    desc: '아름다울 미. 외면과 내면이 모두 곱고 향기로우며 사람들에게 감동을 주는 훌륭한 덕을 뜻합니다.',
+    category: '빛과 밝음', popularSound: '미', tag: ['girl', 'pretty', 'both'],
+    corePhrase: '곱고 향기로운 아름다운 덕망'
+  },
+  {
+    char: '薇', sound: '미', meaning: '장미/고사리',
+    desc: '장미 미. 장미꽃처럼 화사하고 은은한 향기를 품은 매력을 뜻합니다.',
+    category: '자연과 넓음', popularSound: '미', tag: ['girl', 'pretty'],
+    corePhrase: '장미꽃처럼 화사하고 은은한 향기'
+  },
+  {
+    char: '淑', sound: '숙', meaning: '맑을/정숙할',
+    desc: '맑을 숙. 맑은 물처럼 고요하고 온화하며 품격이 높은 성품을 뜻합니다.',
+    category: '바름과 덕', popularSound: '숙', tag: ['girl'],
+    corePhrase: '맑은 물처럼 고요하고 단아한 품격'
+  },
+  {
+    char: '姬', sound: '희', meaning: '아가씨/계집',
+    desc: '아가씨 희. 귀하고 단아하며 기품 있는 모습을 뜻합니다.',
+    category: '복과 길함', popularSound: '희', tag: ['girl'],
+    corePhrase: '귀하고 단아하며 상서로운 기품'
+  },
+  {
+    char: '玉', sound: '옥', meaning: '구슬/옥',
+    desc: '구슬 옥. 옥처럼 흠 없이 맑고 귀중하여 세상의 보배가 됨을 뜻합니다.',
+    category: '복과 길함', popularSound: '옥', tag: ['girl', 'both', 'pretty'],
+    corePhrase: '옥처럼 흠 없이 맑고 귀중한 존재'
+  },
+  {
+    char: '順', sound: '순', meaning: '순할/따를',
+    desc: '순할 순. 도리에 순응하며 원만하고 부드럽게 세상을 품는 덕망을 뜻합니다.',
+    category: '바름과 덕', popularSound: '순', tag: ['both'],
+    corePhrase: '원만하고 부드러운 순리의 덕망'
+  },
+  {
+    char: '貞', sound: '정', meaning: '곧을',
+    desc: '곧을 정. 지조가 굳고 정결하여 흔들리지 않는 바른 마음을 뜻합니다.',
+    category: '바름과 덕', popularSound: '정', tag: ['girl', 'both'],
+    corePhrase: '지조가 굳고 흔들림 없는 바른 마음'
+  },
+  {
+    char: '英', sound: '영', meaning: '꽃부리/뛰어날',
+    desc: '꽃부리 영. 꽃처럼 화사하고 남들보다 뛰어난 영특함과 총기를 뜻합니다.',
+    category: '빛과 밝음', popularSound: '영', tag: ['both', 'pretty'],
+    corePhrase: '꽃처럼 화사하고 뛰어난 영특함'
+  },
+  {
+    char: '秀', sound: '수', meaning: '빼어날',
+    desc: '빼어날 수. 빼어나게 출중하여 어디서나 두각을 나타냄을 뜻합니다.',
+    category: '강함과 큰 뜻', popularSound: '수', tag: ['both'],
+    corePhrase: '남달리 빼어나고 출중한 능력'
   }
 ];
 
@@ -1086,21 +1141,36 @@ NAME_HANJA_LIST.forEach(item => {
   NAME_HANJA_MAP.set(item.char, item);
 });
 
-// 한자 찾기 함수 (NAME_HANJA_LIST 우선, 없으면 GRADE_HANJA fallback 검색)
+// GRADE_HANJA 빠른 조회를 위한 Map 캐시 (3,500자 전체 지원)
+let _GRADE_HANJA_MAP = null;
+function getGradeHanjaMap() {
+  if (!_GRADE_HANJA_MAP && typeof GRADE_HANJA !== 'undefined' && Array.isArray(GRADE_HANJA)) {
+    _GRADE_HANJA_MAP = new Map();
+    GRADE_HANJA.forEach(item => {
+      _GRADE_HANJA_MAP.set(item.char, item);
+    });
+  }
+  return _GRADE_HANJA_MAP;
+}
+
+// 한자 찾기 함수 (NAME_HANJA_LIST 우선, 없으면 GRADE_HANJA 3,500자 fallback 검색)
 function findNameHanja(ch) {
   if (NAME_HANJA_MAP.has(ch)) {
     return NAME_HANJA_MAP.get(ch);
   }
-  if (typeof GRADE_HANJA !== 'undefined' && GRADE_HANJA[ch]) {
-    const g = GRADE_HANJA[ch];
+  const gradeMap = getGradeHanjaMap();
+  if (gradeMap && gradeMap.has(ch)) {
+    const g = gradeMap.get(ch);
+    const meaningText = g.meaning || g.hun || '';
+    const soundText = g.sound || '';
     return {
       char: ch,
-      sound: g.sound || '',
-      meaning: g.hun || '',
-      desc: `${g.hun} ${g.sound}을 뜻하며, ${g.grade || ''} 배정한자입니다.`,
-      category: '기타 배정한자',
-      popularSound: g.sound || '',
-      corePhrase: `${g.hun} ${g.sound}의 뜻`
+      sound: soundText,
+      meaning: meaningText,
+      desc: `${meaningText} ${soundText}을(를) 뜻하며, ${g.hunmum || `${meaningText} ${soundText}`} 배정한자입니다.`,
+      category: '배정한자',
+      popularSound: soundText,
+      corePhrase: `${meaningText} ${soundText}의 뜻`
     };
   }
   return null;
