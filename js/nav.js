@@ -44,6 +44,7 @@
     return f === '' ? 'index.html' : f;
   }
 
+  function buildDesktop(here) {
     const desktopHtml = MENU.map(function (item, i) {
       if (!item.children) {
         const active = item.href === here ? ' class="active"' : '';
