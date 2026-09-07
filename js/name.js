@@ -45,25 +45,90 @@
     });
   }
 
-  // 특정 음(sound)에 해당하는 한자 후보 목록 가져오기
+  // 두음법칙 및 성씨 이음(異音) 매핑 테이블
+  const SOUND_VARIANTS = {
+    '김': ['김', '금'],
+    '금': ['금', '김'],
+    '이': ['이', '리'],
+    '리': ['리', '이'],
+    '심': ['심', '침'],
+    '침': ['침', '심'],
+    '임': ['임', '림'],
+    '림': ['림', '임'],
+    '유': ['유', '류'],
+    '류': ['류', '유'],
+    '양': ['양', '량'],
+    '량': ['량', '양'],
+    '나': ['나', '라'],
+    '라': ['라', '나'],
+    '노': ['노', '로'],
+    '로': ['로', '노'],
+    '여': ['여', '려'],
+    '려': ['려', '여'],
+    '연': ['연', '련'],
+    '련': ['련', '연'],
+    '열': ['열', '렬'],
+    '렬': ['렬', '열'],
+    '염': ['염', '렴'],
+    '렴': ['렴', '염'],
+    '영': ['영', '령'],
+    '령': ['령', '영'],
+    '예': ['예', '례'],
+    '례': ['례', '예'],
+    '낙': ['낙', '락'],
+    '락': ['락', '낙', '악', '요'],
+    '악': ['악', '락', '낙'],
+    '난': ['난', '란'],
+    '란': ['란', '난'],
+    '남': ['남', '람'],
+    '람': ['람', '남'],
+    '납': ['납', '랍'],
+    '랍': ['랍', '납'],
+    '낭': ['낭', '랑'],
+    '랑': ['랑', '낭'],
+    '용': ['용', '룡'],
+    '룡': ['룡', '용'],
+    '육': ['육', '륙'],
+    '륙': ['륙', '육'],
+    '릉': ['릉', '능'],
+    '능': ['능', '릉']
+  };
+
+  // 특정 한자별 음/훈 표기 보정 (검색 음절에 맞춤)
+  const SPECIAL_CHAR_OVERRIDE = {
+    '金': { sound: '김', hun: '성/쇠', desc: '성씨 김, 쇠/황금 금' },
+    '李': { sound: '이', hun: '성/오얏', desc: '성씨 이, 오얏나무 리' },
+    '沈': { sound: '심', hun: '성/잠길', desc: '성씨 심, 잠길 침' },
+    '林': { sound: '임', hun: '수풀', desc: '수풀 림/임' },
+    '柳': { sound: '유', hun: '버들', desc: '버들 류/유' },
+    '梁': { sound: '양', hun: '들보', desc: '들보 량/양' },
+    '羅': { sound: '나', hun: '비단/벌일', desc: '비단 라/나' },
+    '盧': { sound: '노', hun: '성/반석', desc: '성씨 노/로' }
+  };
+
+  // 특정 음(sound)에 해당하는 한자 후보 목록 가져오기 (두음법칙 및 성씨 이음 완벽 지원)
   function getHanjaCandidatesForSound(sound) {
     const list = [];
     const seen = new Set();
 
-    // 1. NAME_HANJA_LIST 에서 우선 검색
+    const targetSounds = SOUND_VARIANTS[sound] || [sound];
+
+    // 1. NAME_HANJA_LIST 에서 우선 검색 (인명용 주요 한자)
     if (typeof NAME_HANJA_LIST !== 'undefined') {
       NAME_HANJA_LIST.forEach(item => {
-        if (item.sound === sound || item.popularSound === sound) {
-          if (!seen.has(item.char)) {
-            seen.add(item.char);
-            list.push({
-              char: item.char,
-              hun: item.meaning,
-              sound: item.sound,
-              desc: item.desc,
-              isPrimary: true
-            });
-          }
+        const itemSounds = [item.sound, item.popularSound, ...(item.aliasSounds || [])].filter(Boolean);
+        const isMatch = itemSounds.some(s => targetSounds.includes(s));
+
+        if (isMatch && !seen.has(item.char)) {
+          seen.add(item.char);
+          const override = SPECIAL_CHAR_OVERRIDE[item.char];
+          list.push({
+            char: item.char,
+            hun: override ? override.hun : item.meaning,
+            sound: override ? override.sound : (itemSounds.includes(sound) ? sound : item.sound),
+            desc: item.desc,
+            isPrimary: true
+          });
         }
       });
     }
@@ -71,13 +136,17 @@
     // 2. GRADE_HANJA (3,500자) 에서 추가 보강
     if (typeof GRADE_HANJA !== 'undefined' && Array.isArray(GRADE_HANJA)) {
       GRADE_HANJA.forEach(item => {
-        if (item.sound === sound && !seen.has(item.char)) {
+        const isMatch = targetSounds.includes(item.sound);
+
+        if (isMatch && !seen.has(item.char)) {
           seen.add(item.char);
+          const override = SPECIAL_CHAR_OVERRIDE[item.char];
+          const hunText = item.meaning || item.hun || '';
           list.push({
             char: item.char,
-            hun: item.hun,
-            sound: item.sound,
-            desc: `${item.hun} ${item.sound}`,
+            hun: override ? override.hun : hunText,
+            sound: override ? override.sound : sound,
+            desc: override ? override.desc : (item.hunmum || `${hunText} ${item.sound}`),
             isPrimary: false
           });
         }

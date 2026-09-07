@@ -221,6 +221,7 @@
       list = list.filter(item => {
         return item.char.includes(q) ||
                item.sound.toLowerCase().includes(q) ||
+               (item.aliasSounds && item.aliasSounds.some(a => a.toLowerCase().includes(q))) ||
                item.meaning.toLowerCase().includes(q) ||
                (item.desc && item.desc.toLowerCase().includes(q)) ||
                (item.category && item.category.toLowerCase().includes(q));

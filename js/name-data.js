@@ -920,6 +920,163 @@ const NAME_HANJA_LIST = [
     desc: '흐트러짐 없이 맑고 결백하여 사심 없는 높은 인격을 나타냅니다.',
     category: '바름과 덕', popularSound: '결', tag: ['both', 'pretty'],
     corePhrase: '사심 없이 맑고 청렴한 인격'
+  },
+  // ==================== 주요 성씨 및 인명 한자 (김, 이, 박, 최, 정, 심 등) ====================
+  {
+    char: '金', sound: '김', aliasSounds: ['김', '금'], meaning: '성/쇠',
+    desc: '성씨 김, 쇠/황금 금. 변치 않는 단단함과 귀한 황금처럼 빛나는 기상을 뜻합니다.',
+    category: '복과 길함', popularSound: '김', tag: ['both'],
+    corePhrase: '황금처럼 빛나고 단단한 기상'
+  },
+  {
+    char: '李', sound: '이', aliasSounds: ['이', '리'], meaning: '성/오얏',
+    desc: '성씨 이, 오얏나무 리. 탐스러운 열매를 맺는 오얏나무처럼 풍요롭고 덕망 있는 기품을 뜻합니다.',
+    category: '자연과 넓음', popularSound: '이', tag: ['both'],
+    corePhrase: '풍성한 결실과 어진 덕망'
+  },
+  {
+    char: '朴', sound: '박', aliasSounds: ['박'], meaning: '순박할',
+    desc: '순박할 박. 거짓 없이 진실하며 통나무처럼 꾸밈없는 맑고 큰 도량을 뜻합니다.',
+    category: '바름과 덕', popularSound: '박', tag: ['both'],
+    corePhrase: '꾸밈없이 순수하고 큰 도량'
+  },
+  {
+    char: '崔', sound: '최', aliasSounds: ['최'], meaning: '높을',
+    desc: '높을 최. 산처럼 높고 우뚝 솟아 탁월한 성취를 이루는 기상을 뜻합니다.',
+    category: '강함과 큰 뜻', popularSound: '최', tag: ['both'],
+    corePhrase: '우뚝 솟은 산처럼 높은 기상'
+  },
+  {
+    char: '鄭', sound: '정', aliasSounds: ['정'], meaning: '나라',
+    desc: '나라 정. 엄숙하고 바르며 중심을 지키는 단정한 기품을 뜻합니다.',
+    category: '바름과 덕', popularSound: '정', tag: ['both'],
+    corePhrase: '바르고 당당한 기품'
+  },
+  {
+    char: '姜', sound: '강', aliasSounds: ['강'], meaning: '성',
+    desc: '성씨 강. 오랜 역사와 깊은 뿌리를 지닌 굳건한 기개를 뜻합니다.',
+    category: '강함과 큰 뜻', popularSound: '강', tag: ['both'],
+    corePhrase: '깊은 뿌리와 굳건한 기개'
+  },
+  {
+    char: '趙', sound: '조', aliasSounds: ['조'], meaning: '나라',
+    desc: '나라 조. 민첩하고 앞서 나가며 번영을 이끄는 뜻을 지닙니다.',
+    category: '강함과 큰 뜻', popularSound: '조', tag: ['both'],
+    corePhrase: '번영과 활기찬 전진'
+  },
+  {
+    char: '尹', sound: '윤', aliasSounds: ['윤'], meaning: '다스릴',
+    desc: '다스릴 윤. 바른 도로써 세상과 마음을 조화롭게 다스리는 지혜를 뜻합니다.',
+    category: '지혜와 배움', popularSound: '윤', tag: ['both'],
+    corePhrase: '조화롭게 다스리는 어진 지혜'
+  },
+  {
+    char: '張', sound: '장', aliasSounds: ['장'], meaning: '베풀/활시위',
+    desc: '베풀 장, 활시위 당길 장. 원대한 꿈을 펼치고 널리 베푸는 기개를 뜻합니다.',
+    category: '강함과 큰 뜻', popularSound: '장', tag: ['both'],
+    corePhrase: '원대한 뜻을 널리 펼치는 기개'
+  },
+  {
+    char: '林', sound: '임', aliasSounds: ['임', '림'], meaning: '수풀',
+    desc: '수풀 림/임. 울창한 숲처럼 생명력이 넘치고 쉼을 주는 너른 포용력을 뜻합니다.',
+    category: '자연과 넓음', popularSound: '임', tag: ['both'],
+    corePhrase: '울창한 숲처럼 푸르고 너른 포용력'
+  },
+  {
+    char: '柳', sound: '유', aliasSounds: ['유', '류'], meaning: '버들',
+    desc: '버들 류/유. 부드럽게 휘어지면서도 꺾이지 않는 유연함과 끈기를 뜻합니다.',
+    category: '자연과 넓음', popularSound: '유', tag: ['both'],
+    corePhrase: '유연함과 꺾이지 않는 강인함'
+  },
+  {
+    char: '梁', sound: '양', aliasSounds: ['양', '량'], meaning: '들보',
+    desc: '들보 량/양. 집과 세상을 굳건히 떠받치는 대들보처럼 든든한 동량을 뜻합니다.',
+    category: '강함과 큰 뜻', popularSound: '양', tag: ['both'],
+    corePhrase: '세상을 든든히 떠받치는 대들보'
+  },
+  {
+    char: '羅', sound: '나', aliasSounds: ['나', '라'], meaning: '비단/벌일',
+    desc: '비단 라/나. 비단처럼 곱고 온 세상에 널리 이름을 떨치는 뜻을 담고 있습니다.',
+    category: '복과 길함', popularSound: '나', tag: ['both'],
+    corePhrase: '비단처럼 곱고 널리 펼쳐지는 뜻'
+  },
+  {
+    char: '盧', sound: '노', aliasSounds: ['노', '로'], meaning: '성/반석',
+    desc: '성씨 노/로. 검은 옥돌 또는 든든한 반석처럼 견고한 기상을 상징합니다.',
+    category: '강함과 큰 뜻', popularSound: '노', tag: ['both'],
+    corePhrase: '반석처럼 든든하고 견고한 기상'
+  },
+  {
+    char: '沈', sound: '심', aliasSounds: ['심', '침'], meaning: '성/잠길',
+    desc: '성씨 심, 잠길 침. 깊은 호수처럼 지혜가 깊고 침착하며 그윽한 덕을 뜻합니다.',
+    category: '지혜와 배움', popularSound: '심', tag: ['both'],
+    corePhrase: '깊은 호수처럼 침착하고 그윽한 지혜'
+  },
+  {
+    char: '韓', sound: '한', aliasSounds: ['한'], meaning: '나라/클',
+    desc: '나라 한. 크고 넓으며 온 세상을 감싸 안는 당당한 기개를 뜻합니다.',
+    category: '강함과 큰 뜻', popularSound: '한', tag: ['both'],
+    corePhrase: '크고 넓게 세상을 품는 기개'
+  },
+  {
+    char: '申', sound: '신', aliasSounds: ['신'], meaning: '거듭/펼',
+    desc: '거듭 신, 펼칠 신. 자신의 뜻과 이상을 거침없이 펼쳐내는 진취성을 뜻합니다.',
+    category: '강함과 큰 뜻', popularSound: '신', tag: ['both'],
+    corePhrase: '뜻과 이상을 거침없이 펼침'
+  },
+  {
+    char: '徐', sound: '서', aliasSounds: ['서'], meaning: '천천히',
+    desc: '천천히 서. 조급하지 않고 침착하게 나아가며 깊이를 더해가는 미덕을 뜻합니다.',
+    category: '바름과 덕', popularSound: '서', tag: ['both'],
+    corePhrase: '침착하고 여유로운 깊은 미덕'
+  },
+  {
+    char: '權', sound: '권', aliasSounds: ['권'], meaning: '권세/저울추',
+    desc: '권세 권, 저울추 권. 중심을 공평하게 잡고 올바른 영향력을 발휘하는 지혜입니다.',
+    category: '지혜와 배움', popularSound: '권', tag: ['both'],
+    corePhrase: '중심을 바르게 잡는 탁월한 지혜'
+  },
+  {
+    char: '黃', sound: '황', aliasSounds: ['황'], meaning: '누를/황금',
+    desc: '누를 황. 대지의 풍요로움과 황금빛 찬란한 번영을 뜻하는 상서로운 한자입니다.',
+    category: '복과 길함', popularSound: '황', tag: ['both'],
+    corePhrase: '대지의 풍요로움과 찬란한 번영'
+  },
+  {
+    char: '安', sound: '안', aliasSounds: ['안'], meaning: '편안할',
+    desc: '편안할 안. 마음이 고요하고 평온하며 주위 사람들을 안도하게 하는 온기를 뜻합니다.',
+    category: '바름과 덕', popularSound: '안', tag: ['both', 'pretty'],
+    corePhrase: '마음의 평온함과 따스한 안도감'
+  },
+  {
+    char: '宋', sound: '송', aliasSounds: ['송'], meaning: '나라',
+    desc: '나라 송. 단정하고 기품 있으며 예를 지키는 품격을 뜻합니다.',
+    category: '바름과 덕', popularSound: '송', tag: ['both'],
+    corePhrase: '단정하고 기품 있는 미덕'
+  },
+  {
+    char: '洪', sound: '홍', aliasSounds: ['홍'], meaning: '넓을/큰물',
+    desc: '넓을 홍. 큰 바다처럼 도량이 넓고 원대한 포부를 품은 기상을 뜻합니다.',
+    category: '자연과 넓음', popularSound: '홍', tag: ['both'],
+    corePhrase: '바다처럼 넓고 원대한 포부'
+  },
+  {
+    char: '全', sound: '전', aliasSounds: ['전'], meaning: '온전할',
+    desc: '온전할 전. 모자람 없이 온전하고 순수하며 완벽을 추구하는 성실함입니다.',
+    category: '바름과 덕', popularSound: '전', tag: ['both'],
+    corePhrase: '모자람 없이 온전하고 맑은 인품'
+  },
+  {
+    char: '白', sound: '백', aliasSounds: ['백'], meaning: '흰/밝을',
+    desc: '흰 백. 눈처럼 깨끗하고 순결하며 거짓 없는 밝은 마음을 뜻합니다.',
+    category: '빛과 밝음', popularSound: '백', tag: ['both', 'pretty'],
+    corePhrase: '눈처럼 깨끗하고 거짓 없는 순수함'
+  },
+  {
+    char: '許', sound: '허', aliasSounds: ['허'], meaning: '허락할/칭찬할',
+    desc: '칭찬할 허, 허락할 허. 관대하게 포용하며 타인의 장점을 북돋는 덕망입니다.',
+    category: '바름과 덕', popularSound: '허', tag: ['both'],
+    corePhrase: '관대하게 포용하고 칭찬하는 덕망'
   }
 ];
 
