@@ -2693,6 +2693,8 @@ img { max-width: 100%; display: block; }
   padding: 8px;
   display: none;
   z-index: 200;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
 }
 .nav-group.open .nav-dropdown { display: block; animation: navSlideDown .16s ease-out; }
 .nav-dropdown a {

@@ -1,7 +1,7 @@
 /* ============================================================
    한자야 놀자! - 공통 상단 내비게이션 (nav.js)
    - 메뉴가 11개로 늘어 가로 배치가 깨지던 문제 해결
-   - PC: 5개 그룹 + 드롭다운 / 태블릿·모바일: 햄버거 서랍(그룹 제목 포함)
+   - PC: 4개 그룹 + 드롭다운 / 태블릿·모바일: 햄버거 서랍(그룹 제목 포함)
    - 메뉴 구조를 한 곳에서 관리하므로 페이지마다 수정할 필요가 없습니다
    ============================================================ */
 
@@ -16,7 +16,10 @@
         { label: '고사성어', href: 'idiom.html', icon: '📖', desc: '유래 일화와 함께 111선' },
         { label: '천자문 250구', href: 'thousand.html', icon: '📜', desc: '천자문 1,000자 완주' },
         { label: '재미로 보는 이야기', href: 'story.html', icon: '🌟', desc: '이야기 속 한자어를 눌러서' },
-        { label: '재미로 보는 지하철 한자', href: 'subway.html', icon: '🚇', desc: '1~9호선 역이름 속 한자' }
+        { label: '재미로 보는 지하철 한자', href: 'subway.html', icon: '🚇', desc: '1~9호선 역이름 속 한자' },
+        { label: '이름 한자 풀이', href: 'name.html', icon: '🔍', desc: '내 이름 한자의 뜻과 풀이' },
+        { label: '이름에 많이 쓰는 한자', href: 'name-list.html', icon: '🏷️', desc: '음별 자주 쓰이는 한자' },
+        { label: '좋은 뜻 한자 모음', href: 'name-meaning.html', icon: '💎', desc: '빛, 지혜, 복 등 주제별 모음' }
       ]
     },
     {
@@ -31,14 +34,6 @@
       children: [
         { label: '실전 모의고사', href: 'exam.html', icon: '📝', desc: '어문회 출제기준 그대로' },
         { label: '퀴즈로 복습', href: 'quiz.html', icon: '🧩', desc: '주제별·급수별·오답 복습' }
-      ]
-    },
-    {
-      label: '이름 한자', icon: '✨',
-      children: [
-        { label: '이름 한자 풀이', href: 'name.html', icon: '🔍', desc: '내 이름 한자의 뜻과 풀이' },
-        { label: '이름에 많이 쓰는 한자', href: 'name-list.html', icon: '🏷️', desc: '음별 자주 쓰이는 한자' },
-        { label: '좋은 뜻 한자 모음', href: 'name-meaning.html', icon: '💎', desc: '빛, 지혜, 복 등 주제별 모음' }
       ]
     },
     { label: '학습 플래너', href: 'planner.html', icon: '🗓️' }
