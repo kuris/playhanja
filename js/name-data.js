@@ -30,7 +30,7 @@ const NAME_CATEGORIES = [
 ];
 
 const POPULAR_SOUNDS = [
-  '전체', '민', '서', '지', '하', '윤', '준', '우', '현', '도', '연', '수', '아', '유', '은', '예', '진', '원', '태', '호', '가', '나', '린', '채'
+  '전체', '민', '서', '지', '하', '윤', '준', '우', '현', '도', '연', '수', '아', '유', '은', '예', '진', '원', '태', '호', '가', '나', '린', '채', '미', '형', '영', '숙', '희'
 ];
 
 const NAME_HANJA_LIST = [
@@ -1132,6 +1132,31 @@ const NAME_HANJA_LIST = [
     desc: '빼어날 수. 빼어나게 출중하여 어디서나 두각을 나타냄을 뜻합니다.',
     category: '강함과 큰 뜻', popularSound: '수', tag: ['both'],
     corePhrase: '남달리 빼어나고 출중한 능력'
+  },
+  // ==================== '형' 인명 한자 (衡, 亨, 炯, 馨) ====================
+  {
+    char: '衡', sound: '형', meaning: '저울대',
+    desc: '저울대 형. 균형을 잡는 저울대처럼 매사에 공평무사하고 치우침 없는 높은 도량과 올바른 균형감각을 뜻합니다.',
+    category: '바름과 덕', popularSound: '형', tag: ['boy', 'both'],
+    corePhrase: '치우침 없이 공평하고 바른 균형감각'
+  },
+  {
+    char: '亨', sound: '형', meaning: '형통할',
+    desc: '형통할 형. 막힘없이 모든 일이 순조롭게 풀려나가며 만사가 형통하는 큰 복을 뜻합니다.',
+    category: '복과 길함', popularSound: '형', tag: ['boy', 'both'],
+    corePhrase: '만사가 순조롭게 풀리는 형통함'
+  },
+  {
+    char: '炯', sound: '형', meaning: '빛날',
+    desc: '빛날 형. 눈빛이 형형하고 재주가 반짝이며 세상을 밝게 비추는 총명한 기상을 뜻합니다.',
+    category: '빛과 밝음', popularSound: '형', tag: ['boy', 'both', 'pretty'],
+    corePhrase: '세상을 밝히는 총명한 눈빛과 기상'
+  },
+  {
+    char: '馨', sound: '형', meaning: '꽃다울/향기',
+    desc: '꽃다울 형, 향기 형. 향기가 멀리까지 퍼져나가듯 맑고 그윽한 인품과 덕망을 널리 떨침을 뜻합니다.',
+    category: '바름과 덕', popularSound: '형', tag: ['girl', 'both', 'pretty'],
+    corePhrase: '멀리까지 널리 퍼지는 그윽한 덕향'
   }
 ];
 
