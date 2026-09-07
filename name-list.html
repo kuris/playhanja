@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>이름에 많이 쓰는 한자 모음 - 한자야 놀자</title>
+<meta name="description" content="민, 서, 지, 하, 윤, 준 등 이름에 자주 쓰이는 한자의 음과 뜻을 쉽게 확인해보세요.">
+<link rel="canonical" href="https://hanja.chatgpts.kr/name-list.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@500;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+<meta name="google-adsense-account" content="ca-pub-3321070604000141">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321070604000141&tfat=1" crossorigin="anonymous"></script>
+<script>
+  /* 어린이 학습 사이트 아동 대상 비맞춤 광고 설정 */
+  (window.adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds = 1;
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-wrap">
+    <a href="index.html" class="logo">
+      <span class="logo-char">漢</span>
+      <span>한자야 놀자!</span>
+    </a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="메뉴 열기"><i class="fa-solid fa-bars"></i></button>
+    <nav class="main-nav" id="main-nav"></nav>
+  </div>
+</header>
+
+<main class="section" style="padding-top:28px;">
+  <div class="container">
+
+    <!-- 상단 타이틀 & 설명 -->
+    <div class="section-head" style="margin-bottom:24px;">
+      <span class="eyebrow">POPULAR NAME CHARACTERS</span>
+      <h1>🏷️ 이름에 많이 쓰는 한자</h1>
+      <p>민, 서, 지, 하, 윤, 준 등 우리나라 이름에 가장 자주 쓰이는 한자들을 음별로 알기 쉽게 정리했습니다.<br>
+      각 글자를 누르면 <strong>훈음과 어원 설명</strong>을 확인하고 바로 <strong>이름 풀이</strong>로 연결해 볼 수 있어요.</p>
+    </div>
+
+    <!-- 검색 및 필터 툴바 -->
+    <div class="thousand-toolbar" style="margin-bottom:16px;">
+      <div class="thousand-search-box" style="flex:1;">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="sound-search-input" placeholder="인명용 한자 쉽게 찾기 (예: 민, 하늘 민, 旻, 瑞, 지혜)" autocomplete="off">
+      </div>
+      <div class="thousand-stats-badge" id="list-count-badge">총 120여 자</div>
+    </div>
+
+    <!-- 음별 필터 탭 -->
+    <div class="filter-tabs-wrap" id="sound-tabs"></div>
+
+    <!-- 한자 카드 그리드 -->
+    <div class="name-item-grid" id="name-list-grid"></div>
+
+    <!-- 검색 결과 없을 때 안내 -->
+    <div id="no-result" style="display:none; text-align:center; padding:40px 20px; background:#fff; border:2px dashed var(--color-border); border-radius:var(--radius-md); margin-bottom:28px;">
+      <div style="font-size:2.4rem; margin-bottom:10px;">🔍</div>
+      <h3 style="font-size:1.15rem; margin-bottom:8px;">일치하는 한자를 찾지 못했습니다.</h3>
+      <p style="color:var(--color-text-soft); font-size:0.92rem; margin-bottom:14px;">현재 기본 목록에 없거나 다른 발음일 수 있습니다. 아래 공식 법원 조회를 확인해 보세요.</p>
+      <a href="https://efamily.scourt.go.kr/cs/CsBltnWrtList.do?bltnbordId=0000010" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">
+        <i class="fa-solid fa-arrow-up-right-from-square"></i> 대법원 인명용 한자 조회
+      </a>
+    </div>
+
+    <!-- 공식 인명용 한자 조회 안내 박스 -->
+    <div class="official-guide-box">
+      <h3><i class="fa-solid fa-building-columns"></i> 대한민국 법원 공식 인명용 한자 조회 안내</h3>
+      <p>이름에 사용할 수 있는 한자는 법원 인명용 한자 범위를 확인하는 것이 좋습니다. 한자는 지정된 발음으로만 사용할 수 있으므로, 실제 등록 가능 여부는 공식 사이트에서 확인해 주세요.</p>
+      <a href="https://efamily.scourt.go.kr/cs/CsBltnWrtList.do?bltnbordId=0000010" target="_blank" rel="noopener noreferrer" class="official-guide-btn">
+        <i class="fa-solid fa-arrow-up-right-from-square"></i> 대법원 전자가족관계등록시스템 인명용 한자 조회 바로가기
+      </a>
+    </div>
+
+    <!-- 주의 문구 -->
+    <div class="caveat-notice">
+      ※ 한자야 놀자의 이름 풀이는 한자의 기본 뜻과 일반적인 의미를 쉽게 설명하는 참고용 콘텐츠입니다. 실제 출생신고 등 공식 이름 등록 가능 여부는 대한민국 법원 전자가족관계등록시스템의 인명용 한자 조회를 확인해 주세요.
+    </div>
+
+    <!-- 하단 관련 페이지 링크 (7개) -->
+    <section class="related-nav-section">
+      <h3><i class="fa-solid fa-compass"></i> 한자야 놀자 관련 콘텐츠 둘러보기</h3>
+      <div class="related-nav-grid">
+        <a href="learn.html" class="related-nav-card">
+          <span class="rnc-icon">📚</span>
+          <span class="rnc-title">오늘의 한자</span>
+        </a>
+        <a href="grade.html" class="related-nav-card">
+          <span class="rnc-icon">🏅</span>
+          <span class="rnc-title">급수별 한자</span>
+        </a>
+        <a href="idiom.html" class="related-nav-card">
+          <span class="rnc-icon">📖</span>
+          <span class="rnc-title">사자성어</span>
+        </a>
+        <a href="quiz.html" class="related-nav-card">
+          <span class="rnc-icon">🧩</span>
+          <span class="rnc-title">한자 퀴즈</span>
+        </a>
+        <a href="name.html" class="related-nav-card">
+          <span class="rnc-icon">✨</span>
+          <span class="rnc-title">이름 한자 풀이</span>
+        </a>
+        <a href="name-list.html" class="related-nav-card active">
+          <span class="rnc-icon">🏷️</span>
+          <span class="rnc-title">이름에 많이 쓰는 한자</span>
+        </a>
+        <a href="name-meaning.html" class="related-nav-card">
+          <span class="rnc-icon">💎</span>
+          <span class="rnc-title">좋은 뜻 한자 모음</span>
+        </a>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- 한자 상세 팝업 모달 -->
+<div class="modal-overlay" id="char-modal" style="display:none;">
+  <div class="modal-box" style="max-width:440px;">
+    <button class="modal-close" id="char-modal-close" aria-label="닫기"><i class="fa-solid fa-xmark"></i></button>
+    <div style="text-align:center; padding:10px 0 16px;">
+      <span class="nc-cat" id="m-cat" style="font-size:0.82rem; padding:4px 12px;"></span>
+      <div class="nc-char" id="m-char" style="font-size:4.2rem; margin:10px 0;"></div>
+      <div class="nc-hun" id="m-hun" style="font-size:1.35rem; margin-bottom:12px;"></div>
+      <p id="m-desc" style="font-size:0.95rem; line-height:1.75; color:var(--color-text); margin-bottom:18px; text-align:left; background:#fffdf9; border:1px solid var(--color-border); padding:14px; border-radius:var(--radius-sm);"></p>
+      <div id="m-core" class="nc-core" style="margin-bottom:18px; text-align:left;"></div>
+      <div style="display:flex; gap:10px; justify-content:center;">
+        <a id="m-try-btn" href="name.html" class="btn btn-primary btn-sm">
+          <i class="fa-solid fa-sparkles"></i> 이 한자로 이름 풀이하기
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container foot-grid">
+    <div>
+      <h4>漢 한자야 놀자!</h4>
+      <p>초등학교 1학년부터 천자문 마스터까지!<br>애니메이션 & 따라쓰기 한자 학습 사이트</p>
+    </div>
+    <div>
+      <h4>바로가기</h4>
+      <p><a href="name.html">이름 한자 풀이</a> · <a href="name-list.html">이름에 많이 쓰는 한자</a> · <a href="name-meaning.html">좋은 뜻 한자 모음</a></p>
+    </div>
+    <div>
+      <h4>안내</h4>
+      <p>학습 결과와 진도는 사용 중인 기기의 브라우저에 저장돼요.</p>
+    </div>
+  </div>
+  <div class="container foot-bottom">© 2026 한자야 놀자! 어린이를 위한 한자 학습 사이트</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/grade-data.js"></script>
+<script src="js/name-data.js"></script>
+<script>
+(function() {
+  const tabsWrap = document.getElementById('sound-tabs');
+  const grid = document.getElementById('name-list-grid');
+  const searchInput = document.getElementById('sound-search-input');
+  const countBadge = document.getElementById('list-count-badge');
+  const noResult = document.getElementById('no-result');
+
+  // 모달 요소
+  const modal = document.getElementById('char-modal');
+  const modalClose = document.getElementById('char-modal-close');
+  const mCat = document.getElementById('m-cat');
+  const mChar = document.getElementById('m-char');
+  const mHun = document.getElementById('m-hun');
+  const mDesc = document.getElementById('m-desc');
+  const mCore = document.getElementById('m-core');
+  const mTryBtn = document.getElementById('m-try-btn');
+
+  let currentSound = '전체';
+
+  // URL 파라미터 sound 확인 (예: name-list.html?sound=민)
+  const params = new URLSearchParams(location.search);
+  const paramSound = params.get('sound');
+  if (paramSound && POPULAR_SOUNDS.includes(paramSound)) {
+    currentSound = paramSound;
+  }
+
+  // 탭 렌더링
+  function renderTabs() {
+    if (!tabsWrap) return;
+    tabsWrap.innerHTML = POPULAR_SOUNDS.map(s => `
+      <button type="button" class="filter-tab-btn ${s === currentSound ? 'active' : ''}" data-sound="${s}">
+        ${s === '전체' ? '🌟 ' + s : s}
+      </button>
+    `).join('');
+
+    tabsWrap.querySelectorAll('.filter-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentSound = btn.getAttribute('data-sound') || '전체';
+        if (searchInput) searchInput.value = '';
+        renderTabs();
+        renderCards();
+      });
+    });
+  }
+
+  // 카드 렌더링
+  function renderCards() {
+    const q = (searchInput ? searchInput.value : '').trim().toLowerCase();
+    let list = NAME_HANJA_LIST;
+
+    // 음 필터링
+    if (currentSound !== '전체') {
+      list = list.filter(item => item.popularSound === currentSound || item.sound === currentSound);
+    }
+
+    // 검색어 필터링
+    if (q) {
+      list = list.filter(item => {
+        return item.char.includes(q) ||
+               item.sound.toLowerCase().includes(q) ||
+               item.meaning.toLowerCase().includes(q) ||
+               (item.desc && item.desc.toLowerCase().includes(q)) ||
+               (item.category && item.category.toLowerCase().includes(q));
+      });
+    }
+
+    if (countBadge) {
+      countBadge.innerText = `총 ${list.length}자`;
+    }
+
+    if (list.length === 0) {
+      if (grid) grid.innerHTML = '';
+      if (noResult) noResult.style.display = 'block';
+      return;
+    }
+
+    if (noResult) noResult.style.display = 'none';
+
+    if (grid) {
+      grid.innerHTML = list.map(item => {
+        const isGirl = item.tag && item.tag.includes('girl');
+        const isBoy = item.tag && item.tag.includes('boy');
+        const isPretty = item.tag && item.tag.includes('pretty');
+        return `
+          <div class="name-item-card" data-char="${item.char}">
+            <div class="nic-badge-bar">
+              <span class="nic-badge">${item.category}</span>
+              ${isPretty ? '<span class="nic-badge pretty">✨예쁜뜻</span>' : ''}
+              ${isGirl ? '<span class="nic-badge girl">🌸여자</span>' : ''}
+              ${isBoy ? '<span class="nic-badge boy">🦁남자</span>' : ''}
+            </div>
+            <div class="nic-char">${item.char}</div>
+            <div class="nic-hun"><span>${item.meaning}</span> ${item.sound}</div>
+            <div class="nic-desc">${item.desc}</div>
+            <div class="nc-sublink" style="justify-content:center; margin-top:auto;">
+              상세보기 & 풀이 <i class="fa-solid fa-arrow-right"></i>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // 카드 클릭 시 모달 오픈
+      grid.querySelectorAll('.name-item-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const ch = card.getAttribute('data-char');
+          openCharModal(ch);
+        });
+      });
+    }
+  }
+
+  // 모달 열기
+  function openCharModal(ch) {
+    const item = findNameHanja(ch);
+    if (!item) return;
+    if (mCat) mCat.innerText = item.category || '인명용 한자';
+    if (mChar) mChar.innerText = item.char;
+    if (mHun) mHun.innerHTML = `<strong style="color:var(--color-primary);">${item.meaning}</strong> ${item.sound}`;
+    if (mDesc) mDesc.innerText = item.desc;
+    if (mCore) {
+      mCore.innerHTML = `<i class="fa-solid fa-sparkles"></i> <strong>추천 해석 포인트:</strong> ${item.corePhrase || item.desc}`;
+    }
+    if (mTryBtn) {
+      mTryBtn.href = `name.html?c=${encodeURIComponent(item.char)}`;
+    }
+    if (modal) modal.style.display = 'flex';
+  }
+
+  function closeModal() {
+    if (modal) modal.style.display = 'none';
+  }
+
+  if (modalClose) modalClose.addEventListener('click', closeModal);
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  // 실시간 검색
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      renderCards();
+    });
+  }
+
+  renderTabs();
+  renderCards();
+})();
+</script>
+<script src="js/auth.js"></script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

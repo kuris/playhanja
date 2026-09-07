@@ -33,6 +33,14 @@
         { label: '퀴즈로 복습', href: 'quiz.html', icon: '🧩', desc: '주제별·급수별·오답 복습' }
       ]
     },
+    {
+      label: '이름 한자', icon: '✨',
+      children: [
+        { label: '이름 한자 풀이', href: 'name.html', icon: '🔍', desc: '내 이름 한자의 뜻과 풀이' },
+        { label: '이름에 많이 쓰는 한자', href: 'name-list.html', icon: '🏷️', desc: '음별 자주 쓰이는 한자' },
+        { label: '좋은 뜻 한자 모음', href: 'name-meaning.html', icon: '💎', desc: '빛, 지혜, 복 등 주제별 모음' }
+      ]
+    },
     { label: '학습 플래너', href: 'planner.html', icon: '🗓️' }
   ];
 
