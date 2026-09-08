@@ -56,7 +56,24 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 
   // ---------- 1. 관리자 권한 확인 및 뷰 전환 ----------
-  function checkAdminAccess(user) {
+  //   1순위: public.profiles.role === 'admin'   (8개 서비스 공통 기준)
+  //   2순위: ADMIN_EMAIL                        (profiles 미반영 시 잠김 방지 폴백)
+  let currentAdminRole = null;
+
+  async function fetchAdminRole(user) {
+    if (!user || !sb()) return null;
+    try {
+      const { data, error } = await sb().schema('public')
+        .from('profiles').select('role').eq('id', user.id).maybeSingle();
+      if (error) throw error;
+      return (data && data.role) || null;
+    } catch (e) {
+      console.warn('[admin] profiles.role 조회 실패 - 이메일 기준으로 판정합니다:', e.message || e);
+      return null;
+    }
+  }
+
+  async function checkAdminAccess(user) {
     loadingView.style.display = 'none';
 
     if (!user) {
@@ -67,8 +84,10 @@ document.addEventListener('DOMContentLoaded', async function () {
       return false;
     }
 
+    currentAdminRole = await fetchAdminRole(user);
+
     const email = (user.email || '').toLowerCase().trim();
-    if (email === ADMIN_EMAIL.toLowerCase()) {
+    if (currentAdminRole === 'admin' || email === ADMIN_EMAIL.toLowerCase()) {
       // 2) 관리자 계정(phiskim@gmail.com) 일치 -> 대시보드 오픈
       currentAdminUser = user;
       authView.style.display = 'none';
@@ -87,27 +106,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
   }
 
-  // ---------- 2. 로그인 처리 ----------
-  if (loginForm) {
-    loginForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('admin-input-email').value.trim();
-      const pass = document.getElementById('admin-input-pass').value;
-      const submitBtn = loginForm.querySelector('.admin-btn-submit');
-      submitBtn.disabled = true;
-      showMsg('관리자 계정 확인 중...', 'info');
-
-      try {
-        const user = await AUTH.signIn(email, pass);
-        showMsg('로그인 성공! 권한을 확인합니다.', 'ok');
-        setTimeout(() => checkAdminAccess(user), 400);
-      } catch (err) {
-        showMsg(err.message || '로그인에 실패했습니다. 이메일과 비밀번호를 확인해 주세요.', 'error');
-      } finally {
-        submitBtn.disabled = false;
-      }
-    });
-  }
+  // ---------- 2. 로그인 처리 (Google 로그인만 사용) ----------
+  // 이메일/비밀번호 로그인은 더 이상 사용하지 않습니다.
+  // admin.html 에서도 폼을 제거했지만, 남아 있는 화면이 있어도 동작하지 않도록 숨깁니다.
+  if (loginForm) loginForm.style.display = 'none';
 
   if (googleBtn) {
     googleBtn.addEventListener('click', async () => {

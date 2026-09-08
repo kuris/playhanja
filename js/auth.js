@@ -310,6 +310,15 @@
       else wrap.appendChild(box);
     }
 
+    // ---------- 공통 로그인 모듈(CGAuth) 위임 ----------
+    // 헤더의 로그인 표시만 공통 모듈에 맡깁니다.
+    // 이 파일의 학습 진도 동기화 · 시험 결과 저장 로직은 그대로 계속 동작합니다.
+    if (window.CGAuth && window.CGAuth.__loaded) {
+      if (!box.querySelector('.cg-auth')) box.innerHTML = '';
+      window.CGAuth.mountAuthUI(box);
+      return;
+    }
+
     if (currentUser) {
       const isAdm = isAdmin(currentUser);
       box.innerHTML = `
