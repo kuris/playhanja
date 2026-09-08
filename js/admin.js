@@ -10,6 +10,16 @@ document.addEventListener('DOMContentLoaded', async function () {
   const ADMIN_EMAIL = 'phiskim@gmail.com';
   const AUTH = window.HanjaAuth;
   const sb = () => window.sb || null;
+  const SERVICE = 'hanja';
+
+  // 다른 프로젝트 관리자 페이지 목록 (서비스 전환용)
+  const SERVICES = [
+    { key: 'hanja',    name: '한자야 놀자!',   emoji: '漢', url: 'https://hanja.chatgpts.kr/admin' },
+    { key: 'voca',     name: '단어야 놀자!',   emoji: '單', url: 'https://voca.chatgpts.kr/admin' },
+    { key: 'history',  name: '역사야 놀자!',   emoji: '史', url: 'https://history.chatgpts.kr/admin' },
+    { key: 'fortune',  name: '운세야 놀자!',   emoji: '運', url: 'https://fortune.chatgpts.kr/admin' },
+    { key: 'mindtest', name: '마인드테스트',   emoji: '心', url: 'https://mindtest.chatgpts.kr/admin' }
+  ];
 
   // DOM 요소
   const loadingView = document.getElementById('admin-loading');
@@ -133,6 +143,59 @@ document.addEventListener('DOMContentLoaded', async function () {
       });
     });
   }
+
+  // ---------- 서비스 전환 (다른 프로젝트 관리자 페이지로 이동) ----------
+  function renderServiceSwitcher() {
+    const menu = document.getElementById('admin-switch-menu');
+    if (!menu) return;
+
+    const items = SERVICES.map(function (s) {
+      const isCurrent = s.key === SERVICE;
+      if (isCurrent) {
+        return `
+          <div class="admin-switch-item is-current">
+            <span class="admin-switch-emoji">${s.emoji}</span>
+            <span>
+              <span class="admin-switch-name">${escapeHtml(s.name)}</span><br>
+              <span class="admin-switch-host">${escapeHtml(s.url.replace('https://', ''))}</span>
+            </span>
+            <span class="admin-switch-current-tag">현재 위치</span>
+          </div>`;
+      }
+      return `
+        <a class="admin-switch-item" href="${s.url}">
+          <span class="admin-switch-emoji">${s.emoji}</span>
+          <span>
+            <span class="admin-switch-name">${escapeHtml(s.name)}</span><br>
+            <span class="admin-switch-host">${escapeHtml(s.url.replace('https://', ''))}</span>
+          </span>
+        </a>`;
+    }).join('');
+
+    menu.innerHTML = `
+      <div class="admin-switch-menu-head">관리자 페이지 전환</div>
+      ${items}
+      <div class="admin-switch-note">
+        서비스마다 도메인이 다르므로, 이동한 사이트에서 관리자 로그인을 한 번 더 해야 할 수 있습니다.
+      </div>`;
+
+    const wrap = document.getElementById('admin-switch');
+    const btn = document.getElementById('admin-switch-btn');
+    if (btn && wrap) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        wrap.classList.toggle('open');
+      });
+      document.addEventListener('click', function (e) {
+        if (!wrap.contains(e.target)) wrap.classList.remove('open');
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') wrap.classList.remove('open');
+      });
+    }
+  }
+
+  renderServiceSwitcher();
 
   // ---------- 3. 탭 전환 ----------
   tabBtns.forEach(btn => {

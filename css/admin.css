@@ -256,6 +256,91 @@ body.admin-body {
 }
 .admin-user-pill i { color: #eab308; }
 
+/* ---------- 서비스 전환 (다른 프로젝트 관리자 페이지로 이동) ---------- */
+.admin-switch {
+  position: relative;
+}
+.admin-switch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--admin-primary);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: .9rem;
+  cursor: pointer;
+  transition: background .16s ease;
+}
+.admin-switch-btn:hover { background: var(--admin-primary-dark); }
+.admin-switch-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 260px;
+  background: #fff;
+  border: 1.5px solid var(--admin-border);
+  border-radius: 16px;
+  box-shadow: 0 12px 28px -6px rgba(0,0,0,0.16);
+  padding: 8px;
+  z-index: 200;
+}
+.admin-switch.open .admin-switch-menu { display: block; }
+.admin-switch-menu-head {
+  font-size: .74rem;
+  font-weight: 800;
+  color: var(--admin-text-soft);
+  padding: 8px 12px 6px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.admin-switch-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 12px;
+  border-radius: 11px;
+  text-decoration: none;
+  color: var(--admin-text);
+  transition: background .14s ease;
+}
+.admin-switch-item:hover { background: #f1f5f9; }
+.admin-switch-item.is-current {
+  background: var(--admin-primary-light);
+  cursor: default;
+}
+.admin-switch-emoji {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: #f1f5f9;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.02rem;
+  flex-shrink: 0;
+}
+.admin-switch-name { font-weight: 800; font-size: .92rem; }
+.admin-switch-host { font-size: .74rem; color: var(--admin-text-soft); }
+.admin-switch-current-tag {
+  margin-left: auto;
+  font-size: .7rem;
+  font-weight: 800;
+  color: var(--admin-primary-dark);
+}
+.admin-switch-note {
+  padding: 8px 12px 4px;
+  font-size: .72rem;
+  color: var(--admin-text-soft);
+  line-height: 1.5;
+  border-top: 1px solid #f1f5f9;
+  margin-top: 6px;
+}
+
 /* 탭 메뉴 */
 .admin-tabs-nav {
   background: #fff;
@@ -623,4 +708,8 @@ body.admin-body {
   .admin-content { padding: 18px 14px 40px; }
   .admin-stat-grid { grid-template-columns: 1fr; }
   .admin-hourly-chart { height: 140px; }
+  .admin-header-actions { width: 100%; }
+  .admin-switch { flex: 1; }
+  .admin-switch-btn { width: 100%; justify-content: center; }
+  .admin-switch-menu { left: 0; right: 0; min-width: 0; }
 }
