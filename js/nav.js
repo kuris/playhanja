@@ -77,6 +77,10 @@
             <a href="https://voca.chatgpts.kr" target="_blank" rel="noopener"><span>⚡</span> <span>단어야 놀자</span></a>
             <a href="https://fortune.chatgpts.kr" target="_blank" rel="noopener"><span>🔮</span> <span>운세야 놀자</span></a>
             <a href="https://history.chatgpts.kr" target="_blank" rel="noopener"><span>📜</span> <span>역사야 놀자</span></a>
+            <a href="https://work.chatgpts.kr" target="_blank" rel="noopener"><span>💼</span> <span>워크야 놀자</span></a>
+            <a href="https://money.chatgpts.kr" target="_blank" rel="noopener"><span>💰</span> <span>머니야 놀자</span></a>
+            <a href="https://tools.chatgpts.kr" target="_blank" rel="noopener"><span>🛠️</span> <span>문서야 놀자</span></a>
+            <a href="https://bible.chatgpts.kr" target="_blank" rel="noopener"><span>✝️</span> <span>성경아 놀자</span></a>
             <a href="https://chatgpts.kr" target="_blank" rel="noopener"><span>🏠</span> <span>chatgpts.kr</span></a>
           </div>
         </div>
@@ -107,6 +111,10 @@
           <li><a href="https://voca.chatgpts.kr" target="_blank" rel="noopener">⚡ 단어야 놀자</a></li>
           <li><a href="https://fortune.chatgpts.kr" target="_blank" rel="noopener">🔮 운세야 놀자</a></li>
           <li><a href="https://history.chatgpts.kr" target="_blank" rel="noopener">📜 역사야 놀자</a></li>
+          <li><a href="https://work.chatgpts.kr" target="_blank" rel="noopener">💼 워크야 놀자</a></li>
+          <li><a href="https://money.chatgpts.kr" target="_blank" rel="noopener">💰 머니야 놀자</a></li>
+          <li><a href="https://tools.chatgpts.kr" target="_blank" rel="noopener">🛠️ 문서야 놀자</a></li>
+          <li><a href="https://bible.chatgpts.kr" target="_blank" rel="noopener">✝️ 성경아 놀자</a></li>
           <li><a href="https://chatgpts.kr" target="_blank" rel="noopener">🏠 chatgpts.kr</a></li>
         </ul>
       </li>`;
