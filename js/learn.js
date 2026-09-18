@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const DATA = window.HANZI_DATA || [];
   const CATEGORIES = window.CATEGORIES || [];
   const LEVELS = window.LEVELS || [];
+  const GRADE_HANJA = window.GRADE_HANJA || [];
   const PROGRESS = window.HanziProgress;
 
   // ---------- 상태 ----------
@@ -90,17 +91,29 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ---------- 필터링 로직 ----------
+  // 검색어가 있으면 배우기(155자) + 급수(3,500자) 전체에서 통합 검색
   function getFiltered() {
+    const q = (state.search || '').trim().toLowerCase();
+    if (q) {
+      const inLearn = DATA.filter(h => matchLearn(h, q)).map(h => ({ kind: 'learn', data: h }));
+      const learnChars = new Set(DATA.map(h => h.char));
+      const inGrade = GRADE_HANJA.filter(h => matchGrade(h, q) && !learnChars.has(h.char))
+        .map(h => ({ kind: 'grade', data: h }));
+      return inLearn.concat(inGrade);
+    }
     return DATA.filter(h => {
       if (state.category !== 'all' && h.category !== state.category) return false;
       if (state.level !== 'all' && h.level !== state.level) return false;
-      if (state.search) {
-        const q = state.search.trim().toLowerCase();
-        const hay = (h.char + h.sound + h.meaning).toLowerCase();
-        if (!hay.includes(q)) return false;
-      }
       return true;
-    });
+    }).map(h => ({ kind: 'learn', data: h }));
+  }
+  function matchLearn(h, q) {
+    const hay = (h.char + h.sound + h.meaning + (h.story || '') + (h.words || []).map(w => w.word + w.meaning).join('')).toLowerCase();
+    return hay.includes(q);
+  }
+  function matchGrade(h, q) {
+    const hay = (h.char + h.meaning + h.sound + h.hunmum + (h.meaningFull || '') + (h.soundFull || '')).toLowerCase();
+    return hay.includes(q);
   }
 
   // ---------- 그리드 렌더 ----------
@@ -127,9 +140,24 @@ document.addEventListener('DOMContentLoaded', function () {
       `;
     }
 
-    grid.innerHTML = bannerHtml + list.map((h, i) => {
-      const lvlInfo = LEVELS.find(l => l.id === h.level);
+    grid.innerHTML = bannerHtml + list.map((item, i) => {
+      const h = item.data;
       const learned = PROGRESS.isLearned(h.id);
+      if (item.kind === 'grade') {
+        const ginfo = window.getGradeInfo ? window.getGradeInfo(h.grade) : null;
+        const link = `grade.html?char=${encodeURIComponent(h.char)}`;
+        return `
+        <a class="hanzi-card grade-hit ${learned ? 'learned' : ''}" href="${link}">
+          <span class="card-level">${ginfo ? ginfo.badge : '🏅'}</span>
+          ${learned ? '<span class="card-done"><i class="fa-solid fa-circle-check"></i></span>' : ''}
+          <div class="card-char">${h.char}</div>
+          <div class="card-sound">${h.sound}</div>
+          <div class="card-meaning">${h.meaning}</div>
+          <span class="card-grade-tag">${ginfo ? ginfo.name : ''} · 급수</span>
+        </a>
+      `;
+      }
+      const lvlInfo = LEVELS.find(l => l.id === h.level);
       return `
         <button class="hanzi-card ${learned ? 'learned' : ''}" data-index="${i}">
           <span class="card-level">${lvlInfo ? lvlInfo.badge : ''}</span>
@@ -141,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
       `;
     }).join('');
 
-    grid.querySelectorAll('.hanzi-card').forEach(card => {
+    grid.querySelectorAll('.hanzi-card[data-index]').forEach(card => {
       card.addEventListener('click', () => openDetail(Number(card.dataset.index)));
     });
 
@@ -168,6 +196,11 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // ---------- 탭 전환 로직 ----------
+  function currentHanzi() {
+    const item = currentList[currentIndex];
+    return item ? item.data : null;
+  }
+
   modalTabs.forEach(tab => {
     tab.addEventListener('click', () => {
       const target = tab.dataset.tab;
@@ -177,26 +210,27 @@ document.addEventListener('DOMContentLoaded', function () {
       if (target === 'anim') {
         tabAnimContent.classList.add('active');
         tabWriteContent.classList.remove('active');
-        if (currentIndex >= 0) {
-          runDetailAnimation(currentList[currentIndex], 1);
+        if (currentIndex >= 0 && currentHanzi()) {
+          runDetailAnimation(currentHanzi(), 1);
         }
       } else {
         tabAnimContent.classList.remove('active');
         tabWriteContent.classList.add('active');
         stopHanziAnimation(detailStage);
-        if (writePad && currentIndex >= 0) {
+        if (writePad && currentIndex >= 0 && currentHanzi()) {
           writePad.resize();
-          writePad.setChar(currentList[currentIndex].char);
+          writePad.setChar(currentHanzi().char);
         }
       }
     });
   });
 
-  // ---------- 상세 모달 ----------
+  // ---------- 상세 모달 (배우기 한자만 모달, 급수 한자는 grade.html 딥링크) ----------
   function openDetail(index) {
     currentIndex = index;
-    const hanzi = currentList[index];
-    if (!hanzi) return;
+    const item = currentList[index];
+    if (!item || item.kind !== 'learn') return;
+    const hanzi = item.data;
 
     modal.classList.add('open');
     const lvlInfo = LEVELS.find(l => l.id === hanzi.level);
@@ -271,19 +305,23 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   detailReplay.addEventListener('click', () => {
-    if (currentIndex >= 0) runDetailAnimation(currentList[currentIndex], 1);
+    if (currentIndex >= 0 && currentHanzi()) runDetailAnimation(currentHanzi(), 1);
   });
   detailSlow.addEventListener('click', () => {
-    if (currentIndex >= 0) runDetailAnimation(currentList[currentIndex], 0.5);
+    if (currentIndex >= 0 && currentHanzi()) runDetailAnimation(currentHanzi(), 0.5);
   });
   detailNext.addEventListener('click', () => {
     if (currentList.length === 0) return;
-    const next = (currentIndex + 1) % currentList.length;
-    openDetail(next);
+    // 다음 배우기 한자로 이동 (급수 결과는 건너뜀)
+    let next = (currentIndex + 1) % currentList.length;
+    for (let n = 0; n < currentList.length; n++) {
+      if (currentList[next] && currentList[next].kind === 'learn') { openDetail(next); return; }
+      next = (next + 1) % currentList.length;
+    }
   });
   markLearnedBtn.addEventListener('click', () => {
-    if (currentIndex < 0) return;
-    const hanzi = currentList[currentIndex];
+    if (currentIndex < 0 || !currentHanzi()) return;
+    const hanzi = currentHanzi();
     PROGRESS.toggleLearned(hanzi.id);
     updateMarkButton(hanzi);
     renderGrid();

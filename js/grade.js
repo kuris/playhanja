@@ -31,14 +31,37 @@ document.addEventListener('DOMContentLoaded', function () {
   const markBtn = document.getElementById('g-mark-learned');
   const modalPrintBtn = document.getElementById('g-print-btn');
 
-  // URL 파라미터로 급수 지정 가능 (예: grade.html?grade=7)
+  // URL 파라미터로 급수 지정 가능 (예: grade.html?grade=g7II / ?grade=7 / ?q=마당 / ?char=場)
   const params = new URLSearchParams(location.search);
-  let currentGrade = params.get('grade') || 'g8';
+  function normalizeGradeParam(v) {
+    if (!v) return null;
+    const s = String(v).trim();
+    if (GRADES.some(g => g.id === s)) return s;
+    const compact = s.replace(/\s+/g, '').toLowerCase();
+    const alias = {
+      '8': 'g8', '8급': 'g8',
+      '7ii': 'g7II', '7ⅱ': 'g7II', '7급ii': 'g7II', '7급ⅱ': 'g7II', '7-2': 'g7II', '7_2': 'g7II',
+      '7': 'g7', '7급': 'g7',
+      '6ii': 'g6II', '6ⅱ': 'g6II', '6급ii': 'g6II', '6-2': 'g6II',
+      '6': 'g6', '6급': 'g6',
+      '5ii': 'g5II', '5ⅱ': 'g5II', '5급ii': 'g5II', '5-2': 'g5II',
+      '5': 'g5', '5급': 'g5',
+      '4ii': 'g4II', '4ⅱ': 'g4II', '4급ii': 'g4II', '4-2': 'g4II',
+      '4': 'g4', '4급': 'g4',
+      '3ii': 'g3II', '3ⅱ': 'g3II', '3급ii': 'g3II', '3-2': 'g3II',
+      '3': 'g3', '3급': 'g3',
+      '2': 'g2', '2급': 'g2',
+      '1': 'g1', '1급': 'g1'
+    };
+    return alias[compact] || null;
+  }
+  let currentGrade = normalizeGradeParam(params.get('grade')) || 'g8';
   if (!GRADES.some(g => g.id === currentGrade)) currentGrade = 'g8';
 
   let currentList = [];
   let currentIndex = -1;
-  let searchQuery = '';
+  let searchQuery = params.get('q') || '';
+  const charParam = params.get('char') || '';
   let writePad = null;
 
   if (writeMount && window.HanziWritePad) {
@@ -72,12 +95,14 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ---------- 목록 필터 ----------
+  // 검색어가 있으면 전체 급수에서 통합 검색 (급수 필터 무시)
+  // 검색어가 없으면 선택된 급수만 표시
   function getList() {
+    const q = (searchQuery || '').trim().toLowerCase();
     return ALL.filter(h => {
-      if (h.grade !== currentGrade) return false;
-      if (searchQuery) {
-        const q = searchQuery.trim().toLowerCase();
-        const hay = (h.char + h.meaning + h.sound + h.hunmum).toLowerCase();
+      if (!q && h.grade !== currentGrade) return false;
+      if (q) {
+        const hay = (h.char + h.meaning + h.sound + h.hunmum + (h.meaningFull || '') + (h.soundFull || '')).toLowerCase();
         if (!hay.includes(q)) return false;
       }
       return true;
@@ -88,27 +113,33 @@ document.addEventListener('DOMContentLoaded', function () {
   function renderGrid() {
     const info = window.getGradeInfo(currentGrade);
     currentList = getList();
+    const q = (searchQuery || '').trim();
 
-    const total = ALL.filter(h => h.grade === currentGrade).length;
-    countLabel.textContent = searchQuery
-      ? `${info.name} ${total}자 중 ${currentList.length}자 검색됨`
-      : `${info.name} ${info.title} · 총 ${total}자`;
+    if (q) {
+      countLabel.textContent = `전체 급수에서 "${q}" ${currentList.length}자 찾음`;
+    } else {
+      const total = ALL.filter(h => h.grade === currentGrade).length;
+      countLabel.textContent = `${info.name} ${info.title} · 총 ${total}자`;
+    }
 
     updatePrintLink();
     updateProgress();
 
     if (currentList.length === 0) {
-      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fa-solid fa-face-frown" style="font-size:2rem; margin-bottom:12px; display:block;"></i><p>조건에 맞는 한자가 없어요. 다른 급수나 검색어로 찾아보세요!</p></div>`;
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fa-solid fa-face-frown" style="font-size:2rem; margin-bottom:12px; display:block;"></i><p>"${q || ''}"에 맞는 한자가 없어요. 한자(예: 場) · 훈(예: 마당) · 음(예: 장)으로 다시 검색해 보세요!</p></div>`;
       return;
     }
 
     grid.innerHTML = currentList.map((h, idx) => {
       const learned = PROGRESS.isLearned(h.id);
+      const ginfo = window.getGradeInfo(h.grade);
+      const gradeBadge = q ? `<span class="gc-grade">${ginfo.badge} ${ginfo.name}</span>` : '';
       return `
-        <button class="grade-char-card ${learned ? 'learned' : ''}" data-idx="${idx}" style="--grade-color:${info.color};">
+        <button class="grade-char-card ${learned ? 'learned' : ''}" data-idx="${idx}" style="--grade-color:${ginfo.color};">
           ${learned ? '<span class="gc-done">✅</span>' : ''}
           <span class="gc-char">${h.char}</span>
           <span class="gc-hunmum">${h.meaning} ${h.sound}</span>
+          ${gradeBadge}
         </button>
       `;
     }).join('');
@@ -144,7 +175,6 @@ document.addEventListener('DOMContentLoaded', function () {
       renderGrid();
     }, 180);
   });
-
   // ---------- 상세 모달 ----------
   function openModal(idx) {
     const h = currentList[idx];
@@ -245,6 +275,12 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // ---------- 초기 렌더 ----------
+  if (searchInput && searchQuery) searchInput.value = searchQuery;
   renderPicker();
   renderGrid();
+  // ?char=場 같은 딥링크: 해당 한자 모달을 바로 열어줌
+  if (charParam) {
+    const idx = currentList.findIndex(h => h.char === charParam.trim());
+    if (idx >= 0) openModal(idx);
+  }
 });
