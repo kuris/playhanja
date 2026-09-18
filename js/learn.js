@@ -92,28 +92,48 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ---------- 필터링 로직 ----------
   // 검색어가 있으면 배우기(155자) + 급수(3,500자) 전체에서 통합 검색
+  // 음만 알아도 찾도록 정확도 순으로 정렬: 한자 일치 > 음 정확일치 > 훈 정확일치 > 부분일치
+  function gradeScore(h, q) {
+    if (h.char === q) return 100;
+    const sounds = String(h.sound || '').toLowerCase().split('/');
+    if (sounds.indexOf(q) !== -1) return 90;
+    if (String(h.hunmum || '').toLowerCase() === q) return 85;
+    const meanings = String(h.meaning || '').toLowerCase().split(/[,/·\s]+/);
+    if (meanings.indexOf(q) !== -1) return 80;
+    if (String(h.sound || '').toLowerCase().indexOf(q) !== -1) return 50;
+    if (String(h.meaning || '').toLowerCase().indexOf(q) !== -1) return 40;
+    if (String(h.hunmum || '').toLowerCase().indexOf(q) !== -1) return 30;
+    const extra = ((h.meaningFull || '') + ' ' + (h.soundFull || '')).toLowerCase();
+    if (q && extra.indexOf(q) !== -1) return 20;
+    return 0;
+  }
+  function learnScore(h, q) {
+    if (h.char === q) return 100;
+    const sounds = String(h.sound || '').toLowerCase().split('/');
+    if (sounds.indexOf(q) !== -1) return 90;
+    const meanings = String(h.meaning || '').toLowerCase().split(/[,/·\s]+/);
+    if (meanings.indexOf(q) !== -1) return 80;
+    if (String(h.sound || '').toLowerCase().indexOf(q) !== -1) return 50;
+    if (String(h.meaning || '').toLowerCase().indexOf(q) !== -1) return 40;
+    const extra = ((h.story || '') + ' ' + (h.words || []).map(w => w.word + ' ' + w.meaning).join(' ')).toLowerCase();
+    if (q && extra.indexOf(q) !== -1) return 10;
+    return 0;
+  }
   function getFiltered() {
     const q = (state.search || '').trim().toLowerCase();
     if (q) {
-      const inLearn = DATA.filter(h => matchLearn(h, q)).map(h => ({ kind: 'learn', data: h }));
       const learnChars = new Set(DATA.map(h => h.char));
-      const inGrade = GRADE_HANJA.filter(h => matchGrade(h, q) && !learnChars.has(h.char))
-        .map(h => ({ kind: 'grade', data: h }));
-      return inLearn.concat(inGrade);
+      const scored = DATA.map(h => ({ kind: 'learn', data: h, s: learnScore(h, q) }))
+        .concat(GRADE_HANJA.filter(h => !learnChars.has(h.char)).map(h => ({ kind: 'grade', data: h, s: gradeScore(h, q) })))
+        .filter(x => x.s > 0);
+      scored.sort((a, b) => (b.s - a.s) || (a.kind === b.kind ? 0 : (a.kind === 'learn' ? -1 : 1)));
+      return scored;
     }
     return DATA.filter(h => {
       if (state.category !== 'all' && h.category !== state.category) return false;
       if (state.level !== 'all' && h.level !== state.level) return false;
       return true;
     }).map(h => ({ kind: 'learn', data: h }));
-  }
-  function matchLearn(h, q) {
-    const hay = (h.char + h.sound + h.meaning + (h.story || '') + (h.words || []).map(w => w.word + w.meaning).join('')).toLowerCase();
-    return hay.includes(q);
-  }
-  function matchGrade(h, q) {
-    const hay = (h.char + h.meaning + h.sound + h.hunmum + (h.meaningFull || '') + (h.soundFull || '')).toLowerCase();
-    return hay.includes(q);
   }
 
   // ---------- 그리드 렌더 ----------

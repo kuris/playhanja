@@ -96,17 +96,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ---------- 목록 필터 ----------
   // 검색어가 있으면 전체 급수에서 통합 검색 (급수 필터 무시)
-  // 검색어가 없으면 선택된 급수만 표시
+  // 음만 알아도 찾도록 정확도 순으로 정렬: 한자 일치 > 음 정확일치 > 훈음 정확일치 > 훈 정확일치 > 부분일치
+  function gradeScore(h, q) {
+    if (h.char === q) return 100;
+    const sounds = String(h.sound || '').toLowerCase().split('/');
+    if (sounds.indexOf(q) !== -1) return 90;
+    if (String(h.hunmum || '').toLowerCase() === q) return 85;
+    const meanings = String(h.meaning || '').toLowerCase().split(/[,/·\s]+/);
+    if (meanings.indexOf(q) !== -1) return 80;
+    if (String(h.sound || '').toLowerCase().indexOf(q) !== -1) return 50;
+    if (String(h.meaning || '').toLowerCase().indexOf(q) !== -1) return 40;
+    if (String(h.hunmum || '').toLowerCase().indexOf(q) !== -1) return 30;
+    const extra = ((h.meaningFull || '') + ' ' + (h.soundFull || '')).toLowerCase();
+    if (q && extra.indexOf(q) !== -1) return 20;
+    return 0;
+  }
   function getList() {
     const q = (searchQuery || '').trim().toLowerCase();
-    return ALL.filter(h => {
-      if (!q && h.grade !== currentGrade) return false;
-      if (q) {
-        const hay = (h.char + h.meaning + h.sound + h.hunmum + (h.meaningFull || '') + (h.soundFull || '')).toLowerCase();
-        if (!hay.includes(q)) return false;
-      }
-      return true;
-    });
+    if (!q) return ALL.filter(h => h.grade === currentGrade);
+    return ALL.map(h => ({ h: h, s: gradeScore(h, q) }))
+      .filter(x => x.s > 0)
+      .sort((a, b) => (b.s - a.s) || (a.h.gradeOrder - b.h.gradeOrder) || (a.h.index - b.h.index))
+      .map(x => x.h);
   }
 
   // ---------- 카드 그리드 ----------
