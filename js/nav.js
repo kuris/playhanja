@@ -16,6 +16,7 @@
         { label: '고사성어', href: 'idiom.html', icon: '📖', desc: '유래 일화와 함께 111선' },
         { label: '천자문 250구', href: 'thousand.html', icon: '📜', desc: '천자문 1,000자 완주' },
         { label: '재미로 보는 이야기', href: 'story.html', icon: '🌟', desc: '이야기 속 한자어를 눌러서' },
+        { label: '한자 이야기책', href: 'books.html', icon: '📕', desc: '어린 왕자와 오즈의 마법사 무료 미리보기' },
         { label: '재미로 보는 지하철 한자', href: 'subway.html', icon: '🚇', desc: '1~9호선 역이름 속 한자' },
         { label: '이름 한자 풀이', href: 'name.html', icon: '🔍', desc: '내 이름 한자의 뜻과 풀이' },
         { label: '이름에 많이 쓰는 한자', href: 'name-list.html', icon: '🏷️', desc: '음별 자주 쓰이는 한자' },
@@ -41,7 +42,7 @@
 
   function currentFile() {
     const f = location.pathname.split('/').pop() || 'index.html';
-    return f === '' ? 'index.html' : f;
+    return f.includes('.') ? f : f + '.html';
   }
 
   function buildDesktop(here) {
